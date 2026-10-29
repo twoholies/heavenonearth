@@ -1004,6 +1004,93 @@
 </template>
 
 
+<!-- Spotify: library and now playing are set in CONFIG.spotify below -->
+<template data-app="Spotify" data-status="light">
+  <style>
+    .sp { position: relative; height: 100%; background: #121212; color: #fff; overflow: hidden;
+          font-family: "Circular Std", -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .sp-scroll { height: 100%; overflow-y: auto; padding: 50px 0 170px; }
+    .sp-head { display: flex; align-items: center; gap: 9px; padding: 0 15px 0 16px; height: 40px; }
+    .sp-head h1 { flex: 1; font-size: 22px; font-weight: 700; letter-spacing: -.3px; }
+    .sp-head .icons { display: flex; gap: 30px; align-items: center; }
+    .sp-me { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #c0392b; display: grid; place-items: center;
+             font-size: 14px; font-weight: 700; flex: none; }
+    .sp-me img { width: 100%; height: 100%; object-fit: cover; }
+    .sp-chips { display: flex; gap: 8px; padding: 22px 16px 0; }
+    .sp-chip { height: 29px; padding: 0 15px; border-radius: 15px; background: #1f1f1f; border: 1px solid #3a3a3a; color: #fff;
+               font: inherit; font-size: 13.5px; cursor: pointer; }
+    .sp-chip.on { background: #1ed760; border-color: #1ed760; color: #000; }
+    .sp-sort { display: flex; align-items: center; gap: 11px; padding: 95px 22px 0 19px; font-size: 13.5px; }
+    .sp-sort .sp2 { flex: 1; }
+    .sp-list { padding: 13px 16px 0; }
+    .sp-row { display: flex; align-items: center; gap: 14px; height: 78px; cursor: pointer; }
+    .sp-art { width: 62px; height: 62px; flex: none; overflow: hidden; display: grid; place-items: center; font-size: 22px; font-weight: 700; }
+    .sp-art img { width: 100%; height: 100%; object-fit: cover; }
+    .sp-art.round { border-radius: 50%; }
+    .sp-art.liked { border-radius: 4px; background: linear-gradient(135deg, #450af5, #8e8ee5 60%, #c4efd9); }
+    .sp-row .t { font-size: 15.5px; line-height: 1.3; }
+    .sp-row .s { font-size: 13.5px; color: #b3b3b3; display: flex; align-items: center; gap: 5px; }
+    .sp-mini { position: absolute; left: 8px; right: 8px; bottom: 92px; height: 55px; border-radius: 7px; background: #5b5b60;
+               display: flex; align-items: center; gap: 10px; padding: 0 16px 0 8px; z-index: 2; overflow: hidden; }
+    .sp-mini .cv { width: 40px; height: 40px; border-radius: 4px; overflow: hidden; flex: none; background: linear-gradient(135deg, #d8d4cf, #6b6670);
+                   display: grid; place-items: center; }
+    .sp-mini .cv img { width: 100%; height: 100%; object-fit: cover; }
+    .sp-mini .info { flex: 1; min-width: 0; line-height: 1.3; }
+    .sp-mini .info b { display: block; font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sp-mini .info span { display: block; font-size: 13px; color: #d9d9d9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sp-mini .ctl { display: flex; align-items: center; gap: 24px; }
+    .sp-mini button { background: none; border: 0; padding: 0; cursor: pointer; display: grid; place-items: center; }
+    .sp-prog { position: absolute; left: 8px; right: 8px; bottom: 0; height: 2px; background: rgba(255,255,255,.3); border-radius: 1px; }
+    .sp-prog i { position: absolute; inset: 0 auto 0 0; width: 0; background: #fff; border-radius: 1px; }
+    .sp-tabs { position: absolute; left: 0; right: 0; bottom: 0; height: 100px; z-index: 1; display: flex; justify-content: space-around;
+               padding: 40px 10px 0; background: linear-gradient(rgba(18,18,18,0), #121212 40%); }
+    .sp-tab { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 10.5px; color: #b3b3b3; width: 80px; }
+    .sp-tab.on { color: #fff; }
+  </style>
+  <div class="sp">
+    <div class="sp-scroll">
+      <div class="sp-head">
+        <div class="sp-me" id="spMe"></div>
+        <h1>Your Library</h1>
+        <div class="icons">
+          <svg width="22" height="22" viewBox="0 0 19 19" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6.8"/><path d="m13 13 5 5"/></svg>
+          <svg width="22" height="22" viewBox="0 0 22 22" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M11 1v20M1 11h20"/></svg>
+        </div>
+      </div>
+      <div class="sp-chips" id="spChips">
+        <button class="sp-chip" type="button" data-f="liked">Playlists</button>
+        <button class="sp-chip" type="button" data-f="album">Albums</button>
+        <button class="sp-chip" type="button" data-f="artist">Artists</button>
+      </div>
+      <div class="sp-sort">
+        <svg width="18" height="16" viewBox="0 0 18 16" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5 9 1l4 4M5 11l4 4 4-4M1 8h16"/></svg>
+        <span class="sp2">Recents</span>
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#fff" stroke-width="1.5"><rect x=".75" y=".75" width="5.5" height="5.5" rx=".6"/><rect x="8.75" y=".75" width="5.5" height="5.5" rx=".6"/><rect x=".75" y="8.75" width="5.5" height="5.5" rx=".6"/><rect x="8.75" y="8.75" width="5.5" height="5.5" rx=".6"/></svg>
+      </div>
+      <div class="sp-list" id="spList"></div>
+    </div>
+
+    <div class="sp-mini" id="spMini">
+      <div class="cv" id="spCover"></div>
+      <div class="info"><b id="spSong"></b><span id="spArtist"></span></div>
+      <div class="ctl">
+        <svg width="24" height="22" viewBox="0 0 24 22" fill="none" stroke="#fff" stroke-width="1.7"><path d="M10 1H3a2 2 0 0 0-2 2v13h9M1 20h9"/><rect x="13" y="1" width="10" height="19" rx="2"/><circle cx="18" cy="14" r="2.3"/><circle cx="18" cy="6" r=".8" fill="#fff"/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg>
+        <button type="button" id="spPlay" aria-label="Play"></button>
+      </div>
+      <div class="sp-prog"><i id="spProg"></i></div>
+    </div>
+
+    <nav class="sp-tabs">
+      <div class="sp-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21h-6v-6.5H9V21H3Z"/></svg>Home</div>
+      <div class="sp-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="8"/><path d="m16.5 16.5 6 6"/></svg>Search</div>
+      <div class="sp-tab on"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><rect x="2" y="2" width="2.6" height="20" rx=".5"/><rect x="7.5" y="2" width="2.6" height="20" rx=".5"/><path d="M13 3.2 15.6 2 22.5 20.7l-2.6 1.1Z"/></svg>Your Library</div>
+      <div class="sp-tab"><svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2v20M2 12h20"/></svg>Create</div>
+    </nav>
+  </div>
+</template>
+
+
 <script>
   // ---- Edit everything here ----
   const CONFIG = {
@@ -1075,6 +1162,22 @@ kantong sampah 😭
       { title: "😵‍💫", date: "27 Feb 2026", duration: "10.56", audio: null },
       { title: "love never felt so good (raw cover by me)", date: "2 Nov 2025", duration: "3.15", audio: null },
     ],
+    // Spotify "Your Library". type is "playlist", "album" or "artist";
+    // image is optional (without one a coloured placeholder is shown).
+    spotify: {
+      avatar: null,
+      library: [
+        { type: "playlist", title: "Liked Songs", sub: "Playlist • b", liked: true, pinned: true },
+        { type: "album", title: "The Firstfruit - The 1st Album", sub: "Album • Mark Lee", image: null },
+        { type: "artist", title: "Keenan Te", image: null },
+        { type: "artist", title: "HAECHAN", image: null },
+        { type: "artist", title: "The Weeknd", image: null },
+        { type: "artist", title: "Mark Lee", image: null },
+      ],
+      // the song in the mini player; audio is optional (silent without it)
+      nowPlaying: { title: "Collide (feat. Tyga)", artist: "Justine Skye, Tyga", cover: null,
+                    duration: "3:24", position: "1:10", audio: null },
+    },
     // Photos app ("Recently Saved"). Newest first. For a video, add
     // type: "video" and a poster (the picture shown in the grid).
     // date is optional and shows at the top when the photo is open.
@@ -1448,6 +1551,68 @@ kantong sampah 😭
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
   const APP_SETUP = {
+    Spotify(layer) {
+      const SP = CONFIG.spotify, $l = sel => layer.querySelector(sel);
+      const COLORS = ["#7b5e57", "#3e5c76", "#5d4b7a", "#2f6b5a", "#8a5a2b", "#6b3b4f"];
+      const initials = t => t.replace(/^The\s+/i, "").split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+      const NOTE = `<svg width="26" height="28" viewBox="0 0 24 26" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="2"><path d="M8 20V3l14-2v17"/><circle cx="5" cy="20" r="3.5"/><circle cx="19" cy="18" r="3.5"/></svg>`;
+      const pic = (img, it) => img ? `<img src="${src(img)}" alt="">` : it.type === "artist" ? esc(initials(it.title)) : NOTE;
+      $l("#spMe").innerHTML = SP.avatar ? `<img src="${src(SP.avatar)}" alt="">` : "H";
+      const pin = `<svg width="14" height="14" viewBox="0 0 16 16" fill="#1ed760"><path d="M10.2 1 15 5.8l-1.4 1.4-1-.4-2.6 2.6.2 3.2-1.4 1.4-2.9-2.9L1.6 15 1 14.4l3.9-4.3L2 7.2l1.4-1.4 3.2.2 2.6-2.6-.4-1Z"/></svg>`;
+      let filter = null;
+      const render = () => {
+        $l("#spList").innerHTML = SP.library.map((it, i) => {
+          if (filter && it.type !== filter) return "";
+          const art = it.liked
+            ? `<div class="sp-art liked"><svg width="28" height="26" viewBox="0 0 24 22" fill="#fff"><path d="M12 21.5 10.3 20C4.2 14.5 0 10.8 0 6.3A6.2 6.2 0 0 1 6.3 0 6.8 6.8 0 0 1 12 2.9 6.8 6.8 0 0 1 17.7 0 6.2 6.2 0 0 1 24 6.3c0 4.5-4.2 8.2-10.3 13.7Z"/></svg></div>`
+            : `<div class="sp-art${it.type === "artist" ? " round" : ""}" style="background:${it.image ? "#333" : COLORS[i % COLORS.length]}">${pic(it.image, it)}</div>`;
+          const sub = it.sub || (it.type === "artist" ? "Artist" : it.type === "album" ? "Album" : "Playlist");
+          return `<div class="sp-row">${art}<div><div class="t">${esc(it.title)}</div><div class="s">${it.pinned ? pin : ""}${esc(sub)}</div></div></div>`;
+        }).join("");
+      };
+      render();
+      $l("#spChips").addEventListener("click", e => {
+        const c = e.target.closest(".sp-chip");
+        if (!c) return;
+        filter = filter === c.dataset.f ? null : c.dataset.f;
+        layer.querySelectorAll(".sp-chip").forEach(x => x.classList.toggle("on", x.dataset.f === filter));
+        render();
+      });
+
+      // mini player
+      const NP = SP.nowPlaying;
+      const secs = d => { const [m, s] = String(d || "0:00").split(/[:.]/).map(Number); return (m || 0) * 60 + (s || 0); };
+      $l("#spSong").textContent = NP.title;
+      $l("#spArtist").textContent = NP.artist;
+      $l("#spCover").innerHTML = NP.cover ? `<img src="${src(NP.cover)}" alt="">` : "";
+      const PLAY = `<svg width="22" height="24" viewBox="0 0 22 24"><path d="M2 1.5v21L21 12Z" fill="#fff"/></svg>`;
+      const PAUSE = `<svg width="22" height="24" viewBox="0 0 22 24" fill="#fff"><rect x="3" y="1.5" width="5.5" height="21" rx="1"/><rect x="13.5" y="1.5" width="5.5" height="21" rx="1"/></svg>`;
+      const audio = NP.audio ? new Audio(src(NP.audio)) : null;
+      let total = secs(NP.duration) || 1, t = secs(NP.position), playing = false, last = 0, raf;
+      if (audio) {
+        audio.currentTime = t;
+        audio.addEventListener("loadedmetadata", () => { if (isFinite(audio.duration)) total = audio.duration; paint(); });
+      }
+      const paint = () => {
+        const cur = audio ? audio.currentTime : t;
+        $l("#spProg").style.width = `${Math.min(100, (cur / total) * 100)}%`;
+        $l("#spPlay").innerHTML = playing ? PAUSE : PLAY;
+      };
+      const tick = now => {
+        if (!playing) return;
+        if (!audio) { t += (now - last) / 1000; last = now; }
+        if ((audio ? audio.currentTime : t) >= total || audio?.ended) { playing = false; t = 0; if (audio) audio.currentTime = 0; paint(); return; }
+        paint();
+        raf = requestAnimationFrame(tick);
+      };
+      $l("#spPlay").addEventListener("click", () => {
+        playing = !playing;
+        if (playing) { last = performance.now(); audio?.play().catch(() => {}); raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); audio?.pause(); }
+        paint();
+      });
+      paint();
+    },
     Calendar(layer) {
       const $l = sel => layer.querySelector(sel);
       const now = new Date(), Y = now.getFullYear();
