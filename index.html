@@ -1170,6 +1170,39 @@
 </template>
 
 
+<!-- FaceTime: cards are set in CONFIG.facetime below -->
+<template data-app="FaceTime" data-status="light">
+  <style>
+    .ft { position: relative; height: 100%; background: #000; color: #fff;
+          font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .ft-top { position: absolute; top: 47px; left: 19px; right: 19px; display: flex; align-items: center; justify-content: space-between; }
+    .ft-top b { position: absolute; left: 0; right: 0; text-align: center; font-size: 16.5px; font-weight: 600; pointer-events: none; }
+    .ft-btn { height: 43px; min-width: 43px; border-radius: 22px; background: #1c1c1e; border: 1px solid #2c2c2e; color: #fff;
+              display: grid; place-items: center; font: inherit; font-size: 16.5px; padding: 0 15px; }
+    .ft-btn.round { padding: 0; }
+    .ft-grid { position: absolute; top: 113px; left: 19px; right: 19px; display: grid; grid-template-columns: repeat(2, 172px); justify-content: space-between; row-gap: 14px; }
+    .ft-card { position: relative; height: 255px; border-radius: 26px; overflow: hidden; background: #2c2c2e; }
+    .ft-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .ft-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,0) 25%, rgba(0,0,0,0) 65%, rgba(0,0,0,.55)); }
+    .ft-card .name { position: absolute; z-index: 1; left: 15px; top: 16px; font-size: 14.5px; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,.4); }
+    .ft-card .lbl { position: absolute; z-index: 1; left: 15px; bottom: 15px; font-size: 13px; }
+    .ft-card .call { position: absolute; z-index: 1; right: 9px; bottom: 9px; width: 45px; height: 45px; border-radius: 50%;
+                     background: rgba(90,90,90,.75); display: grid; place-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+    .ft-new { position: absolute; left: 50%; bottom: 31px; transform: translateX(-50%); height: 40px; border-radius: 20px; background: #30d158;
+              display: flex; align-items: center; gap: 8px; padding: 0 15px; font-size: 15.5px; white-space: nowrap; }
+  </style>
+  <div class="ft">
+    <div class="ft-top">
+      <span class="ft-btn" id="ftEdit">Edit</span>
+      <b>FaceTime</b>
+      <span class="ft-btn round"><svg width="20" height="14" viewBox="0 0 20 14" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M1 1h18M4 7h12M7 13h6"/></svg></span>
+    </div>
+    <div class="ft-grid" id="ftGrid"></div>
+    <div class="ft-new"><svg width="20" height="13" viewBox="0 0 26 17" fill="#fff"><rect x="0" y="1" width="17" height="15" rx="3.5"/><path d="M18 6.5 26 2v13l-8-4.5Z"/></svg>New Call</div>
+  </div>
+</template>
+
+
 <script>
   // ---- Edit everything here ----
   const CONFIG = {
@@ -1240,6 +1273,11 @@ kantong sampah 😭
       { title: "om isa nyanyiiii", date: "2 Mar 2026", duration: "13.22", audio: null },
       { title: "😵‍💫", date: "27 Feb 2026", duration: "10.56", audio: null },
       { title: "love never felt so good (raw cover by me)", date: "2 Nov 2025", duration: "3.15", audio: null },
+    ],
+    // FaceTime cards. fromNotification: 0 uses Isaac's name and photo from
+    // the lock screen (so it follows any rename); or give name and photo.
+    facetime: [
+      { fromNotification: 0, label: "Suggested" },
     ],
     // Health: the Steps page. days are [label, steps, full date].
     health: {
@@ -1639,6 +1677,16 @@ kantong sampah 😭
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
   const APP_SETUP = {
+    FaceTime(layer) {
+      const lockNotifs = CONFIG.notifications.map((n, i) => ({ ...n, ...saved[i] }));
+      layer.querySelector("#ftGrid").innerHTML = CONFIG.facetime.map(c => {
+        const n = c.fromNotification == null ? {} : lockNotifs[c.fromNotification];
+        const name = c.name ?? n.name ?? "", photo = c.photo ?? n.avatar;
+        return `<div class="ft-card">${photo ? `<img src="${src(photo)}" alt="">` : ""}
+          <span class="name">${esc(name)}</span><span class="lbl">${esc(c.label || "")}</span>
+          <span class="call"><svg width="24" height="16" viewBox="0 0 26 17" fill="#fff"><rect x="0" y="1" width="17" height="15" rx="3.5"/><path d="M18 6.5 26 2v13l-8-4.5Z"/></svg></span></div>`;
+      }).join("");
+    },
     Health(layer) {
       const H = CONFIG.health, $l = sel => layer.querySelector(sel);
       const num = n => Math.round(n).toLocaleString("id-ID");
