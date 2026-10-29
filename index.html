@@ -1652,6 +1652,65 @@
 </template>
 
 
+<!-- Phone: call history only (CONFIG.phone below) -->
+<template data-app="Phone">
+  <style>
+    .pn { position: relative; height: 100%; background: #fff; color: #000; overflow: hidden;
+          font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .pn-scroll { height: 100%; overflow-y: auto; padding: 102px 0 120px; }
+    .pn-top { position: absolute; top: 47px; left: 19px; right: 19px; z-index: 2; display: flex; align-items: center; justify-content: space-between; }
+    .pn-btn { height: 44px; min-width: 44px; border-radius: 22px; background: #fff; box-shadow: 0 4px 22px rgba(0,0,0,.09);
+              display: grid; place-items: center; font-size: 16.5px; padding: 0 15px; }
+    .pn-btn.round { padding: 0; }
+    .pn-seg { display: flex; padding: 3px; border-radius: 24px; background: #fff; box-shadow: 0 4px 22px rgba(0,0,0,.09); }
+    .pn-seg span { height: 39px; padding: 0 20px; border-radius: 20px; display: grid; place-items: center; font-size: 15.5px; cursor: pointer; }
+    .pn-seg span.on { background: #e9e9eb; }
+    .pn h1 { font-size: 34px; font-weight: 700; letter-spacing: -.4px; padding: 0 20px; }
+    .pn-search { margin: 12px 19px 14px; height: 39px; border-radius: 20px; background: #eeeef0; display: flex; align-items: center; gap: 9px;
+                 padding: 0 13px; font-size: 16px; color: #8a8a8e; }
+    .pn-row { display: flex; align-items: center; gap: 10px; height: 72px; padding: 0 8px 0 16px; position: relative; }
+    .pn-row + .pn-row::before { content: ""; position: absolute; top: 0; left: 74px; right: 8px; border-top: 1px solid #e3e3e8; }
+    .pn-av { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; flex: none; display: grid; place-items: center;
+             background: linear-gradient(#a6b1de, #7d87c4); color: #fff; font-size: 22px; font-weight: 600; }
+    .pn-av img { width: 100%; height: 100%; object-fit: cover; }
+    .pn-row .bd { flex: 1; min-width: 0; line-height: 1.3; }
+    .pn-row .nm { font-size: 16px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pn-row.missed .nm { color: #ff3b30; }
+    .pn-row .sub { font-size: 14px; color: #8a8a8e; display: flex; align-items: center; gap: 5px; }
+    .pn-row .tm { font-size: 14px; color: #8a8a8e; flex: none; }
+    .pn-info { width: 39px; height: 39px; border-radius: 50%; background: #f2f2f5; display: grid; place-items: center; flex: none; margin-left: 4px; }
+    .pn-empty { padding: 40px; text-align: center; color: #8a8a8e; }
+    .pn-tabs { position: absolute; left: 20px; right: 20px; bottom: 24px; height: 61px; border-radius: 31px; z-index: 2; display: flex; align-items: center;
+               justify-content: space-between; padding: 0 5px; background: rgba(255,255,255,.9); box-shadow: 0 4px 22px rgba(0,0,0,.1);
+               backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    .pn-tab { width: 70px; height: 52px; border-radius: 26px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+              font-size: 10.5px; font-weight: 600; }
+    .pn-tab.on { background: #ececf0; color: #0a84ff; }
+    .pn::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 110px; z-index: 1; pointer-events: none;
+                 background: linear-gradient(rgba(255,255,255,0), #fff 70%); }
+  </style>
+  <div class="pn">
+    <div class="pn-scroll">
+      <h1>Recents</h1>
+      <div class="pn-search"><svg width="17" height="17" viewBox="0 0 19 19" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="m13 13 5 5"/></svg>Search</div>
+      <div id="pnList"></div>
+    </div>
+    <div class="pn-top">
+      <span class="pn-btn">Edit</span>
+      <span class="pn-seg" id="pnSeg"><span class="on" data-f="all">All</span><span data-f="missed">Missed</span></span>
+      <span class="pn-btn round"><svg width="20" height="14" viewBox="0 0 20 14" stroke="#000" stroke-width="1.8" stroke-linecap="round"><path d="M1 1h18M4 7h12M7 13h6"/></svg></span>
+    </div>
+    <nav class="pn-tabs">
+      <span class="pn-tab"><svg width="26" height="25" viewBox="0 0 24 23" fill="#000"><path d="m12 1 3.4 7 7.6 1-5.5 5.4 1.3 7.6L12 18.4 5.2 22l1.3-7.6L1 9l7.6-1Z"/></svg>Favorites</span>
+      <span class="pn-tab on"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="#0a84ff"/><path d="M13 6v7.5H8.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>Recents</span>
+      <span class="pn-tab"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="#000"/><circle cx="13" cy="10" r="4.2" fill="#fff"/><path d="M5.5 21.5a8.5 7 0 0 1 15 0" fill="#fff"/></svg>Contacts</span>
+      <span class="pn-tab"><svg width="26" height="26" viewBox="0 0 26 26" fill="#000"><circle cx="5" cy="4" r="3"/><circle cx="13" cy="4" r="3"/><circle cx="21" cy="4" r="3"/><circle cx="5" cy="11.5" r="3"/><circle cx="13" cy="11.5" r="3"/><circle cx="21" cy="11.5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="13" cy="19" r="3"/><circle cx="21" cy="19" r="3"/><circle cx="13" cy="25" r="1"/></svg>Keypad</span>
+      <span class="pn-tab"><svg width="34" height="18" viewBox="0 0 34 18" fill="none" stroke="#000" stroke-width="2.2"><circle cx="8" cy="9" r="6.5"/><circle cx="26" cy="9" r="6.5"/><path d="M8 15.5h18"/></svg>Voicemail</span>
+    </nav>
+  </div>
+</template>
+
+
 <script>
   // ---- Edit everything here ----
   const CONFIG = {
@@ -1728,6 +1787,21 @@ kantong sampah 😭
       name: "mist bell", initial: "b", suggestions: 3, update: "Update to iOS 27.0.1",
       wifi: "SITOHANG", bluetooth: "On",
     },
+    // Phone call history, newest first. dir: "in" or "out"; missed shows red.
+    // count adds "(3)" for repeated calls; fromNotification: 0 / 1 uses
+    // Isaac's / Niel's lock screen name and photo.
+    phone: [
+      { fromNotification: 0, type: "WhatsApp Audio", dir: "in", missed: true, time: "22.05" },
+      { name: "Bengkel Motor Jaya", type: "WhatsApp Audio", dir: "in", missed: true, time: "09.06" },
+      { name: "Bengkel Motor Jaya", type: "WhatsApp Audio", dir: "in", time: "08.21" },
+      { fromNotification: 0, type: "WhatsApp Video", dir: "out", time: "Yesterday" },
+      { fromNotification: 1, type: "WhatsApp Audio", dir: "in", count: 3, time: "Yesterday" },
+      { fromNotification: 1, type: "WhatsApp Video", dir: "in", time: "Yesterday" },
+      { name: "Mama", type: "WhatsApp Audio", dir: "in", missed: true, time: "Tuesday" },
+      { name: "Mama", type: "WhatsApp Audio", dir: "out", count: 2, time: "Tuesday" },
+      { name: "Kak Rumi", type: "WhatsApp Audio", dir: "in", time: "Monday" },
+      { name: "Bang Jae", type: "mobile", dir: "out", time: "Sunday" },
+    ],
     // Safari: Privacy Report number and the Recent Searches list (newest first).
     safari: {
       trackers: 28,
@@ -2230,6 +2304,30 @@ kantong sampah 😭
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
   const APP_SETUP = {
+    Phone(layer) {
+      const lockNotifs = CONFIG.notifications.map((n, i) => ({ ...n, ...saved[i] }));
+      const calls = CONFIG.phone.map(c => c.fromNotification == null ? c
+        : { name: lockNotifs[c.fromNotification].name, photo: lockNotifs[c.fromNotification].avatar, ...c });
+      const arrow = dir => `<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#8a8a8e" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${
+        dir === "out" ? '<path d="M2 9 9 2M4 2h5v5"/>' : '<path d="M9 2 2 9M2 4v5h5"/>'}</svg>`;
+      const info = `<svg width="21" height="21" viewBox="0 0 22 22" fill="none" stroke="#0a84ff" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="9.5"/><path d="M11 10v6M11 6.5v.3"/></svg>`;
+      const render = f => {
+        const rows = calls.filter(c => f !== "missed" || c.missed);
+        layer.querySelector("#pnList").innerHTML = rows.map(c => `
+          <div class="pn-row${c.missed ? " missed" : ""}">
+            <span class="pn-av">${c.photo ? `<img src="${src(c.photo)}" alt="">` : esc((c.name || "?")[0].toUpperCase())}</span>
+            <div class="bd"><div class="nm">${esc(c.name)}</div><div class="sub">${arrow(c.dir)}${esc(c.type)}${c.count > 1 ? ` (${c.count})` : ""}</div></div>
+            <span class="tm">${esc(c.time)}</span><span class="pn-info">${info}</span>
+          </div>`).join("") || `<div class="pn-empty">No Missed Calls</div>`;
+      };
+      render("all");
+      layer.querySelector("#pnSeg").addEventListener("click", e => {
+        const t = e.target.closest("[data-f]");
+        if (!t) return;
+        layer.querySelectorAll("#pnSeg span").forEach(x => x.classList.toggle("on", x === t));
+        render(t.dataset.f);
+      });
+    },
     Safari(layer) {
       const SF = CONFIG.safari, $l = sel => layer.querySelector(sel);
       $l("#sfTrk").textContent = SF.trackers;
