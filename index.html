@@ -468,7 +468,7 @@
     .wa-head .wa-av svg { transform: scale(.72); }
     .wa-head .who { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
     .wa-head .who b { font-size: 16.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .wa-head .who span { font-size: 12px; color: #667781; min-height: 14px; white-space: nowrap; }
+    .wa-head .who span { font-size: 12px; color: #667781; min-height: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .wa-head .who span.typing { color: #1daa61; }
     .wa-callpill { height: 44px; border-radius: 22px; display: flex; align-items: center; gap: 26px; padding: 0 18px;
                    background: rgba(234,246,222,.85); flex: none; }
@@ -509,7 +509,7 @@
     .wa-msg.photo { padding: 4px; }
     .wa-msg.photo img { display: block; width: 236px; max-height: 300px; object-fit: cover; border-radius: 14px; }
     .wa-msg.photo .cap { padding: 6px 8px 3px; }
-    .wa-msg.photo .meta.over { position: absolute; right: 12px; bottom: 9px; margin: 0; float: none; color: #fff;
+    .wa-msg.photo .meta.over { position: absolute; right: 12px; top: auto; bottom: 9px; margin: 0; float: none; color: #fff;
                                text-shadow: 0 1px 2px rgba(0,0,0,.6); }
     .wa-msg.photo .meta.over svg path { stroke: #fff; }
     .wa-msg.photo .meta.over.read svg path { stroke: #53bdeb; }
@@ -539,6 +539,40 @@
     .wa-call .t b { font-size: 15px; font-weight: 500; }
     .wa-call .t span { font-size: 13px; color: #667781; }
     .wa-msg.call .meta { margin-top: 2px; }
+
+    /* group rooms */
+    .wa-callpill .chev { display: none; margin-left: -20px; }
+    .wa-room.group .wa-callpill { padding: 0 14px; gap: 26px; }
+    .wa-room.group .wa-callpill .phone-ic { display: none; }
+    .wa-room.group .wa-callpill .chev { display: block; }
+    .wa-room.group .wa-msg.them { margin-left: 44px; }
+    .wa-sender { display: block; font-size: 14px; font-weight: 500; margin-bottom: 1px; white-space: nowrap; }
+    .wa-msg.photo .wa-sender, .wa-msg.doc .wa-sender { padding: 3px 8px 4px; }
+    .wa-gav { position: absolute; left: -44px; bottom: 0; }
+    .wa-gav .wa-av { width: 30px; height: 30px; font-size: 13px; font-weight: 500; color: #fff; }
+    .wa-gav .wa-av svg { transform: scale(.55); }
+
+    /* deleted */
+    .wa-del { color: #667781; font-style: italic; }
+    .wa-del svg { vertical-align: -2px; margin-right: 3px; }
+
+    /* document */
+    .wa-msg.doc { padding: 4px; width: 290px; white-space: normal; }
+    .wa-msg.doc .pv { display: block; width: 100%; height: 120px; object-fit: cover; object-position: top; border-radius: 13px 13px 0 0; }
+    .wa-docrow { display: flex; align-items: center; gap: 10px; padding: 10px 10px 11px; background: rgba(11,20,26,.04); border-radius: 13px; }
+    .wa-msg.doc .pv + .wa-docrow { border-radius: 0 0 13px 13px; }
+    .wa-docrow .ext { flex: none; width: 30px; height: 36px; border-radius: 4px; background: #e2343f; color: #fff;
+                      font-size: 10px; font-weight: 700; display: grid; place-items: center; }
+    .wa-docrow .t { min-width: 0; display: flex; flex-direction: column; line-height: 1.3; }
+    .wa-docrow .t b { font-size: 15px; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .wa-docrow .t span { font-size: 12px; color: #667781; }
+    .wa-msg.doc > .meta { margin: 4px 6px 0 0; }
+
+    /* share button beside photos and documents */
+    .wa-fwd { position: absolute; top: 50%; width: 32px; height: 32px; margin-top: -16px; border-radius: 50%;
+              background: rgba(170,170,170,.55); display: grid; place-items: center; }
+    .wa-msg.me .wa-fwd { left: -44px; }
+    .wa-msg.them .wa-fwd { right: -44px; }
 
     .wa-bottom { background: #f2f1ee; }
     .wa-inputbar { display: flex; align-items: center; gap: 13px; padding: 9px 12px 9px 14px; }
@@ -617,7 +651,8 @@
         <div class="who"><b id="waRoomName"></b><span id="waRoomSub"></span></div>
         <div class="wa-callpill wa-glass">
           <svg width="26" height="18" viewBox="0 0 26 18" fill="none" stroke="#0b141a" stroke-width="1.8" stroke-linejoin="round"><rect x="1" y="2" width="16" height="14" rx="3.5"/><path d="M17 7.5 25 3v12l-8-4.5"/></svg>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b141a" stroke-width="1.8" stroke-linejoin="round"><path d="M6.6 2.5 9 2l2 4.5-2 1.6a12 12 0 0 0 6.9 6.9l1.6-2 4.5 2-.5 2.4c-.2 1-1 1.6-2 1.6A17.5 17.5 0 0 1 5 4.5c0-1 .6-1.8 1.6-2Z"/></svg>
+          <svg class="phone-ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b141a" stroke-width="1.8" stroke-linejoin="round"><path d="M6.6 2.5 9 2l2 4.5-2 1.6a12 12 0 0 0 6.9 6.9l1.6-2 4.5 2-.5 2.4c-.2 1-1 1.6-2 1.6A17.5 17.5 0 0 1 5 4.5c0-1 .6-1.8 1.6-2Z"/></svg>
+          <svg class="chev" width="11" height="7" viewBox="0 0 11 7" fill="none" stroke="#0b141a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 4.5 4.5L10 1"/></svg>
         </div>
       </header>
       <div class="wa-msgs" id="waMsgs"></div>
@@ -691,6 +726,13 @@
       //     { from: "them", type: "call", call: "voice", duration: "12 min" }   // answered call
       //     { from: "them", type: "call", call: "video", missed: true }         // missed video call
       //       (from "them" = incoming call, from "me" = outgoing call)
+      //     { from: "me",   type: "doc", name: "Ticket.pdf", pages: 2, size: "51 KB", preview: "optional-picture.png" }
+      //     { from: "them", type: "deleted" }   ("This message was deleted.")
+      //   Group chats: list the members (avatar optional — without one a coloured
+      //   letter is shown), and give every "them" message a sender:
+      //     members: [{ name: "Niel", avatar: "🐰.jpg" }, { name: "Bang Jae" }],
+      //     { from: "them", sender: "Niel", text: "..." }
+      //     reply: { from: "them", sender: "Niel", text: "..." }
       //   Extras for text messages:
       //     reply: { from: "me", text: "the message being replied to" }
       //     edited: true   (shows "Edited" next to the time)
@@ -729,10 +771,56 @@
             { from: "them", text: "Are you free tomorrow?" },
           ],
         },
-        { name: "Heaven on Earth 🌷", group: true, sender: "Niel", deleted: true, time: "06.54", muted: true },
-        { name: "Mama", message: "E-Tiket Pesawat Keberangkatan.pdf • 2 pages", media: "doc", sent: true, time: "Tuesday" },
-        { name: "Kak Rumi", message: "ini kakk", media: "photo", sent: true, time: "Monday", status: true },
-        { name: "Bang Jae", message: "okee makasih", sent: true, time: "02/10/26" },
+        { name: "Heaven on Earth 🌷", group: true, sender: "Niel", deleted: true, time: "06.54", muted: true,
+          members: [
+            { name: "Isaac", avatar: "260116 #MARK 🐯 INSTAGRAM UPDATE.jpg" },
+            { name: "Niel", avatar: "🐰.jpg" },
+            { name: "Bang Jae ‼️" },
+            { name: "Kak Rumi" },
+          ],
+          history: [
+            { day: "Monday", from: "them", sender: "Kak Rumi", text: "gimana presentasinya tadi?", time: "15.40" },
+            { from: "them", sender: "Isaac", text: "lancar kok kak, aman", time: "15.55" },
+            { from: "them", sender: "Niel", text: "syukurlahh", reply: { from: "them", sender: "Isaac", text: "lancar kok kak, aman" }, time: "16.32" },
+            { from: "them", sender: "Kak Rumi", text: "akhirnya selesai juga🙌🏻", time: "16.49" },
+            { from: "me", text: "selamat yaa 🫶🏻", time: "17.48" },
+            { day: "Yesterday", from: "them", sender: "Bang Jae ‼️", text: "Udah bangun ?", time: "05.22" },
+            { from: "them", sender: "Niel", text: "Stretching", time: "05.22" },
+            { from: "me", text: "udah bang", time: "05.28" },
+            { day: "Today", from: "them", sender: "Bang Jae ‼️", text: "Bangun yuk", time: "04.45" },
+            { from: "them", sender: "Niel", text: "Stretching", time: "04.46" },
+            { from: "them", sender: "Niel", type: "deleted", time: "06.54" },
+          ],
+          script: [
+            { from: "them", sender: "Isaac", text: "ada yang mau nitip kopi?", delay: 1500 },
+            { from: "them", sender: "Bang Jae ‼️", text: "aku 1 ya" },
+            { from: "me", text: "aku juga dong, yang biasa" },
+            { from: "them", sender: "Isaac", text: "okee" },
+          ],
+        },
+        { name: "Mama", message: "E-Tiket Pesawat Keberangkatan.pdf • 2 pages", media: "doc", sent: true, time: "Tuesday",
+          history: [
+            { day: "Tuesday", from: "them", text: "kak, tolong cariin tiket pesawat ke Jakarta ya", time: "12.40" },
+            { from: "me", text: "iya ma, ini pilihannya", time: "12.52" },
+            { from: "me", type: "photo", src: "media/flight-options.jpg", time: "13.07" },
+            { from: "them", type: "call", call: "voice", missed: true, time: "15.15" },
+            { from: "me", text: "kenapa ma", time: "15.24" },
+            { from: "me", type: "doc", name: "E-Tiket Pesawat Keberangkatan.pdf", pages: 2, size: "51 KB",
+              preview: "media/eticket-preview.jpg", time: "19.24" },
+          ],
+        },
+        { name: "Kak Rumi", message: "ini kakk", media: "photo", sent: true, time: "Monday", status: true,
+          history: [
+            { day: "Monday", from: "them", text: "dek, fotoin yang kemarin dong", time: "10.02" },
+            { from: "me", type: "photo", src: "download - 2026-10-29T181441.295.jpg", text: "ini kakk", time: "10.15" },
+          ],
+        },
+        { name: "Bang Jae", message: "okee makasih", sent: true, time: "02/10/26",
+          history: [
+            { day: "02/10/26", from: "them", text: "dek, uangnya udah abang transfer ya", time: "19.30" },
+            { from: "me", text: "okee makasih", time: "19.41" },
+          ],
+        },
       ],
     },
   };
@@ -965,10 +1053,11 @@
         const last = st.log[st.log.length - 1];
         const label = last.type === "photo" ? (last.text || "Photo")
                     : last.type === "voice" ? (last.duration || "Voice message")
+                    : last.type === "doc" ? [last.name, last.pages && `${last.pages} pages`].filter(Boolean).join(" • ")
                     : last.type === "call" ? callTitle(last) : last.text;
-        const media = { photo: "photo", voice: "mic", call: last.call === "video" ? "video" : "call" }[last.type] || null;
+        const media = { photo: "photo", voice: "mic", doc: "doc", call: last.call === "video" ? "video" : "call" }[last.type] || null;
         return { ...c, message: label, sent: last.from === "me", time: last.time, unread: 0,
-                 media, deleted: false, sender: null };
+                 media, deleted: last.type === "deleted", sender: c.group && last.from === "them" ? last.sender : null };
       };
       const preview = c => {
         let t = c.sent ? ic.ticks + " " : "";
@@ -1054,11 +1143,32 @@
         return m.missed ? `Missed ${kind} call` : `${kind[0].toUpperCase() + kind.slice(1)} call`;
       }
 
+      // group members: name colour and avatar
+      const MEMBER_COLORS = ["#1f8f6f", "#c0347a", "#2b7bb9", "#b8650f", "#7a4fc2", "#d0453b", "#3f8f26"];
+      const member = name => {
+        const ms = chats[chatIdx].members || [];
+        const i = Math.max(0, ms.findIndex(x => x.name === name));
+        return { name, ...ms[i], color: ms[i]?.color || MEMBER_COLORS[i % MEMBER_COLORS.length] };
+      };
+      const letterAv = mb => mb.avatar ? avatar(mb, false)
+        : `<div class="wa-av" style="background:${mb.color}">${esc((mb.name || "?").replace(/^(Bang|Kak|Adek|Dek)\s+/i, "")[0] || "?")}</div>`;
+      const fwd = `<span class="wa-fwd"><svg width="15" height="13" viewBox="0 0 15 13" fill="#fff"><path d="M8.5 0 15 6l-6.5 6V8.3C4 8.3 1.6 9.8 0 13 .6 8 3 4.4 8.5 3.7Z"/></svg></span>`;
+
       const msgBody = m => {
         const c = chats[chatIdx];
         if (m.type === "photo") {
           return `<img src="${src(m.src || "")}" alt="">` +
-            (m.text ? `<div class="cap">${esc(m.text)}${meta(m)}</div>` : meta(m, " over"));
+            (m.text ? `<div class="cap">${esc(m.text)}${meta(m)}</div>` : meta(m, " over")) + fwd;
+        }
+        if (m.type === "doc") {
+          const ext = (m.ext || (m.name || "").split(".").pop() || "file").toLowerCase();
+          const info = [m.pages && `${m.pages} page${m.pages > 1 ? "s" : ""}`, m.size, ext].filter(Boolean).join(" • ");
+          return (m.preview ? `<img class="pv" src="${src(m.preview)}" alt="">` : "") +
+            `<div class="wa-docrow"><span class="ext">${esc(ext.toUpperCase().slice(0, 4))}</span>
+              <span class="t"><b>${esc(m.name || "Document")}</b><span>${esc(info)}</span></span></div>` + meta(m) + fwd;
+        }
+        if (m.type === "deleted") {
+          return `<span class="wa-del">${ic.ban}${m.from === "me" ? "You deleted this message." : "This message was deleted."}</span>` + meta(m);
         }
         if (m.type === "voice") {
           const who = m.from === "me" ? { avatar: CONFIG.whatsapp.myAvatar } : c;
@@ -1075,19 +1185,33 @@
           return `<div class="wa-call"><span class="ci">${callIcon(m.call === "video", m.missed ? "#ea0038" : "#0b141a")}</span>
             <span class="t"><b>${callTitle(m)}</b><span>${esc(sub)}</span></span></div>${meta(m)}`;
         }
-        const q = m.reply ? `<span class="wa-quote q-${m.reply.from === "me" ? "me" : "them"}"><b>${m.reply.from === "me" ? "You" : esc(c.name)}</b><span>${esc(m.reply.text || "")}</span></span>` : "";
+        let q = "";
+        if (m.reply) {
+          const mine = m.reply.from === "me";
+          const qName = mine ? "You" : c.group ? (m.reply.sender || "") : c.name;
+          const qColor = mine ? "" : c.group ? ` style="--qc:${member(m.reply.sender).color}"` : "";
+          q = `<span class="wa-quote q-${mine ? "me" : "them"}"${qColor}><b>${esc(qName)}</b><span>${esc(m.reply.text || "")}</span></span>`;
+        }
         return q + esc(m.text || "") + meta(m);
       };
+      // consecutive messages from the same person on the same day form one run
+      const sameRun = (a, b) => a && b && a.from === b.from && a.day === b.day && (a.sender || "") === (b.sender || "");
       const bubble = (m, prev, next) => {
-        const first = !prev || prev.from !== m.from || prev.day !== m.day;
-        const tail = !next || next.from !== m.from || next.day !== m.day;
+        const first = !sameRun(prev, m), tail = !sameRun(m, next);
+        const inGroup = chats[chatIdx].group && m.from === "them";
+        const mb = inGroup ? member(m.sender) : null;
+        const name = inGroup && first ? `<b class="wa-sender" style="color:${mb.color}">${esc(m.sender || "")}</b>` : "";
+        const gav = inGroup && tail ? `<span class="wa-gav">${letterAv(mb)}</span>` : "";
         return (m.day !== prev?.day ? `<div class="wa-day">${esc(m.day)}</div>` : "") +
-          `<div class="wa-msg ${m.from} ${m.type || "text"}${first ? " first" : ""}${tail ? " tail" : ""}">${msgBody(m)}</div>`;
+          `<div class="wa-msg ${m.from} ${m.type || "text"}${first ? " first" : ""}${tail ? " tail" : ""}">${name}${msgBody(m)}${gav}</div>`;
       };
       const addBubble = m => {
         const log = waState[chatIdx].log, prev = log[log.length - 2];
-        // the previous bubble loses its tail when the same person sends again
-        if (prev && prev.from === m.from && prev.day === m.day) msgs.lastElementChild?.classList.remove("tail");
+        // the previous bubble loses its tail (and group avatar) when the same person sends again
+        if (sameRun(prev, m)) {
+          msgs.lastElementChild?.classList.remove("tail");
+          msgs.lastElementChild?.querySelector(":scope > .wa-gav")?.remove();
+        }
         msgs.insertAdjacentHTML("beforeend", bubble(m, prev, null));
         msgs.scrollTop = msgs.scrollHeight;
         return msgs.lastElementChild;
@@ -1113,11 +1237,12 @@
           await wait(m.delay ?? (m.from === "me" ? 1200 : 900));
           if (myRun !== run) return;
           if (m.from === "them" && m.type !== "call") {
-            status(m.type === "voice" ? "recording audio…" : "typing…");
+            const who = c.group && m.sender ? `${m.sender} is ` : "";
+            status(who + (m.type === "voice" ? "recording audio…" : "typing…"));
             await wait(m.type === "voice" ? Math.min(4000, 800 + secs(m.duration) * 120)
                      : Math.min(4000, 700 + (m.text || "").length * 45));
             if (myRun !== run) return;
-            status("online");
+            status(c.group ? groupInfo(c) : "online");
           }
           const msg = { ...m, day: "Today", time: now() };
           delete msg.delay;
@@ -1184,6 +1309,7 @@
         if (myRun === run) play(myRun);
       }
 
+      const groupInfo = c => [...(c.members || []).map(x => x.name), "You"].join(", ");
       function openChat(i) {
         chatIdx = i;
         const c = chats[i];
@@ -1193,7 +1319,8 @@
         }
         layer.querySelector("#waRoomAv").innerHTML = avatar(c, false);
         layer.querySelector("#waRoomName").textContent = c.name;
-        status(c.group ? "tap here for group info" : "tap for contact info");
+        status(c.group ? groupInfo(c) : "tap for contact info");
+        room.classList.toggle("group", !!c.group);
         typed.textContent = ""; setHasText(); pendingReply = null; typing = false;
         room.classList.remove("kb");
         const log = waState[i].log;
