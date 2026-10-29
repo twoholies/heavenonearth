@@ -6,7 +6,7 @@
 <title>Hesa's Phone</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
 <style>
   :root {
     --glass: rgba(110, 110, 118, 0.38);
@@ -1376,6 +1376,177 @@
 </template>
 
 
+<!-- X: feed, notifications and DMs are in CONFIG.x below -->
+<template data-app="X">
+  <style>
+    .xa { position: relative; height: 100%; background: #fff; color: #0f1419; overflow: hidden;
+          font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .xa-page { position: absolute; inset: 0 0 85px; display: none; flex-direction: column; }
+    .xa-page.on { display: flex; }
+    .xa-scroll { flex: 1; overflow-y: auto; }
+    .xa-head { position: relative; height: 92px; flex: none; display: flex; align-items: flex-end; padding: 0 16px 6px; }
+    .xa-head .ttl { position: absolute; left: 0; right: 0; bottom: 12px; text-align: center; font-size: 17px; font-weight: 700; pointer-events: none; }
+    .xa-head .right { margin-left: auto; margin-bottom: 4px; }
+    .xa-me { position: relative; width: 32px; height: 32px; margin-bottom: 6px; flex: none; }
+    .xa-me .dot { position: absolute; right: -1px; top: -1px; width: 8px; height: 8px; border-radius: 50%; background: #1d9bf0; border: 1.5px solid #fff; }
+    .xa-av { border-radius: 50%; overflow: hidden; display: grid; place-items: center; color: #fff; font-weight: 700; flex: none; background: #8899a6; }
+    .xa-av img { width: 100%; height: 100%; object-fit: cover; }
+    .xa-tabs { display: flex; flex: none; border-bottom: 1px solid #eff3f4; }
+    .xa-tabs span { flex: 1; text-align: center; font-size: 15.5px; font-weight: 600; color: #536471; padding: 10px 0 12px; position: relative; }
+    .xa-tabs span.on { color: #0f1419; font-weight: 700; }
+    .xa-tabs span.on::after { content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: 62%; height: 4px; border-radius: 2px; background: #0f1419; }
+    .xa-tabs .add { color: #536471; }
+    .xa-tabs .add i { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #1d9bf0; vertical-align: 3px; margin-right: 6px; }
+
+    /* posts */
+    .xa-post { display: flex; gap: 9px; padding: 11px 13px 8px 9px; border-bottom: 1px solid #eff3f4; }
+    .xa-post .bd { flex: 1; min-width: 0; }
+    .xa-post .l1 { display: flex; align-items: baseline; gap: 4px; font-size: 15px; white-space: nowrap; }
+    .xa-post .l1 b { font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
+    .xa-post .l1 .h { color: #536471; overflow: hidden; text-overflow: ellipsis; }
+    .xa-post .l1 .x { margin-left: auto; flex: none; }
+    .xa-post .txt { font-size: 15px; line-height: 1.3; margin-top: 1px; white-space: pre-wrap; word-wrap: break-word; }
+    .xa-media { margin-top: 9px; border-radius: 14px; overflow: hidden; border: 1px solid #cfd9de; }
+    .xa-media img { display: block; width: 100%; max-height: 200px; object-fit: cover; object-position: top; }
+    .xa-goth { margin-top: 9px; border-radius: 14px; height: 98px; display: grid; place-items: center; color: #eee; font-size: 25px;
+               font-family: "UnifrakturMaguntia", serif; letter-spacing: .5px;
+               background: radial-gradient(#2a2a2a, #0b0b0b); }
+    .xa-quote { margin-top: 9px; border: 1px solid #cfd9de; border-radius: 14px; padding: 10px 12px; }
+    .xa-quote .l1 { font-size: 14px; }
+    .xa-quote .txt { font-size: 14.5px; }
+    .xa-made { font-size: 13px; color: #536471; margin-top: 8px; }
+    .xa-acts { display: flex; justify-content: space-between; align-items: center; margin-top: 9px; color: #536471; font-size: 13px; }
+    .xa-acts span { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+    .xa-acts em { font-style: normal; }
+    .xa-acts .like.on { color: #f91880; }
+    .xa-acts .like.on svg path { fill: #f91880; stroke: #f91880; }
+    .xa-acts .rt.on { color: #00ba7c; }
+    .xa-acts .rt.on svg { stroke: #00ba7c; }
+
+    /* notifications */
+    .xa-note { display: flex; gap: 12px; padding: 12px 16px 11px 18px; border-bottom: 1px solid #eff3f4; }
+    .xa-note .ic { width: 28px; flex: none; display: flex; justify-content: center; padding-top: 6px; }
+    .xa-note .bd { flex: 1; min-width: 0; }
+    .xa-note .avs { display: flex; gap: 0; }
+    .xa-note .avs .xa-av { width: 33px; height: 33px; font-size: 13px; margin-right: -1px; border: 1px solid #fff; }
+    .xa-note .what { font-size: 15px; line-height: 1.32; margin-top: 8px; }
+    .xa-note .what b { font-weight: 700; }
+    .xa-note .what .t { color: #536471; }
+    .xa-note .prev { font-size: 15px; color: #536471; line-height: 1.38; margin-top: 3px; white-space: pre-wrap; }
+    .xa-note .row { display: flex; gap: 10px; }
+    .xa-thumb { width: 62px; height: 62px; border-radius: 10px; flex: none; margin-top: 8px; background: #0e1a2b; color: #c9d3e0;
+                font-size: 6px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+                font-family: Georgia, serif; letter-spacing: .5px; }
+
+    /* chat list */
+    .xa-pill { height: 39px; padding: 0 12px 0 15px; border-radius: 20px; border: 1px solid #cfd9de; display: flex; align-items: center; gap: 6px; font-size: 15px; }
+    .xa-search { margin: 4px 16px 14px; height: 40px; border-radius: 20px; background: #eff3f4; display: flex; align-items: center; gap: 9px;
+                 padding: 0 15px; color: #536471; font-size: 16px; flex: none; }
+    .xa-conv { display: flex; align-items: center; gap: 15px; padding: 12px 16px; cursor: pointer; }
+    .xa-conv:active { background: #f7f9f9; }
+    .xa-conv .bd { flex: 1; min-width: 0; }
+    .xa-conv .l1 { display: flex; justify-content: space-between; gap: 8px; font-size: 15.5px; }
+    .xa-conv .l1 b { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .xa-conv .l1 .tm { color: #536471; font-size: 14px; flex: none; }
+    .xa-conv .pv { color: #536471; font-size: 15px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .xa-sec { font-size: 15.5px; font-weight: 800; padding: 10px 16px 4px; }
+    .xa-chatbtn { height: 34px; padding: 0 13px; border-radius: 17px; background: #eff3f4; font-size: 15px; font-weight: 600; display: grid; place-items: center; flex: none; }
+    .xa-verified { vertical-align: -3px; }
+
+    /* DM room */
+    .xa-room { position: absolute; inset: 0; z-index: 4; background: #fff; display: flex; flex-direction: column; transform: translateX(100%);
+               transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+    .xa-room.open { transform: none; }
+    .xa-rhead { display: flex; align-items: center; gap: 10px; padding: 52px 14px 10px; border-bottom: 1px solid #eff3f4; flex: none; }
+    .xa-rhead .who { flex: 1; text-align: center; line-height: 1.2; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .xa-rhead .who b { font-size: 15px; }
+    .xa-rhead .who span:not(.xa-av) { font-size: 12.5px; color: #536471; }
+    .xa-rhead button { background: none; border: 0; padding: 4px; cursor: pointer; }
+    .xa-msgs { flex: 1; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; }
+    .xa-msg { max-width: 76%; padding: 10px 14px; border-radius: 22px; font-size: 15px; line-height: 1.3; white-space: pre-wrap; word-wrap: break-word; }
+    .xa-msg.me { align-self: flex-end; background: #1d9bf0; color: #fff; border-bottom-right-radius: 5px; }
+    .xa-msg.them { align-self: flex-start; background: #eff3f4; border-bottom-left-radius: 5px; }
+    .xa-msg a { color: inherit; text-decoration: underline; }
+    .xa-msg.me.link { background: #fff; color: #0f1419; border: 1px solid #cfd9de; padding: 0; overflow: hidden; }
+    .xa-msg .card { padding: 10px 13px; font-size: 13.5px; color: #536471; }
+    .xa-msg .card b { display: block; color: #0f1419; font-size: 14.5px; }
+    .xa-msg .bar { height: 70px; background: linear-gradient(135deg, #0e1a2b, #2b3f5c); }
+    .xa-mt { font-size: 12.5px; color: #536471; margin: 2px 4px 9px; }
+    .xa-mt.me { align-self: flex-end; }
+    .xa-day { align-self: center; font-size: 12.5px; color: #536471; margin: 6px 0 10px; }
+    .xa-input { flex: none; display: flex; align-items: center; gap: 12px; padding: 8px 14px 34px; border-top: 1px solid #eff3f4; }
+    .xa-input .box { flex: 1; height: 40px; border-radius: 20px; background: #eff3f4; display: flex; align-items: center; padding: 0 14px; color: #536471; font-size: 15px; }
+
+    /* bottom bar + floating button */
+    .xa-nav { position: absolute; left: 0; right: 0; bottom: 0; height: 85px; border-top: 1px solid #eff3f4; background: #fff; z-index: 3;
+              display: flex; justify-content: space-around; padding-top: 12px; }
+    .xa-nav span { position: relative; width: 50px; display: flex; justify-content: center; cursor: pointer; height: 30px; }
+    .xa-nav .badge { position: absolute; left: 27px; top: -6px; min-width: 18px; height: 18px; border-radius: 9px; background: #1d9bf0; color: #fff;
+                     font-size: 11px; display: grid; place-items: center; border: 1.5px solid #fff; padding: 0 4px; }
+    .xa-nav .dot { position: absolute; left: 30px; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: #1d9bf0; }
+    .xa-fab { position: absolute; right: 9px; bottom: 103px; width: 55px; height: 55px; border-radius: 50%; background: #1d9bf0; z-index: 3;
+              display: grid; place-items: center; box-shadow: 0 3px 10px rgba(0,0,0,.18); }
+  </style>
+  <div class="xa">
+    <!-- home -->
+    <section class="xa-page on" data-page="home">
+      <div class="xa-head">
+        <div class="xa-me" data-me></div>
+        <span class="ttl"><svg width="27" height="25" viewBox="0 0 24 22"><path d="M18.2 1h3.4l-7.4 8.4L23 21h-6.8l-5.3-7-6.1 7H1.4l7.9-9L1 1h7l4.8 6.4Zm-1.2 18h1.9L7 3H5Z" fill="#0f1419"/></svg></span>
+      </div>
+      <div class="xa-tabs"><span class="on">For you <svg width="11" height="7" viewBox="0 0 11 7" fill="none" stroke="#536471" stroke-width="1.6" stroke-linecap="round"><path d="m1 1 4.5 4.5L10 1"/></svg></span><span>Following</span><span class="add"><i></i>Add +</span></div>
+      <div class="xa-scroll" id="xaFeed"></div>
+    </section>
+
+    <!-- notifications -->
+    <section class="xa-page" data-page="notif">
+      <div class="xa-head">
+        <div class="xa-me" data-me></div>
+        <span class="ttl">Notifications</span>
+        <span class="right"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0f1419" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5l2 2.6 3.2-.6.8 3.2 2.9 1.4-1.3 3 1.3 3-2.9 1.4-.8 3.2-3.2-.6-2 2.6-2-2.6-3.2.6-.8-3.2-2.9-1.4 1.3-3-1.3-3 2.9-1.4.8-3.2 3.2.6Z" stroke-linejoin="round"/></svg></span>
+      </div>
+      <div class="xa-tabs"><span class="on"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0f1419" stroke-width="2" style="vertical-align:-2px;margin-right:5px"><path d="M6 9a6 6 0 0 1 12 0v5l2 3H4l2-3Z" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>All</span><span>Priority</span><span>Mentions</span></div>
+      <div class="xa-scroll" id="xaNotes"></div>
+    </section>
+
+    <!-- chat -->
+    <section class="xa-page" data-page="chat">
+      <div class="xa-head">
+        <div class="xa-me" data-me><i class="dot"></i></div>
+        <span class="ttl">Chat</span>
+        <span class="right xa-pill">All <svg width="11" height="7" viewBox="0 0 11 7" fill="none" stroke="#8b98a5" stroke-width="1.6" stroke-linecap="round"><path d="m1 1 4.5 4.5L10 1"/></svg></span>
+      </div>
+      <div class="xa-search"><svg width="17" height="17" viewBox="0 0 19 19" fill="none" stroke="#536471" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="m13 13 5 5"/></svg>Search</div>
+      <div class="xa-scroll" id="xaChats"></div>
+    </section>
+
+    <!-- a DM -->
+    <section class="xa-room" id="xaRoom">
+      <div class="xa-rhead">
+        <button type="button" id="xaRoomBack" aria-label="Back"><svg width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="#0f1419" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 9H2M9 1 1 9l8 8"/></svg></button>
+        <div class="who" id="xaRoomWho"></div>
+        <button type="button" aria-label="Info"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#0f1419" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="9.5"/><path d="M11 10v6M11 6.5v.5"/></svg></button>
+      </div>
+      <div class="xa-msgs" id="xaMsgs"></div>
+      <div class="xa-input">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1d9bf0" stroke-width="1.8"><rect x="2" y="3" width="18" height="16" rx="3"/><circle cx="8" cy="9" r="1.8"/><path d="m3 17 5-5 4 4 3-3 5 5" stroke-linejoin="round"/></svg>
+        <div class="box">Start a message</div>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1d9bf0" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="1" width="8" height="12" rx="4"/><path d="M2.5 9.5a7.5 7.5 0 0 0 15 0M10 17v2"/></svg>
+      </div>
+    </section>
+
+    <span class="xa-fab" id="xaFab"></span>
+    <nav class="xa-nav" id="xaNav">
+      <span data-go="home"></span>
+      <span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0f1419" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 6 6"/></svg></span>
+      <span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0f1419" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M4 21 20 3"/></svg></span>
+      <span data-go="notif"></span>
+      <span data-go="chat"></span>
+    </nav>
+  </div>
+</template>
+
+
 <script>
   // ---- Edit everything here ----
   const CONFIG = {
@@ -1451,6 +1622,52 @@ kantong sampah 😭
     settings: {
       name: "mist bell", initial: "b", suggestions: 3, update: "Update to iOS 27.0.1",
       wifi: "SITOHANG", bluetooth: "On",
+    },
+    // X. Avatars are optional (a coloured letter is shown without one).
+    x: {
+      me: { name: "hesa", avatar: null },
+      feed: [
+        { name: "Arung", handle: "@tulisanarung", time: "4h", image: "media/photos/screenshot-whatsapp.jpg", made: true,
+          text: "Sopan gak sih mereka saling salting di roomchat orang yang habis broken heart? 💔",
+          replies: 19, reposts: 1, likes: 5, views: "2,9K" },
+        { name: "vamp †", handle: "@gh0stlyvamp", time: "17h", gothic: "Let me love you to death", nameWeight: 400,
+          replies: 8, reposts: 482, likes: 1300, views: "23K" },
+        { name: "b", handle: "@kelincigemoy", time: "1h", text: "Udh gua bilangin jangan begadang, tetep aja begadang 😭",
+          quote: { name: "Human", handle: "@driftinghuman", time: "5h",
+                   text: "Sebenernya cewe kalau bilang \"terserah\" itu udah punya jawaban, cuma pengen lo nebak aja. Kalau lo nebaknya bener, dia seneng banget. Kalau salah, ya siap-siap aja 🙂" },
+          replies: 41, reposts: 210, likes: 3400, views: "88K" },
+        { name: "mahae daily", handle: "@mahaedaily", time: "2h", text: "reminder buat minum air putih dan jangan lupa makan ya kalian semua 🤍",
+          replies: 3, reposts: 56, likes: 420, views: "9,1K" },
+      ],
+      notifications: [
+        { type: "like", avatars: 8, who: "fl0werryy💚💚💚💚💚", others: 75, time: "4m",
+          text: "yang belum baca sabar\" ya ternyata ao3 nya lagi down maintenance 😭" },
+        { type: "like", avatars: 8, who: "`Amaa🍉", others: 82, time: "4m", thumb: true,
+          text: "a markhyuck | mahae one shoot\n\nread tags | 8k words" },
+        { type: "like", avatars: 1, who: "piew 🐻", time: "8m",
+          text: "sumpah.. sesak nafas.. tolong ya guys kalo kalian nemu interactive au apalagi authornya ngoding sendiri tuh jangan lupa kasih apresiasi soalnya engap banget cuyy 😵‍💫✋🏻" },
+        { type: "repost", avatars: 8, who: "bintangsenja", others: 12, time: "13m", thumb: true,
+          text: "a markhyuck | mahae one shoot\n\nread tags | 8k words" },
+      ],
+      unreadNotifications: 2,
+      // DMs: messages from "me" (Hesa) or "them". link: true shows a link card.
+      chats: [
+        { name: "mahae enjoyer 🌙", handle: "@mahaenjoyer", time: "3w", messages: [
+          { day: "3 weeks ago", from: "them", text: "kak boleh minta link au yang kemarin ga? kelewat aku 🥺", time: "21.02" },
+          { from: "me", text: "boleh dongg", time: "21.10" },
+          { from: "me", link: true, text: "a markhyuck | mahae one shoot", sub: "x.com/hesa/status/…", time: "21.10" },
+        ] },
+        { name: "readers acc", handle: "@readersacc", time: "4w", messages: [
+          { day: "4 weeks ago", from: "them", text: "kak au nya bagus bangettt aku nangis bacanya 😭😭", time: "23.41" },
+          { from: "them", text: "chapter selanjutnya kapan kak??", time: "23.41" },
+          { from: "me", text: "huhu makasih banyak udah baca 🥹", time: "23.58" },
+          { from: "me", text: "makasih kembaliii stay tuned terus yaa 🫶🏻", time: "23.58" },
+        ] },
+      ],
+      suggested: [
+        { name: "Veez", verified: true }, { name: "", handle: "@nightcafe_" }, { name: "Bebeb 🍳 | #MyFriend💌 | fan acc" },
+        { name: "MAHAE BASE AU" }, { name: "Mark Voting Squad" }, { name: "urfvrtcaca" },
+      ],
     },
     // Mail inbox, newest first. The first lines of body show as the preview.
     // attachment: "File.pdf" adds a file at the bottom of the message.
@@ -1892,6 +2109,134 @@ kantong sampah 😭
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
   const APP_SETUP = {
+    X(layer) {
+      const X = CONFIG.x, $l = sel => layer.querySelector(sel);
+      const COLORS = ["#7b5e57", "#3e5c76", "#5d4b7a", "#2f6b5a", "#8a5a2b", "#6b3b4f", "#4a4a4a", "#9b6a8a"];
+      const hash = t => [...String(t)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 3);
+      const av = (p, size) => `<span class="xa-av" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .42)}px;background:${COLORS[hash(p.name || p.handle) % COLORS.length]}">${
+        p.avatar ? `<img src="${src(p.avatar)}" alt="">` : esc(((p.name || p.handle || "?").replace(/[^\p{L}\p{N}]/gu, "")[0] || "?").toUpperCase())}</span>`;
+      const k = n => typeof n === "number" && n >= 1000 ? `${(n / 1000).toFixed(1).replace(".", ",").replace(",0", "")}K` : String(n);
+      const xMark = `<svg class="x" width="17" height="16" viewBox="0 0 24 22"><path d="M18.2 1h3.4l-7.4 8.4L23 21h-6.8l-5.3-7-6.1 7H1.4l7.9-9L1 1h7l4.8 6.4Zm-1.2 18h1.9L7 3H5Z" fill="#0f1419"/></svg>`;
+      const I = {
+        reply: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.5 11a8 7 0 0 1 8-7h1a8 7.5 0 0 1 0 15H9l-4.5 3v-4.2A7.3 7 0 0 1 3.5 11Z" stroke-linejoin="round"/></svg>`,
+        rt: `<svg width="19" height="18" viewBox="0 0 24 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18V6.5A2.5 2.5 0 0 1 7.5 4H15M2 9l3-3 3 3M19 4v11.5a2.5 2.5 0 0 1-2.5 2.5H9M22 13l-3 3-3-3"/></svg>`,
+        like: `<svg width="18" height="18" viewBox="0 0 24 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20.5 10.5 19C5 14 1.5 10.8 1.5 6.8A5.3 5.3 0 0 1 6.8 1.5c2 0 3.9 1 5.2 2.5a6.9 6.9 0 0 1 5.2-2.5 5.3 5.3 0 0 1 5.3 5.3c0 4-3.5 7.2-9 12.2Z"/></svg>`,
+        views: `<svg width="17" height="17" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 17V9M8 17V4M13 17v-7M18 17v-4"/></svg>`,
+        book: `<svg width="16" height="18" viewBox="0 0 16 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M2 2h12v16l-6-4-6 4Z"/></svg>`,
+        share: `<svg width="17" height="18" viewBox="0 0 20 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14V2M5 6l5-5 5 5M2 13v6h16v-6"/></svg>`,
+      };
+
+      // ---- home feed ----
+      $l("#xaFeed").innerHTML = X.feed.map((p, i) => `
+        <article class="xa-post">
+          ${av(p, 45)}
+          <div class="bd">
+            <div class="l1"><b style="font-weight:${p.nameWeight || 700}">${esc(p.name)}</b><span class="h">${esc(p.handle)} · ${esc(p.time)}</span>${xMark}</div>
+            ${p.text ? `<div class="txt">${esc(p.text)}</div>` : ""}
+            ${p.image ? `<div class="xa-media"><img src="${src(p.image)}" alt=""></div>` : ""}
+            ${p.gothic ? `<div class="xa-goth">${esc(p.gothic)}</div>` : ""}
+            ${p.quote ? `<div class="xa-quote"><div class="l1">${av(p.quote, 20)}<b>${esc(p.quote.name)}</b><span class="h">${esc(p.quote.handle)} · ${esc(p.quote.time)}</span></div><div class="txt">${esc(p.quote.text)}</div></div>` : ""}
+            ${p.made ? `<div class="xa-made">Made on 𝕏</div>` : ""}
+            <div class="xa-acts">
+              <span>${I.reply}${k(p.replies)}</span>
+              <span class="rt" data-i="${i}">${I.rt}<em>${k(p.reposts)}</em></span>
+              <span class="like" data-i="${i}">${I.like}<em>${k(p.likes)}</em></span>
+              <span>${I.views}${esc(p.views)}</span>
+              <span>${I.book}</span><span>${I.share}</span>
+            </div>
+          </div>
+        </article>`).join("");
+      // tap the heart / repost to toggle it (counts go up by one)
+      $l("#xaFeed").addEventListener("click", e => {
+        const a = e.target.closest(".like, .rt");
+        if (!a) return;
+        const p = X.feed[+a.dataset.i], key = a.classList.contains("like") ? "likes" : "reposts";
+        const on = a.classList.toggle("on");
+        a.querySelector("em").textContent = k(p[key] + (on ? 1 : 0));
+      });
+
+      // ---- notifications ----
+      const NAMES = ["n", "k", "r", "a", "s", "j", "m", "d", "y", "e"];
+      $l("#xaNotes").innerHTML = X.notifications.map((n, i) => `
+        <div class="xa-note">
+          <span class="ic">${n.type === "repost"
+            ? `<svg width="26" height="24" viewBox="0 0 24 22" fill="none" stroke="#00ba7c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18V6.5A2.5 2.5 0 0 1 7.5 4H15M2 9l3-3 3 3M19 4v11.5a2.5 2.5 0 0 1-2.5 2.5H9M22 13l-3 3-3-3"/></svg>`
+            : `<svg width="26" height="24" viewBox="0 0 24 22" fill="#f91880"><path d="M12 21.5 10.3 20C4.2 14.5 0 10.8 0 6.3A6.2 6.2 0 0 1 6.3 0 6.8 6.8 0 0 1 12 2.9 6.8 6.8 0 0 1 17.7 0 6.2 6.2 0 0 1 24 6.3c0 4.5-4.2 8.2-10.3 13.7Z"/></svg>`}</span>
+          <div class="bd">
+            <div class="avs">${Array.from({ length: n.avatars || 1 }, (_, j) => av({ name: (j ? NAMES[(i + j) % NAMES.length] : n.who) + j }, 33)).join("")}</div>
+            <div class="row"><div style="flex:1;min-width:0">
+              <div class="what"><b>${esc(n.who)}</b>${n.others ? ` and ${n.others} others` : ""} ${n.type === "repost" ? "reposted" : "liked"} your post <span class="t">· ${esc(n.time)}</span></div>
+              <div class="prev">${esc(n.text)}</div>
+            </div>${n.thumb ? `<div class="xa-thumb"><span>TWOOLIES</span><span style="font-size:5px;border:1px solid #c9d3e0;padding:1px 3px">NEXT CHAPTER</span><span>one shoot</span></div>` : ""}</div>
+          </div>
+        </div>`).join("");
+
+      // ---- chat list + rooms ----
+      const verified = `<svg class="xa-verified" width="17" height="17" viewBox="0 0 22 22"><path d="M11 1l2.6 2 3.2-.3.9 3.1 2.8 1.6-1.1 3 1.1 3-2.8 1.6-.9 3.1-3.2-.3L11 21l-2.6-2-3.2.3-.9-3.1-2.8-1.6 1.1-3-1.1-3 2.8-1.6.9-3.1 3.2.3Z" fill="#1d9bf0"/><path d="m7 11 3 3 5-6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      const lastText = c => { const m = c.messages?.[c.messages.length - 1]; return !m ? "" : m.link ? (m.from === "me" ? "You sent a link" : "Sent a link") : m.text; };
+      $l("#xaChats").innerHTML = X.chats.map((c, i) => `
+          <div class="xa-conv" data-chat="${i}">${av(c, 54)}<div class="bd">
+            <div class="l1"><b>${esc(c.name)}</b><span class="tm">${esc(c.time)}</span></div>
+            <div class="pv">${esc(lastText(c))}</div></div></div>`).join("") +
+        `<div class="xa-sec">Suggested</div>` +
+        X.suggested.map((c, i) => `
+          <div class="xa-conv" data-sug="${i}">${av(c, 54)}<div class="bd">
+            <div class="l1"><b>${esc(c.name)}${c.verified ? " " + verified : ""}</b></div>
+            <div class="pv">You interact a lot on X</div></div><span class="xa-chatbtn">Chat</span></div>`).join("");
+      const room = $l("#xaRoom");
+      const openRoom = c => {
+        $l("#xaRoomWho").innerHTML = `${av(c, 28)}<b>${esc(c.name || c.handle || "")}</b>${c.handle ? `<span>${esc(c.handle)}</span>` : ""}`;
+        const ms = c.messages || [];
+        $l("#xaMsgs").innerHTML = ms.length ? ms.map((m, j) => {
+          const next = ms[j + 1];
+          const bubble = m.link
+            ? `<div class="xa-msg me link"><div class="bar"></div><div class="card"><b>${esc(m.text)}</b>${esc(m.sub || "")}</div></div>`
+            : `<div class="xa-msg ${m.from}">${esc(m.text)}</div>`;
+          const time = !next || next.from !== m.from ? `<div class="xa-mt ${m.from}">${esc(m.time || "")}</div>` : "";
+          return (m.day ? `<div class="xa-day">${esc(m.day)}</div>` : "") + bubble + time;
+        }).join("") : `<div class="xa-day" style="margin-top:40px">Say hi to ${esc(c.name || c.handle)} 👋</div>`;
+        room.classList.add("open");
+        requestAnimationFrame(() => { $l("#xaMsgs").scrollTop = 1e6; });
+      };
+      $l("#xaChats").addEventListener("click", e => {
+        const r = e.target.closest("[data-chat], [data-sug]");
+        if (!r) return;
+        openRoom(r.dataset.chat != null ? X.chats[+r.dataset.chat] : X.suggested[+r.dataset.sug]);
+      });
+      $l("#xaRoomBack").addEventListener("click", () => room.classList.remove("open"));
+
+      // ---- top avatar, bottom bar, pages ----
+      layer.querySelectorAll("[data-me]").forEach(m => m.insertAdjacentHTML("afterbegin", av(X.me, 32)));
+      const NAV = {
+        home: on => `<svg width="26" height="26" viewBox="0 0 24 24" fill="${on ? "#0f1419" : "none"}" stroke="#0f1419" stroke-width="2" stroke-linejoin="round"><path d="M3 10 12 3l9 7v10.5a1 1 0 0 1-1 1h-5v-6.5h-6v6.5H4a1 1 0 0 1-1-1Z"/></svg>`,
+        notif: on => `<svg width="26" height="26" viewBox="0 0 24 24" fill="${on ? "#0f1419" : "none"}" stroke="#0f1419" stroke-width="2" stroke-linejoin="round"><path d="M5.5 9.5a6.5 6.5 0 0 1 13 0v4.5l2 3.5h-17l2-3.5Z"/><path d="M9.5 20.5a2.5 2.5 0 0 0 5 0" fill="none"/></svg>`,
+        chat: on => `<svg width="26" height="26" viewBox="0 0 24 24" fill="${on ? "#0f1419" : "none"}" stroke="#0f1419" stroke-width="2" stroke-linejoin="round"><path d="M12 3c5 0 9 3.6 9 8.2s-4 8.3-9 8.3c-1.3 0-2.6-.2-3.7-.7L3 20.5l1.6-4.3A7.9 7.9 0 0 1 3 11.2C3 6.6 7 3 12 3Z"/></svg>`,
+      };
+      const FAB = {
+        plus: `<svg width="22" height="22" viewBox="0 0 22 22" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M11 2v18M2 11h18"/></svg>`,
+        chat: `<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4c-5.5 0-10 3.8-10 8.7 0 2.3 1 4.3 2.6 5.8L4 23l5-1.8c1.2.4 2.6.7 4 .7"/><path d="M21 15v8M17 19h8"/></svg>`,
+      };
+      let notifSeen = false;
+      const go = name => {
+        layer.querySelectorAll(".xa-page").forEach(p => p.classList.toggle("on", p.dataset.page === name));
+        if (name === "notif") notifSeen = true;
+        layer.querySelectorAll("[data-go]").forEach(s => {
+          const n = s.dataset.go;
+          s.innerHTML = NAV[n](n === name) +
+            (n === "notif" && !notifSeen && X.unreadNotifications ? `<i class="badge">${X.unreadNotifications}</i>` : "") +
+            (n === "home" && name !== "home" ? `<i class="dot"></i>` : "");
+        });
+        $l("#xaFab").innerHTML = name === "chat" ? FAB.chat : FAB.plus;
+        room.classList.remove("open");
+      };
+      $l("#xaNav").addEventListener("click", e => { const s = e.target.closest("[data-go]"); if (s) go(s.dataset.go); });
+      go("home");
+      APP_KEYS.X = e => {
+        if (e.key !== "Escape" || !room.classList.contains("open")) return false;
+        room.classList.remove("open");
+        return true;
+      };
+    },
     Settings(layer) {
       const S = CONFIG.settings;
       const chev = `<svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#c4c4c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg>`;
