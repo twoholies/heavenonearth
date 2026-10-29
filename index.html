@@ -408,6 +408,94 @@
   </template>
 -->
 
+<!-- WhatsApp: the chat list itself is set in CONFIG.whatsapp below -->
+<template data-app="WhatsApp">
+  <style>
+    .wa { position: relative; height: 100%; display: flex; flex-direction: column; background: #fff; color: #0b141a;
+          font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .wa-scroll { flex: 1; overflow-y: auto; padding: 54px 0 120px; }
+    .wa-top { display: flex; align-items: center; justify-content: space-between; padding: 0 19px; height: 30px; margin-top: 0; }
+    .wa-top h1 { font-size: 17px; font-weight: 600; position: absolute; left: 50%; transform: translateX(-50%); }
+    .wa-circle { width: 43px; height: 43px; border-radius: 50%; display: grid; place-items: center; background: #fff;
+                 box-shadow: 0 1px 6px rgba(0,0,0,.08); cursor: pointer; }
+    .wa-circle.green { background: #1daa61; box-shadow: none; }
+    .wa-right { display: flex; gap: 12px; }
+    .wa-chips { display: flex; gap: 8px; padding: 25px 19px 10px; }
+    .wa-chip { height: 31px; padding: 0 11px; border-radius: 16px; border: 1px solid #d1d7db; background: #fff;
+               font: inherit; font-size: 14px; font-weight: 500; color: #54656f; cursor: pointer; display: grid; place-items: center; }
+    .wa-chip.on { background: #d9fdd3; border-color: #a8e6a1; color: #15603e; }
+    .wa-row { display: flex; align-items: center; gap: 13px; padding: 0 0 0 19px; cursor: pointer; }
+    .wa-row:active { background: #f5f6f6; }
+    .wa-row .main { flex: 1; min-width: 0; padding: 12px 19px 12px 0; border-bottom: 1px solid #e9edef; min-height: 72px;
+                    display: flex; flex-direction: column; justify-content: center; }
+    .wa-row:last-child .main { border-bottom-color: #e9edef; }
+    .wa-archived { height: 54px; }
+    .wa-archived .ico { width: 54px; display: grid; place-items: center; }
+    .wa-archived .main { min-height: 54px; flex-direction: row; align-items: center; justify-content: space-between; color: #54656f; font-weight: 500; font-size: 16px; }
+    .wa-archived .count { font-size: 13px; font-weight: 400; }
+    .wa-av { width: 54px; height: 54px; border-radius: 50%; flex: none; object-fit: cover; background: #f2ddd1;
+             display: grid; place-items: center; overflow: hidden; }
+    .wa-av.ring { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #25d366; }
+    .wa-line { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .wa-name { font-size: 16.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .wa-time { font-size: 13px; color: #667781; flex: none; }
+    .wa-time.unread { color: #1daa61; font-weight: 500; }
+    .wa-prev { font-size: 14.5px; color: #667781; margin-top: 3px; display: flex; align-items: flex-start; gap: 8px; }
+    .wa-prev .txt { flex: 1; min-width: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
+    .wa-prev .txt svg { vertical-align: -2px; margin-right: 3px; }
+    .wa-prev em { font-style: italic; }
+    .wa-badge { flex: none; min-width: 21px; height: 21px; padding: 0 6px; border-radius: 11px; background: #1daa61; color: #fff;
+                font-size: 12px; font-weight: 600; display: grid; place-items: center; }
+    .wa-e2e { text-align: center; font-size: 12.5px; color: #667781; padding: 22px 30px; }
+    .wa-e2e b { color: #1a7f37; font-weight: 500; }
+    .wa-empty { text-align: center; color: #667781; font-size: 14px; padding: 40px 20px; }
+    .wa-ai { position: absolute; right: 16px; bottom: 112px; width: 44px; height: 44px; border-radius: 50%; background: #fff;
+             box-shadow: 0 2px 10px rgba(0,0,0,.12); display: grid; place-items: center; }
+    .wa-tabs { position: absolute; left: 20px; right: 20px; bottom: 26px; height: 60px; border-radius: 30px; background: #fff;
+               box-shadow: 0 2px 16px rgba(0,0,0,.1); display: flex; align-items: center; justify-content: space-around; padding: 0 6px; }
+    .wa-tab { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 500;
+              padding: 6px 8px; border-radius: 24px; cursor: pointer; min-width: 58px; }
+    .wa-tab.on { background: #ececec; padding: 6px 14px; }
+    .wa-you { width: 26px; height: 26px; border-radius: 50%; background: #f2ddd1; border: 1.5px solid #c98a72; display: grid; place-items: center; }
+  </style>
+  <div class="wa">
+    <div class="wa-scroll">
+      <div class="wa-top">
+        <div class="wa-circle"><svg width="18" height="4" viewBox="0 0 18 4" fill="#0b141a"><circle cx="2" cy="2" r="2"/><circle cx="9" cy="2" r="2"/><circle cx="16" cy="2" r="2"/></svg></div>
+        <h1>Chats</h1>
+        <div class="wa-right">
+          <div class="wa-circle"><svg width="22" height="18" viewBox="0 0 26 20" fill="#0b141a"><path d="M9 1h8l2 3h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4Z"/><circle cx="13" cy="11.5" r="4.8" fill="#fff"/><circle cx="13" cy="11.5" r="3" fill="#0b141a"/></svg></div>
+          <div class="wa-circle green"><svg width="18" height="18" viewBox="0 0 18 18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M9 2v14M2 9h14"/></svg></div>
+        </div>
+      </div>
+      <div class="wa-chips" id="waChips">
+        <button class="wa-chip on" data-filter="all">All</button>
+        <button class="wa-chip" data-filter="unread">Unread</button>
+        <button class="wa-chip" data-filter="favorites">Favorites</button>
+        <button class="wa-chip" data-filter="groups">Groups</button>
+        <button class="wa-chip" style="width:33px;padding:0"><svg width="13" height="13" viewBox="0 0 14 14" stroke="#0b141a" stroke-width="1.8" stroke-linecap="round"><path d="M7 1v12M1 7h12"/></svg></button>
+      </div>
+      <div class="wa-row wa-archived">
+        <div class="ico"><svg width="24" height="22" viewBox="0 0 24 22" fill="none" stroke="#54656f" stroke-width="1.8"><rect x="2" y="2" width="20" height="5" rx="1"/><path d="M4 7v12a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7M9 11h6" stroke-linecap="round"/></svg></div>
+        <div class="main"><span>Archived</span><span class="count" id="waArchived"></span></div>
+      </div>
+      <div id="waList"></div>
+      <div class="wa-e2e"><svg width="10" height="12" viewBox="0 0 10 12" fill="#667781"><path d="M2.5 5V3.5a2.5 2.5 0 0 1 5 0V5" fill="none" stroke="#667781" stroke-width="1.4"/><rect x="0.5" y="5" width="9" height="7" rx="1.5"/></svg>
+        Your personal messages are <b>end-to-end encrypted</b></div>
+    </div>
+    <div class="wa-ai"><svg width="28" height="28" viewBox="-14 -14 28 28"><g>
+      <ellipse rx="2.6" ry="4.2" cy="-8" fill="#c86dd7"/><ellipse rx="2.6" ry="4.2" cy="-8" fill="#9b5de5" transform="rotate(60)"/><ellipse rx="2.6" ry="4.2" cy="-8" fill="#6c63ff" transform="rotate(120)"/>
+      <ellipse rx="2.6" ry="4.2" cy="-8" fill="#5b5bd6" transform="rotate(180)"/><ellipse rx="2.6" ry="4.2" cy="-8" fill="#a855f7" transform="rotate(240)"/><ellipse rx="2.6" ry="4.2" cy="-8" fill="#e05bc3" transform="rotate(300)"/></g></svg></div>
+    <nav class="wa-tabs">
+      <div class="wa-tab"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#0b141a" stroke-width="1.8"><circle cx="13" cy="13" r="7.5"/><path d="M13 2.5a10.5 10.5 0 0 1 10.5 10.5M23.5 13A10.5 10.5 0 0 1 13 23.5 10.5 10.5 0 0 1 2.5 13" stroke-dasharray="3 0"/><path d="M5.6 5.6A10.5 10.5 0 0 1 10 3"/></svg>Updates</div>
+      <div class="wa-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0b141a" stroke-width="1.8" stroke-linejoin="round"><path d="M6.6 2.5 9 2l2 4.5-2 1.6a12 12 0 0 0 6.9 6.9l1.6-2 4.5 2-.5 2.4c-.2 1-1 1.6-2 1.6A17.5 17.5 0 0 1 5 4.5c0-1 .6-1.8 1.6-2Z"/></svg>Calls</div>
+      <div class="wa-tab"><svg width="30" height="24" viewBox="0 0 30 24" fill="none" stroke="#0b141a" stroke-width="1.7"><circle cx="15" cy="7" r="3.5"/><circle cx="6" cy="9" r="2.8"/><circle cx="24" cy="9" r="2.8"/><path d="M8.5 21a6.5 6.5 0 0 1 13 0ZM1.5 19a4.5 4.5 0 0 1 7-3.7M28.5 19a4.5 4.5 0 0 0-7-3.7"/></svg>Communities</div>
+      <div class="wa-tab on"><svg width="28" height="24" viewBox="0 0 28 24" fill="#0b141a"><path d="M11 2C5.5 2 1 5.6 1 10c0 2.3 1.2 4.4 3.2 5.9-.2 1.6-1 3-2.2 4 2.6 0 4.7-1 6-2.3 1 .3 2 .4 3 .4 5.5 0 10-3.6 10-8S16.5 2 11 2Z"/><path d="M23.3 7.5c2.3 1.4 3.7 3.6 3.7 6 0 2-1 3.8-2.7 5.1.2 1.3.9 2.6 1.9 3.4-2.2 0-4-.8-5.2-2a11 11 0 0 1-6.7.3" fill="none" stroke="#0b141a" stroke-width="1.7"/></svg>Chats</div>
+      <div class="wa-tab"><span class="wa-you"><svg width="12" height="13" viewBox="0 0 12 13" fill="#c0603e"><circle cx="6" cy="3.5" r="3"/><path d="M0 13a6 6 0 0 1 12 0Z"/></svg></span>You</div>
+    </nav>
+  </div>
+</template>
+
 
 <script>
   // ---- Edit everything here ----
@@ -431,6 +519,26 @@
       { name: "Isaac", avatar: "260116 #MARK 🐯 INSTAGRAM UPDATE.jpg", message: "Sorry for bothering you, Hesa", when: "now" },
       { name: "Niel",  avatar: "🐰.jpg", message: "Hi", when: "now" },
     ],
+    // WhatsApp chat list, top to bottom.
+    //   avatar: a photo file, or leave it out for the default person icon
+    //   group: true (group icon)      unread: number of unread messages
+    //   sent: true (grey ✓✓ — Hesa sent the last message)
+    //   media: "photo" or "doc"        deleted: true ("This message was deleted")
+    //   sender: who wrote the last message in a group
+    //   muted: true    status: true (green ring)    favorite: true
+    // Isaac's and Niel's rows use the lock screen notifications (names and
+    // messages, including edits made on the lock screen).
+    whatsapp: {
+      archived: 12,
+      chats: [
+        { fromNotification: 0, time: "22.09", unread: 2, favorite: true },
+        { fromNotification: 1, time: "22.07", unread: 1, favorite: true },
+        { name: "Heaven on Earth 🌷", group: true, sender: "Niel", deleted: true, time: "06.54", muted: true },
+        { name: "Mama", message: "E-Tiket Pesawat Keberangkatan.pdf • 2 pages", media: "doc", sent: true, time: "Tuesday" },
+        { name: "Kak Rumi", message: "ini kakk", media: "photo", sent: true, time: "Monday", status: true },
+        { name: "Bang Jae", message: "okee makasih", sent: true, time: "02/10/26" },
+      ],
+    },
   };
   // ------------------------------
 
@@ -620,11 +728,62 @@
     // grow out of the tapped icon
     const icon = appEl.querySelector(".icon").getBoundingClientRect(), box = phone.getBoundingClientRect();
     layer.style.transformOrigin = `${icon.left + icon.width / 2 - box.left}px ${icon.top + icon.height / 2 - box.top}px`;
+    APP_SETUP[name]?.(layer);
     layer.scrollTop = 0;
     phone.classList.toggle("dark-status", tpl?.dataset.status !== "light");
     state = "app";
     phone.classList.add("app-open");
   }
+  // Extra code for app screens that are built from CONFIG.
+  const APP_SETUP = {
+    WhatsApp(layer) {
+      const WA = CONFIG.whatsapp;
+      const lockNotifs = CONFIG.notifications.map((n, i) => ({ ...n, ...saved[i] }));
+      const chats = WA.chats.map(c => c.fromNotification == null ? c : (() => {
+        const n = lockNotifs[c.fromNotification];
+        return { name: n.name, avatar: n.avatar, message: n.message, ...c };
+      })());
+      const ic = {
+        ticks: `<svg width="17" height="11" viewBox="0 0 17 11" fill="none" stroke="#8696a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6l3 3 6-7.5M7.5 8.5l.5.5 6-7.5"/></svg>`,
+        photo: `<svg width="15" height="12" viewBox="0 0 26 20" fill="#8696a0"><path d="M9 1h8l2 3h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4Z"/><circle cx="13" cy="11.5" r="4" fill="#fff"/></svg>`,
+        doc: `<svg width="11" height="14" viewBox="0 0 11 14" fill="#8696a0"><path d="M1.5 0H7l4 4v8.5a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 0 12.5v-11A1.5 1.5 0 0 1 1.5 0Z"/></svg>`,
+        ban: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#8696a0" stroke-width="1.5"><circle cx="7" cy="7" r="5.8"/><path d="M3 3l8 8"/></svg>`,
+        muted: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 22a2.5 2.5 0 0 0 2.4-2H9.6A2.5 2.5 0 0 0 12 22Zm7-6v-5a7 7 0 0 0-5-6.7V3.5a2 2 0 0 0-4 0v.8a7 7 0 0 0-1.6.7L19 15.6ZM3.3 2.3 2 3.6l3.4 3.4A7 7 0 0 0 5 9v7l-2 2v1h14.4l2.9 2.9 1.3-1.3Z"/></svg>`,
+        person: `<svg width="24" height="26" viewBox="0 0 12 13" fill="#a0614a"><circle cx="6" cy="3.5" r="3"/><path d="M0 13a6 6 0 0 1 12 0Z"/></svg>`,
+        group: `<svg width="30" height="22" viewBox="0 0 30 22" fill="#a0614a"><circle cx="10" cy="5.5" r="4.5"/><circle cx="21" cy="6" r="4"/><path d="M0 21a10 9 0 0 1 20 0ZM17 21a9 9 0 0 0-2.5-6.5 8 8 0 0 1 15.5 6.5Z"/></svg>`,
+      };
+      const avatar = c => c.avatar
+        ? `<img class="wa-av${c.status ? " ring" : ""}" src="${src(c.avatar)}" alt="">`
+        : `<div class="wa-av${c.status ? " ring" : ""}">${c.group ? ic.group : ic.person}</div>`;
+      const preview = c => {
+        let t = c.sent ? ic.ticks + " " : "";
+        if (c.sender) t += `${esc(c.sender)}: `;
+        if (c.deleted) return t + `${ic.ban} <em>This message was deleted.</em>`;
+        if (c.media) t += ic[c.media] + " ";
+        return t + esc(c.message || "");
+      };
+      const render = filter => {
+        const shown = chats.filter(c => filter === "unread" ? c.unread : filter === "favorites" ? c.favorite : filter === "groups" ? c.group : true);
+        layer.querySelector("#waList").innerHTML = shown.map(c => `
+          <div class="wa-row">
+            ${avatar(c)}
+            <div class="main">
+              <div class="wa-line"><span class="wa-name">${esc(c.name)}</span><span class="wa-time${c.unread ? " unread" : ""}">${esc(c.time || "")}</span></div>
+              <div class="wa-prev"><span class="txt">${preview(c)}</span>${c.unread ? `<span class="wa-badge">${c.unread}</span>` : c.muted ? ic.muted : ""}</div>
+            </div>
+          </div>`).join("") || `<div class="wa-empty">No chats here</div>`;
+      };
+      layer.querySelector("#waArchived").textContent = WA.archived || "";
+      layer.querySelector("#waChips").addEventListener("click", e => {
+        const chip = e.target.closest("[data-filter]");
+        if (!chip) return;
+        layer.querySelectorAll(".wa-chip").forEach(c => c.classList.toggle("on", c === chip));
+        render(chip.dataset.filter);
+      });
+      render("all");
+    },
+  };
+
   function closeApp() {
     state = "home";
     phone.classList.remove("app-open");
