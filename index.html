@@ -1091,6 +1091,85 @@
 </template>
 
 
+<!-- Health: Steps page, numbers in CONFIG.health below -->
+<template data-app="Health">
+  <style>
+    .hl { position: relative; height: 100%; background: #f2f2f7; color: #000;
+          font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .hl-scroll { height: 100%; overflow-y: auto; padding: 99px 0 140px; }
+    .hl-top { position: absolute; top: 0; left: 0; right: 0; height: 99px; background: #f2f2f7; z-index: 2;
+              display: flex; align-items: flex-end; justify-content: space-between; padding: 0 19px 11px; }
+    .hl-top b { font-size: 16.5px; font-weight: 600; position: absolute; left: 0; right: 0; bottom: 21px; text-align: center; pointer-events: none; }
+    .hl-btn { width: 43px; height: 43px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 2px 10px rgba(0,0,0,.06); border: 0; cursor: pointer; }
+    .hl-main { background: #fff; padding: 11px 19px 16px; }
+    .hl-seg { display: flex; background: #eeeef0; border-radius: 14px; height: 28px; padding: 2px; }
+    .hl-seg span { flex: 1; display: grid; place-items: center; font-size: 12px; font-weight: 500; border-radius: 12px; }
+    .hl-seg span.on { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .hl-k { font-size: 12px; font-weight: 600; color: #8a8a8e; margin-top: 11px; letter-spacing: .2px; }
+    .hl-v { display: flex; align-items: baseline; gap: 8px; }
+    .hl-v b { font-size: 33px; font-weight: 500; letter-spacing: -.5px; }
+    .hl-v span { font-size: 16.5px; color: #8a8a8e; font-weight: 500; }
+    .hl-d { font-size: 15px; color: #8a8a8e; font-weight: 500; margin-top: 1px; }
+    .hl-chart { position: relative; height: 270px; margin-top: 15px; }
+    .hl-chart svg { position: absolute; inset: 0; overflow: visible; }
+    .hl-chart rect.bar { cursor: pointer; }
+    .hl-trend { margin: 26px 0 0; height: 49px; border-radius: 25px; border: 1px solid #d1d1d6; display: flex; align-items: center;
+                justify-content: space-between; padding: 0 15px; font-size: 13px; color: #8a8a8e; }
+    .hl-trend b { font-weight: 500; }
+    .hl-hi { display: flex; justify-content: space-between; align-items: baseline; padding: 31px 35px 10px; }
+    .hl-hi b { font-size: 20px; font-weight: 700; }
+    .hl-hi span { font-size: 15.5px; color: #0a84ff; }
+    .hl-card { margin: 0 19px; background: #fff; border-radius: 20px; padding: 16px 16px 18px; }
+    .hl-card .lbl { display: flex; align-items: center; gap: 4px; color: #ff4b00; font-size: 13px; font-weight: 600; }
+    .hl-card p { font-size: 15.5px; font-weight: 600; line-height: 1.3; margin-top: 10px; padding-bottom: 12px; border-bottom: 1px solid #e5e5ea; }
+    .hl-yr { margin-top: 14px; }
+    .hl-yr .n { display: flex; align-items: baseline; gap: 4px; }
+    .hl-yr .n b { font-size: 25px; font-weight: 600; }
+    .hl-yr .n span { font-size: 12.5px; color: #8a8a8e; font-weight: 600; }
+    .hl-yr .barw { height: 23px; border-radius: 5px; margin-top: 3px; display: flex; align-items: center; padding-left: 8px;
+                   font-size: 12px; font-weight: 600; color: #fff; }
+    .hl-bottom { position: absolute; left: 20px; right: 20px; bottom: 26px; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
+    .hl-tabs { display: flex; background: rgba(255,255,255,.92); border-radius: 31px; padding: 4px; box-shadow: 0 4px 22px rgba(0,0,0,.1);
+               backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .hl-tab { width: 88px; height: 52px; border-radius: 26px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+              gap: 3px; font-size: 10.5px; font-weight: 600; }
+    .hl-tab.on { background: #ececf0; color: #0a84ff; }
+    .hl-search { width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,.92); display: grid; place-items: center;
+                 box-shadow: 0 4px 22px rgba(0,0,0,.1); }
+  </style>
+  <div class="hl">
+    <div class="hl-scroll">
+      <div class="hl-main">
+        <div class="hl-seg"><span>D</span><span class="on">W</span><span>M</span><span>6M</span><span>Y</span></div>
+        <div class="hl-k" id="hlK">AVERAGE</div>
+        <div class="hl-v"><b id="hlV"></b><span>steps</span></div>
+        <div class="hl-d" id="hlD"></div>
+        <div class="hl-chart" id="hlChart"></div>
+        <div class="hl-trend"><span>Trend</span><b>Unavailable</b></div>
+      </div>
+      <div class="hl-hi"><b>Highlights</b><span>Show All</span></div>
+      <div class="hl-card">
+        <div class="lbl"><svg width="12" height="14" viewBox="0 0 12 14" fill="#ff4b00"><path d="M6 0c.5 2.7 4.8 4.7 4.8 8.6A4.8 4.8 0 0 1 1.2 8.6c0-1.6.7-2.8 1.7-3.8.1 1.3.7 2.3 1.6 2.6C4.3 4.6 5 2.2 6 0Z"/></svg>Steps</div>
+        <p id="hlMsg"></p>
+        <div id="hlYears"></div>
+      </div>
+    </div>
+    <div class="hl-top">
+      <button class="hl-btn" id="hlClose" type="button" aria-label="Back"><svg width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 2 10l8 8"/></svg></button>
+      <b>Steps</b>
+      <button class="hl-btn" type="button" aria-label="Add"><svg width="17" height="17" viewBox="0 0 18 18" stroke="#000" stroke-width="2" stroke-linecap="round"><path d="M9 1v16M1 9h16"/></svg></button>
+    </div>
+    <div class="hl-bottom">
+      <div class="hl-tabs">
+        <div class="hl-tab on"><svg width="24" height="22" viewBox="0 0 24 22" fill="#0a84ff"><path d="M12 21.5 10.3 20C4.2 14.5 0 10.8 0 6.3A6.2 6.2 0 0 1 6.3 0 6.8 6.8 0 0 1 12 2.9 6.8 6.8 0 0 1 17.7 0 6.2 6.2 0 0 1 24 6.3c0 4.5-4.2 8.2-10.3 13.7Z"/></svg>Summary</div>
+        <div class="hl-tab"><svg width="32" height="20" viewBox="0 0 32 20" fill="#000"><circle cx="11" cy="5" r="4.5"/><circle cx="22" cy="5" r="4.5"/><path d="M1 20a10 8.5 0 0 1 20 0ZM16 20a8 8 0 0 0-2.2-5.5 9 8 0 0 1 17.2 5.5Z"/></svg>Sharing</div>
+      </div>
+      <div class="hl-search"><svg width="22" height="22" viewBox="0 0 19 19" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="m13 13 5 5"/></svg></div>
+    </div>
+  </div>
+</template>
+
+
 <script>
   // ---- Edit everything here ----
   const CONFIG = {
@@ -1162,6 +1241,15 @@ kantong sampah 😭
       { title: "😵‍💫", date: "27 Feb 2026", duration: "10.56", audio: null },
       { title: "love never felt so good (raw cover by me)", date: "2 Nov 2025", duration: "3.15", audio: null },
     ],
+    // Health: the Steps page. days are [label, steps, full date].
+    health: {
+      range: "23–29 Oct 2026",
+      days: [["Fri", 820, "Fri, 23 Oct 2026"], ["Sat", 2100, "Sat, 24 Oct 2026"], ["Sun", 1090, "Sun, 25 Oct 2026"],
+             ["Mon", 1330, "Mon, 26 Oct 2026"], ["Tue", 830, "Tue, 27 Oct 2026"], ["Wed", 980, "Wed, 28 Oct 2026"],
+             ["Thu", 557, "Thu, 29 Oct 2026"]],
+      highlight: "On average, this year’s step count is lower than last year’s.",
+      years: [["2026", 1489], ["2025", 2312]],     // steps/day, this year first
+    },
     // Spotify "Your Library". type is "playlist", "album" or "artist";
     // image is optional (without one a coloured placeholder is shown).
     spotify: {
@@ -1551,6 +1639,50 @@ kantong sampah 😭
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
   const APP_SETUP = {
+    Health(layer) {
+      const H = CONFIG.health, $l = sel => layer.querySelector(sel);
+      const num = n => Math.round(n).toLocaleString("id-ID");
+      const avg = H.days.reduce((a, d) => a + d[1], 0) / H.days.length;
+      const showAvg = () => { $l("#hlK").textContent = "AVERAGE"; $l("#hlV").textContent = num(avg); $l("#hlD").textContent = H.range; };
+      showAvg();
+
+      // chart: 7 columns, y axis on the right, max rounded up to a nice step
+      const W = 336, Hh = 252, top = 0, axisW = 0, max = Math.max(3000, Math.ceil(Math.max(...H.days.map(d => d[1])) / 1000) * 1000);
+      const col = W / H.days.length, barW = 32;
+      const y = v => top + Hh - (v / max) * Hh;
+      let svg = "";
+      for (let v = 0; v <= max; v += max / 3) {
+        svg += `<line x1="0" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#e5e5ea" stroke-width="1"/>
+                <text x="${W + 4}" y="${y(v) + 4}" font-size="12" fill="#a1a1a6">${num(v)}</text>`;
+      }
+      H.days.forEach((d, i) => {
+        const x = i * col;
+        svg += `<line x1="${x}" x2="${x}" y1="0" y2="${Hh + 20}" stroke="#d6d6da" stroke-width="1" stroke-dasharray="2 2"/>
+                <rect class="bar" data-i="${i}" x="${x + (col - barW) / 2}" y="${y(d[1])}" width="${barW}" height="${Hh - y(d[1]) + top}" fill="#ff4b00" rx="1"/>
+                <text x="${x + 3}" y="${Hh + 17}" font-size="12" fill="#a1a1a6">${esc(d[0])}</text>`;
+      });
+      svg += `<line x1="${W}" x2="${W}" y1="0" y2="${Hh + 20}" stroke="#d6d6da" stroke-width="1" stroke-dasharray="2 2"/>`;
+      $l("#hlChart").innerHTML = `<svg width="${W}" height="${Hh + 20}" font-family="-apple-system, Helvetica Neue, Arial">${svg}</svg>`;
+
+      // tap a bar for that day's total; tap it again (or elsewhere) for the average
+      let sel = null;
+      $l("#hlChart").addEventListener("click", e => {
+        const bar = e.target.closest(".bar");
+        layer.querySelectorAll(".bar").forEach(b => b.setAttribute("fill", "#ff4b00"));
+        if (!bar || sel === bar.dataset.i) { sel = null; showAvg(); return; }
+        sel = bar.dataset.i;
+        const d = H.days[+sel];
+        layer.querySelectorAll(".bar").forEach(b => { if (b !== bar) b.setAttribute("fill", "#ffb899"); });
+        $l("#hlK").textContent = "TOTAL"; $l("#hlV").textContent = num(d[1]); $l("#hlD").textContent = d[2] || d[0];
+      });
+
+      $l("#hlMsg").textContent = H.highlight;
+      const top1 = Math.max(...H.years.map(y => y[1]));
+      $l("#hlYears").innerHTML = H.years.map(([yr, v], i) => `
+        <div class="hl-yr"><div class="n"><b>${num(v)}</b><span>steps/day</span></div>
+          <div class="barw" style="width:${(v / top1) * 100}%;background:${i === 0 ? "#ff4b00" : "#c7c7cc"}">${esc(yr)}</div></div>`).join("");
+      $l("#hlClose").addEventListener("click", closeApp);
+    },
     Spotify(layer) {
       const SP = CONFIG.spotify, $l = sel => layer.querySelector(sel);
       const COLORS = ["#7b5e57", "#3e5c76", "#5d4b7a", "#2f6b5a", "#8a5a2b", "#6b3b4f"];
