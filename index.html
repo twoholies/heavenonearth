@@ -77,6 +77,8 @@
   .notif .name { font-weight: 600; font-size: 15px; color: #fff; }
   .notif .when { font-size: 13px; color: rgba(255,255,255,.75); }
   .notif .msg { font-size: 15px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  [contenteditable] { outline: none; cursor: text; border-radius: 4px; }
+  [contenteditable]:focus { background: rgba(255,255,255,.18); text-overflow: clip; }
 
   /* widgets */
   .widgets {
@@ -209,14 +211,35 @@
 
   const wa = `<svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.1.1.6-.1 1.2Z"/></svg>`;
   const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  $("notifs").innerHTML = CONFIG.notifications.map(n => `
+  // Names and messages are editable on the page: tap a contact name or a
+  // message, type, then press Enter. Edits are remembered in this browser.
+  const SAVE_KEY = "hesa-lockscreen-edits";
+  let saved = [];
+  try { saved = JSON.parse(localStorage.getItem(SAVE_KEY)) || []; } catch {}
+  const notifs = CONFIG.notifications.map((n, i) => ({ ...n, ...saved[i] }));
+
+  $("notifs").innerHTML = notifs.map((n, i) => `
     <div class="notif">
       <div class="avatar"><img src="${src(n.avatar)}" alt=""><span class="badge">${wa}</span></div>
       <div class="body">
-        <div class="row"><span class="name">${esc(n.name)}</span><span class="when">${esc(n.when)}</span></div>
-        <div class="msg">${esc(n.message)}</div>
+        <div class="row"><span class="name" contenteditable="plaintext-only" spellcheck="false" data-i="${i}" data-field="name">${esc(n.name)}</span><span class="when">${esc(n.when)}</span></div>
+        <div class="msg" contenteditable="plaintext-only" spellcheck="false" data-i="${i}" data-field="message">${esc(n.message)}</div>
       </div>
     </div>`).join("");
+
+  $("notifs").addEventListener("keydown", e => {
+    if (e.target.isContentEditable && (e.key === "Enter" || e.key === "Escape")) {
+      e.preventDefault();
+      e.target.blur();
+    }
+  });
+  $("notifs").addEventListener("input", e => {
+    const el = e.target;
+    if (!el.isContentEditable) return;
+    const i = el.dataset.i;
+    saved[i] = { ...saved[i], [el.dataset.field]: el.textContent };
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(saved)); } catch {}
+  });
 
   function tick() {
     const d = new Date();
