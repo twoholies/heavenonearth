@@ -1711,6 +1711,90 @@
 </template>
 
 
+<!-- Messages: SMS list and conversations (CONFIG.messages below) -->
+<template data-app="Messages">
+  <style>
+    .ms { position: relative; height: 100%; background: #fff; color: #000; overflow: hidden;
+          font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .ms-scroll { height: 100%; overflow-y: auto; padding: 104px 0 120px; }
+    .ms-top { position: absolute; top: 47px; left: 19px; right: 19px; z-index: 2; display: flex; align-items: center; justify-content: space-between; }
+    .ms-top b { position: absolute; left: 0; right: 0; text-align: center; font-size: 16.5px; font-weight: 600; pointer-events: none; }
+    .ms-btn { height: 44px; min-width: 44px; border-radius: 22px; background: #fff; box-shadow: 0 4px 22px rgba(0,0,0,.09);
+              display: grid; place-items: center; font-size: 16.5px; padding: 0 15px; cursor: pointer; border: 0; font-family: inherit; color: #000; }
+    .ms-btn.round { padding: 0; }
+    .ms-row { position: relative; display: flex; gap: 12px; padding: 12px 10px 12px 25px; cursor: pointer; }
+    .ms-row::after { content: ""; position: absolute; left: 80px; right: 8px; bottom: 0; border-bottom: 1px solid #e3e3e8; }
+    .ms-row:active { background: #f2f2f7; }
+    .ms-row .dot { position: absolute; left: 7px; top: 39px; width: 10px; height: 10px; border-radius: 50%; background: #0a84ff; }
+    .ms-av { width: 46px; height: 46px; border-radius: 50%; flex: none; display: grid; place-items: center; overflow: hidden;
+             background: linear-gradient(#a6b1de, #7d87c4); color: #fff; font-size: 21px; font-weight: 600; }
+    .ms-row .bd { flex: 1; min-width: 0; }
+    .ms-row .l1 { display: flex; align-items: baseline; gap: 8px; }
+    .ms-row .nm { flex: 1; min-width: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ms-row .tm { font-size: 14px; color: #8a8a8e; display: flex; align-items: center; gap: 9px; flex: none; }
+    .ms-row .l2 { display: flex; gap: 8px; }
+    .ms-row .pv { flex: 1; min-width: 0; font-size: 14.5px; color: #8a8a8e; line-height: 1.27; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2;
+                  -webkit-box-orient: vertical; overflow: hidden; }
+    .ms-row .mute { flex: none; margin-top: 6px; }
+    .ms-bottom { position: absolute; left: 27px; right: 28px; bottom: 31px; z-index: 2; display: flex; gap: 12px; align-items: center; }
+    .ms-search { flex: 1; height: 47px; border-radius: 24px; background: #fff; display: flex; align-items: center; gap: 10px; padding: 0 18px; font-size: 17px; color: #8a8a8e;
+                 box-shadow: 0 4px 22px rgba(0,0,0,.09); }
+    .ms-round { width: 47px; height: 47px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 4px 22px rgba(0,0,0,.09); flex: none; }
+
+    /* conversation */
+    .ms-room { position: absolute; inset: 0; z-index: 3; background: #fff; display: flex; flex-direction: column; transform: translateX(100%);
+               transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+    .ms-room.open { transform: none; }
+    .ms-rhead { flex: none; position: relative; height: 128px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 8px;
+                background: linear-gradient(#fff 75%, rgba(255,255,255,.85)); border-bottom: 1px solid #f0f0f2; }
+    .ms-rhead .ms-btn { position: absolute; left: 19px; top: 47px; }
+    .ms-rhead .ms-av { width: 50px; height: 50px; font-size: 22px; }
+    .ms-rhead .who { margin-top: 4px; font-size: 12px; padding: 3px 10px; border-radius: 12px; background: #f2f2f5; display: flex; align-items: center; gap: 4px; }
+    .ms-msgs { flex: 1; overflow-y: auto; padding: 8px 14px 14px; display: flex; flex-direction: column; gap: 3px; }
+    .ms-day { align-self: center; text-align: center; font-size: 11.5px; color: #8a8a8e; margin: 12px 0 6px; line-height: 1.35; }
+    .ms-day b { font-weight: 600; }
+    .ms-b { max-width: 74%; padding: 8px 13px; border-radius: 19px; font-size: 15.5px; line-height: 1.3; white-space: pre-wrap; word-wrap: break-word; }
+    .ms-b.them { align-self: flex-start; background: #e9e9eb; }
+    .ms-b.me { align-self: flex-end; background: #34c759; color: #fff; }
+    .ms-b.imsg { background: #0a84ff; }
+    .ms-b .code { font-weight: 600; text-decoration: underline; }
+    .ms-map { align-self: flex-start; width: 240px; border-radius: 18px; overflow: hidden; background: #e9e9eb; }
+    .ms-map .pic { height: 120px; position: relative;
+                   background: linear-gradient(90deg, transparent 47%, #fff 47% 51%, transparent 51%), linear-gradient(0deg, transparent 58%, #fff 58% 62%, transparent 62%),
+                               linear-gradient(35deg, transparent 30%, #f6d78b 30% 34%, transparent 34%), #dcebd4; }
+    .ms-map .pin { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -90%); }
+    .ms-map .t { padding: 8px 12px 10px; font-size: 13px; color: #6e6e73; line-height: 1.3; }
+    .ms-map .t b { display: block; color: #000; font-size: 14.5px; font-weight: 600; }
+    .ms-input { flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 16px 34px; }
+    .ms-input .box { flex: 1; height: 38px; border-radius: 19px; border: 1px solid #d8d8dc; display: flex; align-items: center; padding: 0 14px; color: #8a8a8e; font-size: 15.5px; }
+    .ms-input .plus { width: 38px; height: 38px; border-radius: 50%; background: #f2f2f5; display: grid; place-items: center; }
+  </style>
+  <div class="ms">
+    <div class="ms-scroll"><div id="msList"></div></div>
+    <div class="ms-top">
+      <span class="ms-btn">Edit</span>
+      <b>Messages</b>
+      <span class="ms-btn round"><svg width="20" height="14" viewBox="0 0 20 14" stroke="#000" stroke-width="1.8" stroke-linecap="round"><path d="M1 1h18M4 7h12M7 13h6"/></svg></span>
+    </div>
+    <div class="ms-bottom">
+      <div class="ms-search"><svg width="19" height="19" viewBox="0 0 19 19" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="m13 13 5 5"/></svg>Search</div>
+      <span class="ms-round"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><path d="M17.5 1.8a1.8 1.8 0 0 1 2.6 2.6L11 13.5l-3.4.9.9-3.4Z"/></svg></span>
+    </div>
+    <section class="ms-room" id="msRoom">
+      <div class="ms-rhead">
+        <button class="ms-btn round" id="msBack" type="button" aria-label="Back"><svg width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 2 10l8 8"/></svg></button>
+        <div id="msWho" style="display:flex;flex-direction:column;align-items:center"></div>
+      </div>
+      <div class="ms-msgs" id="msMsgs"></div>
+      <div class="ms-input">
+        <span class="plus"><svg width="16" height="16" viewBox="0 0 16 16" stroke="#6e6e73" stroke-width="2" stroke-linecap="round"><path d="M8 1v14M1 8h14"/></svg></span>
+        <div class="box">Text Message • SMS</div>
+      </div>
+    </section>
+  </div>
+</template>
+
+
 <script>
   // ---- Edit everything here ----
   const CONFIG = {
@@ -1787,6 +1871,29 @@ kantong sampah 😭
       name: "mist bell", initial: "b", suggestions: 3, update: "Update to iOS 27.0.1",
       wifi: "SITOHANG", bluetooth: "On",
     },
+    // Messages (SMS), newest first. Each conversation's last message is its
+    // preview (or set preview:). day: starts a new "Text Message · …" label.
+    // type: "map" shows a shared-location card.
+    messages: [
+      { name: "99599", time: "05.27", unread: true, muted: true, messages: [
+        { day: "Today 05.27", from: "them", text: "Mohon maaf, pulsa anda tidak mencukupi untuk layanan 3330 (inc. ppn) untuk pembelian Tanda Cinta Harian. Silakan isi ulang pulsa anda. CS: 021-80001234" } ] },
+      { name: "99598", time: "04.53", unread: true, muted: true, messages: [
+        { day: "Today 04.53", from: "them", text: "Mohon maaf, pulsa anda tidak mencukupi untuk layanan Info Religi Harian. CS: 021-80001234. Untuk berhenti ketik UNREG RELIGI kirim ke 99598" } ] },
+      { name: "Mama", time: "Yesterday", messages: [
+        { day: "Yesterday 18.02", from: "them", text: "kak, pulsa mama abis 😭" },
+        { from: "them", text: "tolong isiin 20rb ya nak, mama mau telpon tante" },
+        { from: "me", text: "iya ma bentar yaa" },
+        { day: "Yesterday 18.15", from: "me", text: "udah ya ma 👍🏻" },
+        { from: "them", text: "makasih kak sayang ❤️ jangan lupa makan" } ] },
+      { name: "BANKNUSA", time: "Yesterday", messages: [
+        { day: "Yesterday 12.01", from: "them", text: "JANGAN BERIKAN KODE INI KEPADA SIAPA PUN termasuk pihak Bank Nusa. Kode OTP Anda: 482913. Berlaku 5 menit." } ] },
+      { name: "TSEL", time: "Tuesday", messages: [
+        { day: "Tuesday 07.30", from: "them", text: "Sisa kuota Internet Anda 1,2GB berlaku s.d 05/11/2026. Perpanjang paket sekarang lewat aplikasi atau *363#. Info: 188" } ] },
+      { name: "KURIR", time: "Sunday", messages: [
+        { day: "Sunday 10.12", from: "them", text: "Halo Hesa, paket Anda dengan resi NX2026102899 (Rak buku minimalis 3 susun) sedang dalam pengantaran oleh kurir kami. Mohon pastikan ada yang menerima ya 📦" } ] },
+      { name: "LO-W", time: "11/10/26", preview: "1 Google Maps Message", messages: [
+        { day: "11/10/26 19.44", from: "them", type: "map", title: "Lokasi dibagikan", text: "Jl. Sudirman No. 21, Pekanbaru" } ] },
+    ],
     // Phone call history, newest first. dir: "in" or "out"; missed shows red.
     // count adds "(3)" for repeated calls; fromNotification: 0 / 1 uses
     // Isaac's / Niel's lock screen name and photo.
@@ -2300,10 +2407,53 @@ kantong sampah 😭
     phone.classList.add("app-open");
   }
   const waState = {};
-  let notesDone = null, mailRead = null, safariRecent = null;   // ticked checklist items / opened emails, until reload
+  let notesDone = null, mailRead = null, safariRecent = null, msgsRead = null;   // ticked checklist items / opened emails, until reload
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
   const APP_SETUP = {
+    Messages(layer) {
+      const M = CONFIG.messages, $l = sel => layer.querySelector(sel);
+      msgsRead ??= new Set();
+      const isNumber = n => /^[\d\s+()-]+$/.test(n);
+      const person = `<svg width="46" height="46" viewBox="0 0 46 46" fill="#fff"><circle cx="23" cy="17" r="8"/><path d="M8 40c2-8 8-12 15-12s13 4 15 12a22 22 0 0 1-30 0Z"/></svg>`;
+      const av = (c, size) => `<span class="ms-av" style="width:${size}px;height:${size}px">${isNumber(c.name) ? person : esc(c.name[0].toUpperCase())}</span>`;
+      const chev = `<svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="#c7c7cc" stroke-width="2" stroke-linecap="round"><path d="m1 1 5 5-5 5"/></svg>`;
+      const bell = `<svg class="mute" width="18" height="18" viewBox="0 0 24 24" fill="#c7c7cc"><path d="M12 22a2.5 2.5 0 0 0 2.4-2H9.6A2.5 2.5 0 0 0 12 22Zm7-6v-5a7 7 0 0 0-5-6.7V3.5a2 2 0 0 0-4 0v.8a7 7 0 0 0-1.6.7L19 15.6ZM3.3 2.3 2 3.6l3.4 3.4A7 7 0 0 0 5 9v7l-2 2v1h14.4l2.9 2.9 1.3-1.3Z"/></svg>`;
+      const preview = c => c.preview || (c.messages.at(-1)?.type === "map" ? "Shared a location" : c.messages.at(-1)?.text || "");
+      const render = () => {
+        $l("#msList").innerHTML = M.map((c, i) => `
+          <div class="ms-row" data-i="${i}">
+            ${c.unread && !msgsRead.has(i) ? '<span class="dot"></span>' : ""}
+            ${av(c, 46)}
+            <div class="bd">
+              <div class="l1"><span class="nm">${esc(c.name)}</span><span class="tm">${esc(c.time)}${chev}</span></div>
+              <div class="l2"><span class="pv">${esc(preview(c))}</span>${c.muted ? bell : ""}</div>
+            </div>
+          </div>`).join("");
+      };
+      render();
+      const fmt = t => esc(t).replace(/\b(\d{6})\b/, '<span class="code">$1</span>');   // OTP codes look tappable
+      const open = i => {
+        const c = M[i];
+        msgsRead.add(i);
+        $l("#msWho").innerHTML = `${av(c, 50)}<span class="who">${esc(c.name)} ${chev}</span>`;
+        $l("#msMsgs").innerHTML = c.messages.map(m => {
+          const day = m.day ? `<div class="ms-day"><b>Text Message</b><br>${esc(m.day)}</div>` : "";
+          if (m.type === "map") return day + `<div class="ms-map"><div class="pic"><svg class="pin" width="26" height="34" viewBox="0 0 26 34"><path d="M13 33S2 20 2 12.5a11 11 0 0 1 22 0C24 20 13 33 13 33Z" fill="#ff3b30"/><circle cx="13" cy="12.5" r="4" fill="#fff"/></svg></div>
+            <div class="t"><b>${esc(m.title || "Location")}</b>${esc(m.text || "")}<br>Google Maps</div></div>`;
+          return day + `<div class="ms-b ${m.from}${m.imessage ? " imsg" : ""}">${fmt(m.text)}</div>`;
+        }).join("");
+        $l("#msRoom").classList.add("open");
+        requestAnimationFrame(() => { $l("#msMsgs").scrollTop = 1e6; });
+      };
+      $l("#msList").addEventListener("click", e => { const r = e.target.closest(".ms-row"); if (r) open(+r.dataset.i); });
+      $l("#msBack").addEventListener("click", () => { $l("#msRoom").classList.remove("open"); render(); });
+      APP_KEYS.Messages = e => {
+        if (e.key !== "Escape" || !$l("#msRoom").classList.contains("open")) return false;
+        $l("#msBack").click();
+        return true;
+      };
+    },
     Phone(layer) {
       const lockNotifs = CONFIG.notifications.map((n, i) => ({ ...n, ...saved[i] }));
       const calls = CONFIG.phone.map(c => c.fromNotification == null ? c
