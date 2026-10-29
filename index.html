@@ -627,6 +627,10 @@
       //            "them" messages arrive by themselves (with "typing…");
       //            for "me" messages, tap the message box and Hesa's reply
       //            types itself, then tap the green send button.
+      //   day: put day: "Yesterday" (or "Monday", "12 October", …) on the
+      //            first message of a day to show a date label above it; the
+      //            messages after it belong to that day until the next day:.
+      //            Messages without any day: are "Today".
       //   Isaac's and Niel's lock screen message is added to the end of their
       //   history automatically.
       // The texts below are examples — replace them with your own, and add as
@@ -634,7 +638,10 @@
       chats: [
         { fromNotification: 0, time: "22.09", unread: 2, favorite: true,
           history: [
-            { from: "them", text: "Hesa, are you still awake?", time: "22.08" },
+            { day: "Yesterday", from: "them", text: "Did you get home safe?", time: "23.40" },
+            { from: "me",   text: "Yes, just got in", time: "23.52" },
+            { from: "them", text: "Good. Sleep well, Hesa", time: "23.53" },
+            { day: "Today", from: "them", text: "Hesa, are you still awake?", time: "22.08" },
           ],
           script: [
             { from: "me",   text: "It's okay, I'm still up. What's wrong?" },
@@ -861,7 +868,7 @@
       const chats = WA.chats.map(c => {
         if (c.fromNotification == null) return c;
         const n = lockNotifs[c.fromNotification];
-        const history = [...(c.history || []), { from: "them", text: n.message, time: c.time }];
+        const history = [...(c.history || []), { day: "Today", from: "them", text: n.message, time: c.time }];
         return { name: n.name, avatar: n.avatar, message: n.message, ...c, history };
       });
       const ic = {
@@ -949,7 +956,7 @@
       };
 
       const tickSvg = `<svg width="16" height="11" viewBox="0 0 17 11" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6l3 3 6-7.5M7.5 8.5l.5.5 6-7.5" stroke="#8696a0"/></svg>`;
-      const bubble = (m, prev) => `<div class="wa-msg ${m.from}${!prev || prev.from !== m.from ? " first" : ""}">${esc(m.text)}<span class="meta${m.read ? " read" : ""}">${esc(m.time || "")}${m.from === "me" ? tickSvg : ""}</span></div>`;
+      const bubble = (m, prev) => (m.day !== prev?.day ? `<div class="wa-day">${esc(m.day)}</div>` : "") + `<div class="wa-msg ${m.from}${!prev || prev.from !== m.from || prev.day !== m.day ? " first" : ""}">${esc(m.text)}<span class="meta${m.read ? " read" : ""}">${esc(m.time || "")}${m.from === "me" ? tickSvg : ""}</span></div>`;
       const addBubble = m => {
         const log = waState[chatIdx].log;
         msgs.insertAdjacentHTML("beforeend", bubble(m, log[log.length - 2]));
@@ -973,7 +980,7 @@
           await wait(Math.min(4000, 700 + m.text.length * 45));
           if (myRun !== run) return;
           sub.textContent = "online"; sub.classList.remove("typing");
-          const msg = { from: "them", text: m.text, time: now() };
+          const msg = { day: "Today", from: "them", text: m.text, time: now() };
           st.log.push(msg); st.step++;
           addBubble(msg);
         }
@@ -997,7 +1004,7 @@
       async function send() {
         if (!pendingReply || typing || !typed.textContent) return;
         const st = waState[chatIdx], myRun = run;
-        const msg = { from: "me", text: pendingReply.text, time: now() };
+        const msg = { day: "Today", from: "me", text: pendingReply.text, time: now() };
         pendingReply = null;
         typed.textContent = ""; setHasText();
         st.log.push(msg); st.step++;
@@ -1011,14 +1018,17 @@
       function openChat(i) {
         chatIdx = i;
         const c = chats[i];
-        waState[i] ??= { log: (c.history || []).map(m => ({ ...m, read: true })), step: 0 };
+        if (!waState[i]) {
+          let day = "Today";
+          waState[i] = { log: (c.history || []).map(m => ({ ...m, day: (day = m.day ?? day), read: true })), step: 0 };
+        }
         layer.querySelector("#waRoomAv").innerHTML = avatar(c, false);
         layer.querySelector("#waRoomName").textContent = c.name;
         sub.textContent = c.group ? "tap here for group info" : "online"; sub.classList.remove("typing");
         typed.textContent = ""; setHasText(); pendingReply = null; typing = false;
         room.classList.remove("kb");
         const log = waState[i].log;
-        msgs.innerHTML = `<div class="wa-day">Today</div>` + log.map((m, j) => bubble(m, log[j - 1])).join("");
+        msgs.innerHTML = log.map((m, j) => bubble(m, log[j - 1])).join("");
         room.classList.add("open");
         requestAnimationFrame(() => { msgs.scrollTop = msgs.scrollHeight; });
         play(++run);
