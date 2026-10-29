@@ -817,6 +817,94 @@
 </template>
 
 
+<!-- Notes: the notes themselves are in CONFIG.notes below -->
+<template data-app="Notes">
+  <style>
+    .nt { position: relative; height: 100%; background: #f2f2f7; color: #000;
+          font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .nt-page { position: absolute; inset: 0; display: none; }
+    .nt-page.on { display: block; animation: ntIn .28s cubic-bezier(.2,.8,.2,1); }
+    @keyframes ntIn { from { opacity: .4; transform: translateX(24px); } }
+    .nt-scroll { height: 100%; overflow-y: auto; padding-bottom: 120px; }
+    .nt-bar { position: absolute; top: 47px; left: 19px; right: 19px; z-index: 2; display: flex; align-items: center; gap: 10px; }
+    .nt-bar .sp { flex: 1; }
+    .nt-btn { height: 44px; min-width: 44px; border-radius: 22px; background: #fff; border: 0; display: grid; place-items: center;
+              box-shadow: 0 2px 12px rgba(0,0,0,.06); cursor: pointer; padding: 0; }
+    .nt-head { padding: 116px 20px 0; }
+    .nt-head h1 { font-size: 36px; font-weight: 700; letter-spacing: -.4px; line-height: 1.1; }
+    .nt-head p { color: #8a8a8e; font-size: 16.5px; margin-top: 3px; }
+    .nt-sec { font-size: 21px; font-weight: 700; margin: 40px 20px 12px; }
+    .nt-grid { display: grid; grid-template-columns: repeat(3, 111px); justify-content: space-between; row-gap: 24px; padding: 0 20px; }
+    .nt-card { cursor: pointer; text-align: center; }
+    .nt-thumb { height: 84px; border-radius: 10px; background: #fff; border: 1px solid #d4d4d8; overflow: hidden; position: relative; text-align: left; }
+    .nt-thumb .mini { position: absolute; left: 0; top: 0; width: 380px; transform: scale(.285); transform-origin: 0 0; pointer-events: none; }
+    .nt-card .t { font-size: 13px; line-height: 1.2; margin-top: 8px; padding: 0 2px; }
+    .nt-card .d { font-size: 12.5px; color: #8a8a8e; margin-top: 2px; }
+    .nt-bottom { position: absolute; left: 27px; right: 28px; bottom: 31px; display: flex; align-items: center; gap: 12px; z-index: 2; }
+    .nt-search { flex: 1; height: 47px; border-radius: 24px; background: #fff; display: flex; align-items: center; gap: 10px; padding: 0 18px;
+                 font-size: 17px; color: #8a8a8e; box-shadow: 0 2px 14px rgba(0,0,0,.07); }
+    .nt-compose { width: 47px; height: 47px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 2px 14px rgba(0,0,0,.07); }
+
+    /* a note */
+    .nt-note { background: #fff; }
+    .nt-note .nt-btn { background: #f2f2f7; box-shadow: none; }
+    .nt-date { text-align: center; color: #8a8a8e; font-size: 13px; padding-top: 108px; }
+    .nt-body { padding: 14px 22px 0; }
+    .nt-doc { font-size: 17px; line-height: 1.38; }
+    .nt-doc h2 { font-size: 26px; font-weight: 700; line-height: 1.2; margin-bottom: 12px; }
+    .nt-doc p { min-height: 1.38em; white-space: pre-wrap; word-wrap: break-word; }
+    .nt-doc .ck { display: flex; align-items: flex-start; gap: 10px; margin: 5px 0; }
+    .nt-doc .ck i { flex: none; width: 21px; height: 21px; border-radius: 50%; border: 1.5px solid #c7c7cc; margin-top: 1px;
+                    display: grid; place-items: center; cursor: pointer; }
+    .nt-doc .ck.done i { background: #e5a800; border-color: #e5a800; }
+    .nt-doc .ck.done i::after { content: ""; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+    .nt-doc .ck span { flex: 1; min-width: 0; white-space: pre-wrap; word-wrap: break-word; }
+    .nt-doc .ck.done span { color: #8a8a8e; }
+    .nt-tools { position: absolute; left: 28px; right: 28px; bottom: 31px; height: 50px; border-radius: 25px; background: #f2f2f7;
+                display: flex; align-items: center; justify-content: space-around; z-index: 2; }
+  </style>
+  <div class="nt">
+    <!-- folder -->
+    <div class="nt-page on" id="ntList">
+      <div class="nt-scroll">
+        <div class="nt-head"><h1 id="ntFolder"></h1><p id="ntCount"></p></div>
+        <div id="ntSections"></div>
+      </div>
+      <div class="nt-bar">
+        <button class="nt-btn" id="ntClose" type="button" aria-label="Back"><svg width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 2 10l8 8"/></svg></button>
+        <span class="sp"></span>
+        <button class="nt-btn" type="button" aria-label="More"><svg width="18" height="4" viewBox="0 0 18 4" fill="#000"><circle cx="2" cy="2" r="2"/><circle cx="9" cy="2" r="2"/><circle cx="16" cy="2" r="2"/></svg></button>
+      </div>
+      <div class="nt-bottom">
+        <div class="nt-search"><svg width="19" height="19" viewBox="0 0 19 19" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="m13 13 5 5"/></svg>Search</div>
+        <div class="nt-compose"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><path d="M17.5 1.8a1.8 1.8 0 0 1 2.6 2.6L11 13.5l-3.4.9.9-3.4Z"/></svg></div>
+      </div>
+    </div>
+
+    <!-- open note -->
+    <div class="nt-page nt-note" id="ntNote">
+      <div class="nt-scroll">
+        <div class="nt-date" id="ntDate"></div>
+        <div class="nt-body"><div class="nt-doc" id="ntDoc"></div></div>
+      </div>
+      <div class="nt-bar">
+        <button class="nt-btn" id="ntBack" type="button" aria-label="Back"><svg width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 2 10l8 8"/></svg></button>
+        <span class="sp"></span>
+        <button class="nt-btn" type="button" aria-label="Share"><svg width="18" height="22" viewBox="0 0 22 26" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 16V2M6 6l5-5 5 5M7 10H3v14h16V10h-4"/></svg></button>
+        <button class="nt-btn" type="button" aria-label="More"><svg width="18" height="4" viewBox="0 0 18 4" fill="#000"><circle cx="2" cy="2" r="2"/><circle cx="9" cy="2" r="2"/><circle cx="16" cy="2" r="2"/></svg></button>
+      </div>
+      <div class="nt-tools">
+        <svg width="22" height="20" viewBox="0 0 22 20" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"><circle cx="3.5" cy="4" r="2.5"/><circle cx="3.5" cy="16" r="2.5"/><path d="M9 4h12M9 16h12"/></svg>
+        <svg width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="#000" stroke-width="1.8" stroke-linejoin="round"><path d="M1 3h20v12H1Z"/><path d="M1 8h20M8 3v12"/></svg>
+        <svg width="24" height="20" viewBox="0 0 26 20" fill="none" stroke="#000" stroke-width="1.8"><path d="M9 1h8l2 3h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4Z"/><circle cx="13" cy="11.5" r="4.3"/></svg>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19c3-1 5-3 7-6l7-9a2 2 0 0 1 3 2.5l-8 8.5c-3 2.5-5.5 3.5-9 4Z"/></svg>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><path d="M17.5 1.8a1.8 1.8 0 0 1 2.6 2.6L11 13.5l-3.4.9.9-3.4Z"/></svg>
+      </div>
+    </div>
+  </div>
+</template>
+
+
 <script>
   // ---- Edit everything here ----
   const CONFIG = {
@@ -834,6 +922,50 @@
     worldClock: { city: "CUP", timeZone: "America/Los_Angeles" },
     weather: { city: "Pekanbaru", temp: 25, condition: "Rain", hi: 31, lo: 24 },
     settingsBadge: 4,
+    // Notes app. Each note's text: the first line is its title; a line
+    // starting with "[ ] " is a checklist item, "[x] " a ticked one;
+    // **text** is bold. section groups notes under a heading ("Today", …).
+    notes: {
+      folder: "catatan hesa 🤍🫧",
+      notes: [
+        { section: "Today", time: "22.19", date: "29 October 2026 at 22.19", text:
+`dear diary
+
+aku kangen om isa... tapi om sibuk :(
+emang boleh ya kangen ginii??` },
+        { section: "Today", time: "22.18", date: "29 October 2026 at 22.18", text:
+`things to do this week!
+[ ] laundry
+[ ] clean up my room
+[ ] buy groceries
+[ ] pay apartement
+[ ] **GET ENOUGH SLEEP HESA (jangan ngajak om Isa begadang terus 😒)**` },
+        { section: "Today", time: "22.16", date: "29 October 2026 at 22.16", text:
+`belanja bulanan (hemat ihh)
+
+beras 5kg
+telur 1kg
+minyak goreng 2L
+mie instan (pentingg) 1 dus
+roti tawar
+oatmeal
+sabun mandi
+sampo
+pasta gigi
+deterjen` },
+        { section: "Today", time: "22.14", date: "29 October 2026 at 22.14", text:
+`deadlines!
+
+[ ] tugas financial accounting 30/10
+[ ] tax accounting (HUEKK) 2/11
+[ ] auditing 03/11
+[ ] ` },
+        { section: "Today", time: "22.10", date: "29 October 2026 at 22.10", text:
+`note 5 (replace me)
+
+write the fifth note here` },
+      ],
+    },
     // Photos app ("Recently Saved"). Newest first. For a video, add
     // type: "video" and a poster (the picture shown in the grid).
     // date is optional and shows at the top when the photo is open.
@@ -1202,9 +1334,67 @@
     phone.classList.add("app-open");
   }
   const waState = {};
+  let notesDone = null;
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
   const APP_SETUP = {
+    Notes(layer) {
+      const N = CONFIG.notes, notes = N.notes;
+      const $l = sel => layer.querySelector(sel);
+      const page = id => layer.querySelectorAll(".nt-page").forEach(pg => pg.classList.toggle("on", pg.id === id));
+      const inline = t => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+      // ticks made while reading are remembered until the page reloads
+      notesDone ??= notes.map(n => n.text.split("\n").map(l => /^\[x\]/i.test(l)));
+      const docHTML = i => notes[i].text.split("\n").map((line, j) => {
+        if (j === 0) return `<h2>${inline(line)}</h2>`;
+        const m = line.match(/^\[( |x)\] ?(.*)$/i);
+        if (m) return `<div class="ck${notesDone[i][j] ? " done" : ""}" data-line="${j}"><i></i><span>${inline(m[2])}</span></div>`;
+        return `<p>${inline(line)}</p>`;
+      }).join("");
+      const title = n => n.text.split("\n")[0];
+
+      $l("#ntFolder").textContent = N.folder;
+      $l("#ntCount").textContent = `${notes.length} Note${notes.length === 1 ? "" : "s"}`;
+      const renderList = () => {
+        const sections = [...new Set(notes.map(n => n.section || ""))];
+        $l("#ntSections").innerHTML = sections.map(sec => `
+          ${sec ? `<div class="nt-sec">${esc(sec)}</div>` : ""}
+          <div class="nt-grid">${notes.map((n, i) => (n.section || "") !== sec ? "" : `
+            <div class="nt-card" data-note="${i}">
+              <div class="nt-thumb"><div class="mini nt-doc" style="padding:28px 30px">${docHTML(i)}</div></div>
+              <div class="t">${inline(title(n))}</div>
+              <div class="d">${esc(n.time || "")}</div>
+            </div>`).join("")}</div>`).join("");
+      };
+      renderList();
+
+      let cur = null;
+      const openNote = i => {
+        cur = i;
+        $l("#ntDate").textContent = notes[i].date || "";
+        $l("#ntDoc").innerHTML = docHTML(i);
+        $l("#ntNote .nt-scroll").scrollTop = 0;
+        page("ntNote");
+      };
+      $l("#ntSections").addEventListener("click", e => {
+        const c = e.target.closest("[data-note]");
+        if (c) openNote(+c.dataset.note);
+      });
+      $l("#ntDoc").addEventListener("click", e => {
+        const ck = e.target.closest(".ck");
+        if (!ck || !e.target.closest("i")) return;
+        const j = +ck.dataset.line;
+        notesDone[cur][j] = !notesDone[cur][j];
+        ck.classList.toggle("done", notesDone[cur][j]);
+      });
+      $l("#ntBack").addEventListener("click", () => { renderList(); page("ntList"); });
+      $l("#ntClose").addEventListener("click", closeApp);
+      APP_KEYS.Notes = e => {
+        if (e.key !== "Escape" || !$l("#ntNote").classList.contains("on")) return false;
+        $l("#ntBack").click();
+        return true;
+      };
+    },
     Photos(layer) {
       const P = CONFIG.photos;
       const $l = sel => layer.querySelector(sel);
