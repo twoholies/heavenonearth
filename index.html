@@ -1259,6 +1259,80 @@
 </template>
 
 
+<!-- Mail: the inbox is in CONFIG.mail below -->
+<template data-app="Mail">
+  <style>
+    .ml { position: relative; height: 100%; background: #fff; color: #000;
+          font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .ml-page { position: absolute; inset: 0; display: none; background: #fff; }
+    .ml-page.on { display: block; animation: mlIn .28s cubic-bezier(.2,.8,.2,1); }
+    @keyframes mlIn { from { opacity: .4; transform: translateX(24px); } }
+    .ml-scroll { height: 100%; overflow-y: auto; padding: 104px 0 120px; }
+    .ml-bar { position: absolute; top: 47px; left: 19px; right: 19px; z-index: 2; display: flex; align-items: center; gap: 12px; }
+    .ml-bar .ttl { flex: 1; font-size: 16.5px; font-weight: 600; padding-left: 2px; }
+    .ml-btn { height: 44px; min-width: 44px; border-radius: 22px; background: #fff; border: 0; display: grid; place-items: center;
+              box-shadow: 0 4px 22px rgba(0,0,0,.09); padding: 0; cursor: pointer; font: inherit; font-size: 16.5px; color: #000; }
+    .ml-btn.sel { padding: 0 16px; }
+    .ml-row { position: relative; display: block; padding: 10px 19px 11px 32px; cursor: pointer; }
+    .ml-row::after { content: ""; position: absolute; left: 32px; right: 0; bottom: 0; border-bottom: 1px solid #e5e5ea; }
+    .ml-row:active { background: #f2f2f7; }
+    .ml-row .dot { position: absolute; left: 12px; top: 16px; width: 10px; height: 10px; border-radius: 50%; background: #0a84ff; }
+    .ml-row .l1 { display: flex; align-items: baseline; gap: 8px; }
+    .ml-row .from { flex: 1; min-width: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ml-row .time { font-size: 14px; color: #8a8a8e; display: flex; align-items: center; gap: 6px; flex: none; }
+    .ml-row .subj { font-size: 14.5px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ml-row .prev { font-size: 14.5px; color: #8a8a8e; line-height: 1.3; margin-top: 1px; display: -webkit-box; -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical; overflow: hidden; }
+    .ml-row .clip { vertical-align: -1px; margin-left: 4px; }
+    .ml-foot { text-align: center; font-size: 12px; color: #8a8a8e; padding: 14px 0; }
+    .ml::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 120px; z-index: 1; pointer-events: none;
+                 background: linear-gradient(rgba(255,255,255,0), #fff 60%); }
+    .ml-bottom { position: absolute; left: 27px; right: 28px; bottom: 31px; z-index: 2; display: flex; gap: 12px; align-items: center; }
+    .ml-round { width: 47px; height: 47px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 4px 22px rgba(0,0,0,.09); flex: none; }
+    .ml-search { flex: 1; height: 47px; border-radius: 24px; background: #fff; display: flex; align-items: center; padding: 0 18px; box-shadow: 0 4px 22px rgba(0,0,0,.09); }
+
+    /* reading a message */
+    .ml-read { padding: 104px 20px 120px; height: 100%; overflow-y: auto; }
+    .ml-read .hd { display: flex; gap: 11px; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #e5e5ea; }
+    .ml-av { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 600; font-size: 16px; flex: none;
+             background: linear-gradient(#a5a5ab, #8a8a8e); }
+    .ml-read .who { flex: 1; min-width: 0; line-height: 1.3; }
+    .ml-read .who b { display: block; font-size: 16px; }
+    .ml-read .who span { font-size: 13px; color: #8a8a8e; }
+    .ml-read .when { font-size: 13px; color: #8a8a8e; align-self: flex-start; padding-top: 3px; }
+    .ml-read h2 { font-size: 20px; font-weight: 700; line-height: 1.25; margin: 14px 0 12px; }
+    .ml-read .body { font-size: 15.5px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+    .ml-att { display: flex; align-items: center; gap: 10px; margin-top: 18px; padding: 10px 12px; border-radius: 12px; background: #f2f2f7; font-size: 14px; }
+    .ml-att .ext { width: 28px; height: 34px; border-radius: 4px; background: #e2343f; color: #fff; font-size: 9px; font-weight: 700; display: grid; place-items: center; }
+    .ml-att span { color: #8a8a8e; font-size: 12px; display: block; }
+  </style>
+  <div class="ml">
+    <div class="ml-page on" id="mlList">
+      <div class="ml-scroll"><div id="mlRows"></div><div class="ml-foot" id="mlFoot"></div></div>
+      <div class="ml-bar">
+        <button class="ml-btn" id="mlClose" type="button" aria-label="Back"><svg width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 2 10l8 8"/></svg></button>
+        <span class="ttl" id="mlTitle"></span>
+        <button class="ml-btn sel" type="button">Select</button>
+        <button class="ml-btn" type="button" aria-label="More"><svg width="18" height="4" viewBox="0 0 18 4" fill="#000"><circle cx="2" cy="2" r="2"/><circle cx="9" cy="2" r="2"/><circle cx="16" cy="2" r="2"/></svg></button>
+      </div>
+    </div>
+    <div class="ml-page" id="mlMsg">
+      <div class="ml-read" id="mlRead"></div>
+      <div class="ml-bar">
+        <button class="ml-btn" id="mlBack" type="button" aria-label="Back"><svg width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 2 10l8 8"/></svg></button>
+        <span class="ttl"></span>
+        <button class="ml-btn" type="button" aria-label="More"><svg width="18" height="4" viewBox="0 0 18 4" fill="#000"><circle cx="2" cy="2" r="2"/><circle cx="9" cy="2" r="2"/><circle cx="16" cy="2" r="2"/></svg></button>
+      </div>
+    </div>
+    <div class="ml-bottom">
+      <span class="ml-round"><svg width="20" height="14" viewBox="0 0 20 14" stroke="#000" stroke-width="1.8" stroke-linecap="round"><path d="M1 1h18M4 7h12M7 13h6"/></svg></span>
+      <span class="ml-search"><svg width="19" height="19" viewBox="0 0 19 19" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="m13 13 5 5"/></svg></span>
+      <span class="ml-round"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><path d="M17.5 1.8a1.8 1.8 0 0 1 2.6 2.6L11 13.5l-3.4.9.9-3.4Z"/></svg></span>
+    </div>
+  </div>
+</template>
+
+
 <script>
   // ---- Edit everything here ----
   const CONFIG = {
@@ -1330,6 +1404,43 @@ kantong sampah 😭
       { title: "😵‍💫", date: "27 Feb 2026", duration: "10.56", audio: null },
       { title: "love never felt so good (raw cover by me)", date: "2 Nov 2025", duration: "3.15", audio: null },
     ],
+    // Mail inbox, newest first. The first lines of body show as the preview.
+    // attachment: "File.pdf" adds a file at the bottom of the message.
+    mail: {
+      title: "Inbox Gmail",
+      account: "hesa.hoe@gmail.com",
+      messages: [
+        { from: "Isaac", email: "isaac.dl@gmail.com", time: "22.41", date: "Today at 22.41", unread: true,
+          subject: "foto kemarin", attachment: "IMG_2210.HEIC",
+          body: "ini fotonya ya, yang di cafe kemarin. maaf baru sempat kirim, kerjaan lagi numpuk banget minggu ini.\n\njangan begadang terus ya.\n\n- Isaac" },
+        { from: "Nusa Air", email: "no-reply@nusaair.co.id", time: "Yesterday", date: "Yesterday at 19.20", unread: true,
+          subject: "E-Ticket Keberangkatan – Kode Booking HSW7QE",
+          body: "Terima kasih telah terbang bersama Nusa Air.\n\nKode Booking: HSW7QE\nRute: Pekanbaru (PKU) → Jakarta (CGK)\nPenerbangan: NA 287 · 07:40 – 09:25\nPenumpang: 1 Dewasa\n\nSilakan lakukan check-in online paling lambat 2 jam sebelum keberangkatan. E-ticket terlampir.",
+          attachment: "E-Tiket Pesawat Keberangkatan.pdf" },
+        { from: "Akademik Fakultas Ekonomi", email: "akademik@feb.ac.id", time: "Tuesday", date: "Tuesday at 09.12",
+          subject: "Jadwal UTS Semester Ganjil 2026/2027",
+          body: "Kepada seluruh mahasiswa,\n\nBerikut kami sampaikan jadwal Ujian Tengah Semester Ganjil 2026/2027. Mohon diperhatikan ruangan dan waktu ujian masing-masing. Mahasiswa wajib membawa KTM saat ujian.\n\nSalam,\nBagian Akademik",
+          attachment: "Jadwal UTS Ganjil 2026.pdf" },
+        { from: "Dr. Ratna Sari, M.Ak.", email: "ratna.sari@feb.ac.id", time: "Monday", date: "Monday at 14.05", unread: true,
+          subject: "[Tax Accounting] Pengumpulan Tugas 2 – 2/11",
+          body: "Selamat siang,\n\nMengingatkan kembali bahwa Tugas 2 Tax Accounting dikumpulkan paling lambat Senin, 2 November pukul 23.59 melalui LMS. Keterlambatan akan dikenakan pengurangan nilai.\n\nTerima kasih." },
+        { from: "Spotify", email: "no-reply@spotify.com", time: "Monday", date: "Monday at 08.00",
+          subject: "Your Premium Student receipt",
+          body: "Thanks for being a Premium Student member.\n\nPremium Student · 1 month\nTotal: Rp 34.990\n\nYour next payment will be on 26 November 2026." },
+        { from: "Shopee", email: "info@shopee.co.id", time: "Sunday", date: "Sunday at 16.47",
+          subject: "Pesananmu sudah dikirim! 📦",
+          body: "Hai Hesa, pesananmu sedang dalam perjalanan.\n\nRak buku minimalis 3 susun (Putih)\nEstimasi tiba: 28 – 30 Okt\n\nLacak pesananmu di aplikasi." },
+        { from: "Pinterest", email: "recommendations@pinterest.com", time: "Saturday", date: "Saturday at 10.30",
+          subject: "Ideas for you: cozy room decor",
+          body: "Gingham bedsheets, warm lamps and little shelves full of plushies – we picked a few Pins we think you'll love." },
+        { from: "LinkedIn", email: "messages-noreply@linkedin.com", time: "21/10/26", date: "21 October 2026 at 07.15",
+          subject: "You appeared in 4 searches this week",
+          body: "Hesa, see who's looking at your profile and what keywords led them to you. Keep your profile up to date to get noticed by recruiters." },
+        { from: "Bank Nusa", email: "notifikasi@banknusa.co.id", time: "20/10/26", date: "20 October 2026 at 12.02",
+          subject: "Notifikasi Transaksi Berhasil",
+          body: "Transfer Anda telah berhasil.\n\nNominal: Rp 60.000\nTujuan: Ruang Cerita, Edukasi\nWaktu: 20/10/2026 12:02 WIB\n\nJangan berikan PIN atau kode OTP kepada siapa pun." },
+      ],
+    },
     // FaceTime cards. fromNotification: 0 uses Isaac's name and photo from
     // the lock screen (so it follows any rename); or give name and photo.
     facetime: [
@@ -1729,10 +1840,53 @@ kantong sampah 😭
     phone.classList.add("app-open");
   }
   const waState = {};
-  let notesDone = null;
+  let notesDone = null, mailRead = null;   // ticked checklist items / opened emails, until reload
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
   const APP_SETUP = {
+    Mail(layer) {
+      const M = CONFIG.mail, $l = sel => layer.querySelector(sel);
+      const page = id => layer.querySelectorAll(".ml-page").forEach(pg => pg.classList.toggle("on", pg.id === id));
+      mailRead ??= new Set();
+      const clip = `<svg class="clip" width="11" height="13" viewBox="0 0 22 24" fill="none" stroke="#8a8a8e" stroke-width="2.4" stroke-linecap="round"><path d="M19.5 11 11 19.5a5.5 5.5 0 0 1-7.8-7.8L12 3a3.7 3.7 0 0 1 5.2 5.2L8.5 16.9a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>`;
+      const chev = `<svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="#c7c7cc" stroke-width="2" stroke-linecap="round"><path d="m1 1 5 5-5 5"/></svg>`;
+      $l("#mlTitle").textContent = M.title;
+      const render = () => {
+        $l("#mlRows").innerHTML = M.messages.map((m, i) => `
+          <div class="ml-row" data-i="${i}">
+            ${m.unread && !mailRead.has(i) ? '<span class="dot"></span>' : ""}
+            <div class="l1"><span class="from">${esc(m.from)}</span><span class="time">${esc(m.time)}${chev}</span></div>
+            <div class="subj">${esc(m.subject)}${m.attachment ? clip : ""}</div>
+            <div class="prev">${esc(m.body.replace(/\n+/g, " "))}</div>
+          </div>`).join("");
+        const unread = M.messages.filter((m, i) => m.unread && !mailRead.has(i)).length;
+        $l("#mlFoot").textContent = unread ? `${unread} Unread` : "Updated Just Now";
+      };
+      render();
+      $l("#mlRows").addEventListener("click", e => {
+        const r = e.target.closest(".ml-row");
+        if (!r) return;
+        const i = +r.dataset.i, m = M.messages[i];
+        mailRead.add(i);
+        const ext = m.attachment ? m.attachment.split(".").pop().toUpperCase().slice(0, 4) : "";
+        $l("#mlRead").innerHTML = `
+          <div class="hd"><span class="ml-av">${esc(m.from[0])}</span>
+            <div class="who"><b>${esc(m.from)}</b><span>To: ${esc(M.account)}</span></div>
+            <span class="when">${esc(m.date || m.time)}</span></div>
+          <h2>${esc(m.subject)}</h2>
+          <div class="body">${esc(m.body)}</div>
+          ${m.attachment ? `<div class="ml-att"><span class="ext">${esc(ext)}</span><div>${esc(m.attachment)}<span>Tap to download</span></div></div>` : ""}`;
+        $l("#mlRead").scrollTop = 0;
+        page("mlMsg");
+      });
+      $l("#mlBack").addEventListener("click", () => { render(); page("mlList"); });
+      $l("#mlClose").addEventListener("click", closeApp);
+      APP_KEYS.Mail = e => {
+        if (e.key !== "Escape" || !$l("#mlMsg").classList.contains("on")) return false;
+        $l("#mlBack").click();
+        return true;
+      };
+    },
     Camera(layer) {
       const $l = sel => layer.querySelector(sel), cm = $l("#cm");
       const MODES = ["TIME-LAPSE", "SLO-MO", "CINEMATIC", "VIDEO", "PHOTO", "PORTRAIT", "PANO"];
