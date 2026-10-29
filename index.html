@@ -858,6 +858,7 @@
                     display: grid; place-items: center; cursor: pointer; }
     .nt-doc .ck.done i { background: #e5a800; border-color: #e5a800; }
     .nt-doc .ck.done i::after { content: ""; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+    .nt-doc u { text-decoration: underline; text-decoration-color: rgba(60,60,67,.32); text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
     .nt-doc .ck span { flex: 1; min-width: 0; white-space: pre-wrap; word-wrap: break-word; }
     .nt-doc .ck.done span { color: #8a8a8e; }
     .nt-tools { position: absolute; left: 27px; right: 28px; bottom: 31px; display: flex; align-items: center; justify-content: space-between; z-index: 2; }
@@ -929,7 +930,8 @@
     settingsBadge: 4,
     // Notes app. Each note's text: the first line is its title; a line
     // starting with "[ ] " is a checklist item, "[x] " a ticked one;
-    // **text** is bold. section groups notes under a heading ("Today", …);
+    // **text** is bold, __text__ gets the light underline iPhone puts
+    // under dates and amounts. section groups notes under a heading ("Today", …);
     // time shows under the note in the folder.
     notes: {
       folder: "catatan hesa 🤍🫧",
@@ -949,9 +951,9 @@ emang boleh ya kangen ginii??` },
         { section: "Today", time: "22.16", text:
 `belanja bulanan (hemat ihh)
 
-beras 5kg
-telur 1kg
-minyak goreng 2L
+beras __5kg__
+telur __1kg__
+minyak goreng __2L__
 mie instan (pentingg) 1 dus
 roti tawar
 oatmeal
@@ -966,8 +968,8 @@ kantong sampah 😭
 `deadlines!
 
 [ ] tugas financial accounting 30/10
-[ ] tax accounting (HUEKK) 2/11
-[ ] auditing 03/11
+[ ] tax accounting (HUEKK) __2/11__
+[ ] auditing __03/11__
 [ ] ` },
       ],
     },
@@ -1347,7 +1349,7 @@ kantong sampah 😭
       const N = CONFIG.notes, notes = N.notes;
       const $l = sel => layer.querySelector(sel);
       const page = id => layer.querySelectorAll(".nt-page").forEach(pg => pg.classList.toggle("on", pg.id === id));
-      const inline = t => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+      const inline = t => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/__(.+?)__/g, "<u>$1</u>");
       // ticks made while reading are remembered until the page reloads
       notesDone ??= notes.map(n => n.text.split("\n").map(l => /^\[x\]/i.test(l)));
       const docHTML = i => notes[i].text.split("\n").map((line, j) => {
