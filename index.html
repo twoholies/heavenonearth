@@ -1203,6 +1203,62 @@
 </template>
 
 
+<!-- Camera: black viewfinder with the usual controls -->
+<template data-app="Camera" data-status="light">
+  <style>
+    .cm { position: relative; height: 100%; background: #000; color: #fff; overflow: hidden; user-select: none;
+          font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .cm-top { position: absolute; top: 52px; left: 22px; right: 22px; display: flex; justify-content: space-between; align-items: center; }
+    .cm-ic { width: 38px; height: 38px; border-radius: 50%; background: rgba(40,40,42,.9); display: grid; place-items: center; }
+    .cm-rec { display: none; padding: 3px 8px; border-radius: 6px; background: #ff3b30; font-size: 16px; font-variant-numeric: tabular-nums; }
+    .cm.recording .cm-rec { display: block; }
+    .cm.recording .cm-chev { display: none; }
+    .cm-view { position: absolute; top: 108px; left: 0; right: 0; height: 536px; background: #050505; }
+    .cm-zoom { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; align-items: center;
+               padding: 4px; border-radius: 22px; background: rgba(30,30,30,.55); }
+    .cm-zoom span { width: 30px; height: 30px; border-radius: 50%; background: rgba(40,40,40,.8); display: grid; place-items: center;
+                    font-size: 11px; font-weight: 600; cursor: pointer; }
+    .cm-zoom span.on { width: 38px; height: 38px; color: #ffd60a; font-size: 13px; }
+    .cm-modes { position: absolute; top: 660px; left: 0; right: 0; height: 20px; overflow: hidden; }
+    .cm-modes .row { position: absolute; left: 0; top: 0; display: flex; gap: 22px; white-space: nowrap; transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+    .cm-modes span { font-size: 13px; font-weight: 600; letter-spacing: .6px; color: #fff; cursor: pointer; }
+    .cm-modes span.on { color: #ffd60a; }
+    .cm-bottom { position: absolute; top: 705px; left: 0; right: 0; height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; }
+    .cm-thumb { width: 48px; height: 48px; border-radius: 8px; overflow: hidden; background: #222; transition: transform .2s; }
+    .cm-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cm-thumb.pop { transform: scale(1.12); }
+    .cm-shutter { width: 76px; height: 76px; border-radius: 50%; border: 4px solid #fff; display: grid; place-items: center; cursor: pointer; }
+    .cm-shutter i { width: 62px; height: 62px; border-radius: 50%; background: #fff; transition: all .2s; }
+    .cm-shutter:active i { transform: scale(.92); }
+    .cm.video .cm-shutter i { background: #ff3b30; }
+    .cm.video.recording .cm-shutter i { width: 30px; height: 30px; border-radius: 7px; }
+    .cm-flip { width: 48px; height: 48px; border-radius: 50%; background: rgba(40,40,42,.9); display: grid; place-items: center; cursor: pointer; transition: transform .4s; }
+    .cm-flip.turn { transform: rotate(180deg); }
+    .cm-flash { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+    .cm-flash.go { animation: cmFlash .25s; }
+    @keyframes cmFlash { 0% { opacity: 1; } 100% { opacity: 0; } }
+  </style>
+  <div class="cm" id="cm">
+    <div class="cm-top">
+      <span class="cm-ic"><svg width="16" height="20" viewBox="0 0 16 20" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"><path d="M9.5 1 2 11h5.5L6 19l8-11H8.5Z"/><path d="M1 1l14 18" stroke-linecap="round"/></svg></span>
+      <span class="cm-chev"><svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 9 8-8 8 8"/></svg></span>
+      <span class="cm-rec" id="cmRec">00:00:00</span>
+      <span class="cm-ic"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" stroke-width="1.5"><circle cx="11" cy="11" r="3"/><circle cx="11" cy="11" r="6"/><circle cx="11" cy="11" r="9.5" stroke-dasharray="1.6 2"/></svg></span>
+    </div>
+    <div class="cm-view">
+      <div class="cm-zoom" id="cmZoom"><span>.5</span><span class="on">1×</span><span>2</span><span>3</span></div>
+    </div>
+    <div class="cm-modes"><div class="row" id="cmModes"></div></div>
+    <div class="cm-bottom">
+      <div class="cm-thumb" id="cmThumb"></div>
+      <div class="cm-shutter" id="cmShutter"><i></i></div>
+      <div class="cm-flip" id="cmFlip"><svg width="26" height="22" viewBox="0 0 26 22" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9a9 9 0 0 1 16.5-3M22 13a9 9 0 0 1-16.5 3"/><path d="M21 1v5h-5M5 21v-5h5"/></svg></div>
+    </div>
+    <div class="cm-flash" id="cmFlash"></div>
+  </div>
+</template>
+
+
 <script>
   // ---- Edit everything here ----
   const CONFIG = {
@@ -1677,6 +1733,53 @@ kantong sampah 😭
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
   const APP_SETUP = {
+    Camera(layer) {
+      const $l = sel => layer.querySelector(sel), cm = $l("#cm");
+      const MODES = ["TIME-LAPSE", "SLO-MO", "CINEMATIC", "VIDEO", "PHOTO", "PORTRAIT", "PANO"];
+      const row = $l("#cmModes");
+      row.innerHTML = MODES.map(m => `<span data-m="${m}">${m}</span>`).join("");
+      let mode = "PHOTO", recording = false, recTimer = null;
+      const setMode = m => {
+        mode = m;
+        row.querySelectorAll("span").forEach(s => s.classList.toggle("on", s.dataset.m === m));
+        const el = row.querySelector(`[data-m="${m}"]`);
+        row.style.transform = `translateX(${201 - el.offsetLeft - el.offsetWidth / 2}px)`;   // keep the chosen mode centred
+        stopRec();
+        cm.classList.toggle("video", ["VIDEO", "SLO-MO", "CINEMATIC", "TIME-LAPSE"].includes(m));
+      };
+      const stopRec = () => { recording = false; clearInterval(recTimer); cm.classList.remove("recording"); };
+      row.addEventListener("click", e => { const s = e.target.closest("[data-m]"); if (s) setMode(s.dataset.m); });
+      requestAnimationFrame(() => setMode("PHOTO"));
+
+      // the thumbnail shows the newest picture in Photos
+      const first = CONFIG.photos.items[0];
+      if (first) $l("#cmThumb").innerHTML = `<img src="${src(first.type === "video" ? first.poster || "" : first.src)}" alt="">`;
+
+      $l("#cmShutter").addEventListener("click", () => {
+        if (cm.classList.contains("video")) {
+          if (recording) { stopRec(); return; }
+          recording = true; cm.classList.add("recording");
+          const t0 = Date.now();
+          recTimer = setInterval(() => {
+            const s = Math.floor((Date.now() - t0) / 1000);
+            $l("#cmRec").textContent = `00:${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
+          }, 250);
+          $l("#cmRec").textContent = "00:00:00";
+          return;
+        }
+        const f = $l("#cmFlash");
+        f.classList.remove("go"); void f.offsetWidth; f.classList.add("go");
+        $l("#cmThumb").classList.add("pop"); setTimeout(() => $l("#cmThumb").classList.remove("pop"), 200);
+      });
+      $l("#cmZoom").addEventListener("click", e => {
+        const z = e.target.closest("span"); if (!z) return;
+        layer.querySelectorAll("#cmZoom span").forEach(x => {
+          x.classList.toggle("on", x === z);
+          x.textContent = x.textContent.replace("×", "") + (x === z ? "×" : "");
+        });
+      });
+      $l("#cmFlip").addEventListener("click", e => e.currentTarget.classList.toggle("turn"));
+    },
     FaceTime(layer) {
       const lockNotifs = CONFIG.notifications.map((n, i) => ({ ...n, ...saved[i] }));
       layer.querySelector("#ftGrid").innerHTML = CONFIG.facetime.map(c => {
@@ -2501,6 +2604,7 @@ kantong sampah 😭
 
   function closeApp() {
     $("appLayer").querySelectorAll("video, audio").forEach(m => m.pause());
+    $("appLayer").querySelector(".cm.recording #cmShutter")?.click();   // stop a camera recording
     state = "home";
     phone.classList.remove("app-open");
   }
