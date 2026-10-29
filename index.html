@@ -459,52 +459,104 @@
     .wa-room { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; background: #efeae2;
                transform: translateX(100%); transition: transform .35s cubic-bezier(.2,.8,.2,1); }
     .wa-room.open { transform: none; }
-    .wa-head { display: flex; align-items: center; gap: 10px; padding: 54px 16px 8px 8px; background: #f6f5f3;
-               border-bottom: 1px solid #e3e1dc; }
-    .wa-back { background: none; border: 0; padding: 6px 8px; cursor: pointer; display: grid; place-items: center; }
-    .wa-head .wa-av { width: 36px; height: 36px; }
-    .wa-head .wa-av svg { transform: scale(.7); }
-    .wa-head .who { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
-    .wa-head .who b { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .wa-head .who span { font-size: 12px; color: #667781; min-height: 14px; }
+    .wa-head { display: flex; align-items: center; gap: 10px; padding: 48px 19px 10px; position: relative; z-index: 1;
+               background: linear-gradient(#f4f6f0, #ecf1e6); box-shadow: 0 1px 0 rgba(0,0,0,.04); }
+    .wa-glass { background: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.9);
+                box-shadow: 0 2px 10px rgba(0,0,0,.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+    .wa-back { width: 44px; height: 44px; border-radius: 50%; padding: 0; cursor: pointer; display: grid; place-items: center; flex: none; }
+    .wa-head .wa-av { width: 39px; height: 39px; margin-left: 4px; }
+    .wa-head .wa-av svg { transform: scale(.72); }
+    .wa-head .who { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+    .wa-head .who b { font-size: 16.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .wa-head .who span { font-size: 12px; color: #667781; min-height: 14px; white-space: nowrap; }
     .wa-head .who span.typing { color: #1daa61; }
-    .wa-head > svg { margin-left: 12px; flex: none; }
-    .wa-msgs { flex: 1; overflow-y: auto; padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 2px;
-               background-color: #efeae2;
-               background-image: radial-gradient(rgba(0,0,0,.035) 1.2px, transparent 1.3px);
-               background-size: 18px 18px; }
-    .wa-day { align-self: center; background: #fff; color: #54656f; font-size: 12px; font-weight: 500;
-              padding: 5px 10px; border-radius: 8px; margin: 6px 0 8px; box-shadow: 0 1px .5px rgba(0,0,0,.1); }
-    .wa-msg { max-width: 80%; padding: 6px 8px 7px 9px; border-radius: 9px; font-size: 15.5px; line-height: 1.3;
-              box-shadow: 0 1px .5px rgba(0,0,0,.13); position: relative; word-wrap: break-word; white-space: pre-wrap;
+    .wa-callpill { height: 44px; border-radius: 22px; display: flex; align-items: center; gap: 26px; padding: 0 18px;
+                   background: rgba(234,246,222,.85); flex: none; }
+
+    .wa-msgs { flex: 1; overflow-y: auto; padding: 8px 10px 14px; display: flex; flex-direction: column;
+               background: #efeae2 center / cover no-repeat; }
+    .wa-day { align-self: center; background: rgba(255,255,255,.88); color: #111b21; font-size: 12.5px; font-weight: 600;
+              padding: 3px 14px; border-radius: 8px; margin: 14px 0 6px; }
+    .wa-msg { max-width: 78%; padding: 7px 11px 7px 12px; border-radius: 18px; font-size: 15.5px; line-height: 1.32;
+              position: relative; word-wrap: break-word; white-space: pre-wrap; margin-top: 3px; margin-left: 6px; margin-right: 6px;
               animation: waIn .25s ease-out; }
+    .wa-msg.first { margin-top: 10px; }
     .wa-msg.them { align-self: flex-start; background: #fff; }
-    .wa-msg.me { align-self: flex-end; background: #d9fdd3; }
-    .wa-msg.first { margin-top: 6px; }
-    .wa-msg.first.them { border-top-left-radius: 0; }
-    .wa-msg.first.me { border-top-right-radius: 0; }
-    .wa-msg .meta { float: right; margin: 6px 0 -4px 10px; font-size: 11px; color: #667781; display: inline-flex; align-items: center; gap: 3px; }
+    .wa-msg.me { align-self: flex-end; background: #dcf9c7; }
+    .wa-msg.tail.them { border-bottom-left-radius: 5px; }
+    .wa-msg.tail.me { border-bottom-right-radius: 5px; }
+    .wa-msg.tail::before { content: ""; position: absolute; bottom: 0; width: 14px; height: 15px; background: inherit;
+                           clip-path: path("M6 0 C6 8 4 12.5 0 15 C5 15.6 10 14.6 14 12 L14 0 Z"); }
+    .wa-msg.tail.them::before { left: -6px; }
+    .wa-msg.tail.me::before { right: -6px; transform: scaleX(-1); }
+    .wa-msg .meta { float: right; margin: 8px 0 -5px 12px; font-size: 11px; color: #667781; white-space: nowrap;
+                    display: inline-flex; align-items: center; gap: 3px; position: relative; top: 1px; }
     .wa-msg .meta svg path { transition: stroke .3s; }
     .wa-msg .meta.read svg path { stroke: #53bdeb; }
     @keyframes waIn { from { opacity: 0; transform: translateY(8px) scale(.97); } }
-    .wa-bottom { background: #f6f5f3; border-top: 1px solid #e3e1dc; }
-    .wa-inputbar { display: flex; align-items: center; gap: 12px; padding: 7px 12px 7px 14px; }
+
+    /* reply quote */
+    .wa-quote { display: block; margin: -1px -5px 6px -6px; padding: 7px 10px 8px 12px; border-radius: 10px;
+                background: rgba(11,20,26,.05); border-left: 4px solid var(--qc); font-size: 13.5px; line-height: 1.3; white-space: normal; }
+    .wa-quote b { display: block; color: var(--qc); font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
+    .wa-quote span { color: #54656f; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .wa-quote.q-me { --qc: #a8682a; }
+    .wa-quote.q-them { --qc: #1fa855; }
+
+    .wa-msg.photo, .wa-msg.voice, .wa-msg.call { white-space: normal; }
+    .wa-msg.photo .cap { white-space: pre-wrap; }
+    /* photo */
+    .wa-msg.photo { padding: 4px; }
+    .wa-msg.photo img { display: block; width: 236px; max-height: 300px; object-fit: cover; border-radius: 14px; }
+    .wa-msg.photo .cap { padding: 6px 8px 3px; }
+    .wa-msg.photo .meta.over { position: absolute; right: 12px; bottom: 9px; margin: 0; float: none; color: #fff;
+                               text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+    .wa-msg.photo .meta.over svg path { stroke: #fff; }
+    .wa-msg.photo .meta.over.read svg path { stroke: #53bdeb; }
+
+    /* voice note */
+    .wa-msg.voice { width: 258px; padding: 8px 11px 6px 8px; }
+    .wa-voice { display: flex; align-items: center; gap: 9px; }
+    .wa-vplay { width: 30px; height: 30px; border: 0; background: none; padding: 0; cursor: pointer; flex: none; display: grid; place-items: center; }
+    .wa-wave { position: relative; flex: 1; height: 26px; }
+    .wa-wave svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .wa-wave .done { position: absolute; inset: 0; clip-path: inset(0 calc(100% - var(--p, 0%)) 0 0); }
+    .wa-wave .knob { position: absolute; top: 50%; left: var(--p, 0%); width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px;
+                     border-radius: 50%; background: #34b7f1; }
+    .wa-msg.me .wa-wave .knob { background: #1daa61; }
+    .wa-vav { position: relative; flex: none; }
+    .wa-vav .wa-av { width: 44px; height: 44px; }
+    .wa-vav .wa-av svg { transform: scale(.75); }
+    .wa-vav .mic { position: absolute; left: -5px; bottom: -2px; }
+    .wa-vfoot { display: flex; justify-content: space-between; align-items: center; margin: 1px 0 0 39px; font-size: 11px; color: #667781; }
+    .wa-vfoot .meta { float: none; margin: 0; top: 0; }
+
+    /* call */
+    .wa-msg.call { padding: 9px 11px 7px 9px; min-width: 200px; }
+    .wa-call { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+    .wa-call .ci { width: 38px; height: 38px; border-radius: 50%; background: rgba(11,20,26,.06); display: grid; place-items: center; flex: none; }
+    .wa-call .t { display: flex; flex-direction: column; line-height: 1.25; margin-right: 6px; }
+    .wa-call .t b { font-size: 15px; font-weight: 500; }
+    .wa-call .t span { font-size: 13px; color: #667781; }
+    .wa-msg.call .meta { margin-top: 2px; }
+
+    .wa-bottom { background: #f2f1ee; }
+    .wa-inputbar { display: flex; align-items: center; gap: 13px; padding: 9px 12px 9px 14px; }
     .wa-room:not(.kb) .wa-inputbar { padding-bottom: 34px; }
-    .wa-input { flex: 1; min-height: 34px; max-height: 96px; overflow-y: auto; border-radius: 18px; background: #fff;
-                border: 1px solid #e3e1dc; padding: 7px 34px 7px 12px; font-size: 15.5px; line-height: 1.3;
-                position: relative; cursor: text; word-wrap: break-word; }
+    .wa-input { flex: 1; min-height: 36px; max-height: 96px; overflow-y: auto; border-radius: 18px; background: #fff;
+                padding: 8px 36px 8px 13px; font-size: 15.5px; line-height: 1.3;
+                position: relative; cursor: text; word-wrap: break-word; box-shadow: 0 0 0 1px rgba(0,0,0,.05); }
     #waTyped { white-space: pre-wrap; }
-    .wa-sticker { position: absolute; right: 9px; bottom: 7px; }
+    .wa-sticker { position: absolute; right: 9px; bottom: 8px; }
     .wa-caret { display: none; width: 2px; height: 19px; background: #1daa61; vertical-align: -4px; margin-left: 1px;
                 animation: waBlink 1s steps(1) infinite; }
     .wa-room.kb .wa-caret { display: inline-block; }
     @keyframes waBlink { 50% { opacity: 0; } }
-    .wa-idle-icons { display: flex; gap: 18px; align-items: center; }
-    .wa-send { display: none; width: 34px; height: 34px; border-radius: 50%; border: 0; background: #1daa61; cursor: pointer;
-               place-items: center; flex: none; }
-    .wa-room.has-text .wa-idle-icons { display: none; }
-    .wa-room.has-text .wa-send { display: grid; }
-    .wa-room.has-text .wa-sticker { display: none; }
+    .wa-send { width: 36px; height: 36px; border-radius: 50%; border: 0; background: #4f9a2c; cursor: pointer;
+               display: grid; place-items: center; flex: none; }
+    .wa-send .arrow, .wa-room.has-text .wa-send .mic, .wa-room.has-text .wa-cam, .wa-room.has-text .wa-sticker { display: none; }
+    .wa-room.has-text .wa-send .arrow { display: block; }
+    .wa-room.has-text .wa-send { background: #1daa61; }
     .wa-kb { height: 0; overflow: hidden; background: #d1d3d9; transition: height .3s cubic-bezier(.2,.8,.2,1); }
     .wa-room.kb .wa-kb { height: 262px; }
     .wa-kb .rows { padding: 8px 3px 0; display: flex; flex-direction: column; gap: 11px; }
@@ -558,13 +610,15 @@
     <!-- chat room (slides in when a chat is tapped) -->
     <section class="wa-room" id="waRoom">
       <header class="wa-head">
-        <button class="wa-back" id="waBack" type="button">
+        <button class="wa-back wa-glass" id="waBack" type="button" aria-label="Back">
           <svg width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="#0b141a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 2 10l8 8"/></svg>
         </button>
         <div id="waRoomAv"></div>
         <div class="who"><b id="waRoomName"></b><span id="waRoomSub"></span></div>
-        <svg width="26" height="18" viewBox="0 0 26 18" fill="none" stroke="#0b141a" stroke-width="1.8" stroke-linejoin="round"><rect x="1" y="2" width="16" height="14" rx="3.5"/><path d="M17 7.5 25 3v12l-8-4.5"/></svg>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b141a" stroke-width="1.8" stroke-linejoin="round"><path d="M6.6 2.5 9 2l2 4.5-2 1.6a12 12 0 0 0 6.9 6.9l1.6-2 4.5 2-.5 2.4c-.2 1-1 1.6-2 1.6A17.5 17.5 0 0 1 5 4.5c0-1 .6-1.8 1.6-2Z"/></svg>
+        <div class="wa-callpill wa-glass">
+          <svg width="26" height="18" viewBox="0 0 26 18" fill="none" stroke="#0b141a" stroke-width="1.8" stroke-linejoin="round"><rect x="1" y="2" width="16" height="14" rx="3.5"/><path d="M17 7.5 25 3v12l-8-4.5"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b141a" stroke-width="1.8" stroke-linejoin="round"><path d="M6.6 2.5 9 2l2 4.5-2 1.6a12 12 0 0 0 6.9 6.9l1.6-2 4.5 2-.5 2.4c-.2 1-1 1.6-2 1.6A17.5 17.5 0 0 1 5 4.5c0-1 .6-1.8 1.6-2Z"/></svg>
+        </div>
       </header>
       <div class="wa-msgs" id="waMsgs"></div>
       <div class="wa-bottom">
@@ -573,12 +627,10 @@
           <div class="wa-input" id="waInput"><span id="waTyped"></span><i class="wa-caret"></i>
             <svg class="wa-sticker" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0b141a" stroke-width="1.6"><path d="M18 11a8 8 0 1 1-9-9h4l5 5Z"/><path d="M13 2v3a2 2 0 0 0 2 2h3"/></svg>
           </div>
-          <span class="wa-idle-icons">
-            <svg width="24" height="20" viewBox="0 0 26 20" fill="none" stroke="#0b141a" stroke-width="1.8"><path d="M9 1h8l2 3h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4Z"/><circle cx="13" cy="11.5" r="4.3"/></svg>
-            <svg width="16" height="22" viewBox="0 0 16 22" fill="none" stroke="#0b141a" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="1" width="8" height="13" rx="4"/><path d="M1 10a7 7 0 0 0 14 0M8 17v4"/></svg>
-          </span>
+          <svg class="wa-cam" width="24" height="20" viewBox="0 0 26 20" fill="none" stroke="#0b141a" stroke-width="1.8"><path d="M9 1h8l2 3h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4Z"/><circle cx="13" cy="11.5" r="4.3"/></svg>
           <button class="wa-send" id="waSend" type="button" aria-label="Send">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 16V2M3 8l6-6 6 6"/></svg>
+            <svg class="mic" width="14" height="20" viewBox="0 0 16 22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="4" y="1" width="8" height="13" rx="4" fill="#fff"/><path d="M1 10a7 7 0 0 0 14 0M8 17v4"/></svg>
+            <svg class="arrow" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 16V2M3 8l6-6 6 6"/></svg>
           </button>
         </div>
         <div class="wa-kb" id="waKb"></div>
@@ -621,6 +673,8 @@
     // messages, including edits made on the lock screen).
     whatsapp: {
       archived: 12,
+      myAvatar: null,            // Hesa's photo, shown on her voice notes
+      chatWallpaper: null,       // chat background; null = the lock screen wallpaper
       // Chat room conversations:
       //   history: messages already in the chat when it's opened
       //   script:  messages that play out after the chat is opened, in order.
@@ -631,6 +685,17 @@
       //            first message of a day to show a date label above it; the
       //            messages after it belong to that day until the next day:.
       //            Messages without any day: are "Today".
+      //   Message types (text is the default):
+      //     { from: "them", type: "photo", src: "picture.jpg", text: "optional caption" }
+      //     { from: "me",   type: "voice", duration: "0:14", audio: "optional-file.mp3" }
+      //     { from: "them", type: "call", call: "voice", duration: "12 min" }   // answered call
+      //     { from: "them", type: "call", call: "video", missed: true }         // missed video call
+      //       (from "them" = incoming call, from "me" = outgoing call)
+      //   Extras for text messages:
+      //     reply: { from: "me", text: "the message being replied to" }
+      //     edited: true   (shows "Edited" next to the time)
+      //   In script, Hesa's photos, voice notes and calls send by themselves
+      //   (only her text replies use the keyboard). delay: 2000 waits 2 s first.
       //   Isaac's and Niel's lock screen message is added to the end of their
       //   history automatically.
       // The texts below are examples — replace them with your own, and add as
@@ -640,16 +705,22 @@
           history: [
             { day: "Yesterday", from: "them", text: "Did you get home safe?", time: "23.40" },
             { from: "me",   text: "Yes, just got in", time: "23.52" },
-            { from: "them", text: "Good. Sleep well, Hesa", time: "23.53" },
-            { day: "Today", from: "them", text: "Hesa, are you still awake?", time: "22.08" },
+            { from: "me",   type: "photo", src: "download - 2026-10-29T181441.295.jpg", text: "look what I found 🥹", time: "23.52" },
+            { from: "them", type: "voice", duration: "0:14", time: "23.55" },
+            { from: "them", text: "Good. Sleep well, Hesa", reply: { from: "me", text: "Yes, just got in" }, time: "23.56" },
+            { from: "me",   type: "call", call: "video", duration: "12 min", time: "23.58" },
+            { day: "Today", from: "them", type: "call", call: "voice", missed: true, time: "22.05" },
+            { from: "them", text: "Hesa, are you still awake?", time: "22.08", edited: true },
           ],
           script: [
             { from: "me",   text: "It's okay, I'm still up. What's wrong?" },
             { from: "them", text: "Nothing really" },
+            { from: "them", type: "voice", duration: "0:09" },
             { from: "them", text: "I just couldn't sleep and you were the first person I thought of" },
             { from: "me",   text: "You know you can always text me" },
             { from: "them", text: "Can I call you?" },
             { from: "me",   text: "Give me a minute" },
+            { from: "me",   type: "call", call: "voice", duration: "15 min", delay: 2500 },
           ],
         },
         { fromNotification: 1, time: "22.07", unread: 1, favorite: true,
@@ -875,6 +946,9 @@
         ticks: `<svg width="17" height="11" viewBox="0 0 17 11" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6l3 3 6-7.5M7.5 8.5l.5.5 6-7.5" stroke="#8696a0"/></svg>`,
         photo: `<svg width="15" height="12" viewBox="0 0 26 20" fill="#8696a0"><path d="M9 1h8l2 3h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4Z"/><circle cx="13" cy="11.5" r="4" fill="#fff"/></svg>`,
         doc: `<svg width="11" height="14" viewBox="0 0 11 14" fill="#8696a0"><path d="M1.5 0H7l4 4v8.5a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 0 12.5v-11A1.5 1.5 0 0 1 1.5 0Z"/></svg>`,
+        mic: `<svg width="10" height="14" viewBox="0 0 16 22"><rect x="4" y="1" width="8" height="13" rx="4" fill="#8696a0"/><path d="M1 10a7 7 0 0 0 14 0M8 17v4" fill="none" stroke="#8696a0" stroke-width="2" stroke-linecap="round"/></svg>`,
+        call: `<svg width="13" height="13" viewBox="0 0 24 24" fill="#8696a0"><path d="M6.6 2.5 9 2l2 4.5-2 1.6a12 12 0 0 0 6.9 6.9l1.6-2 4.5 2-.5 2.4c-.2 1-1 1.6-2 1.6A17.5 17.5 0 0 1 5 4.5c0-1 .6-1.8 1.6-2Z"/></svg>`,
+        video: `<svg width="16" height="11" viewBox="0 0 26 18" fill="#8696a0"><rect x="1" y="2" width="16" height="14" rx="3.5"/><path d="M17 7.5 25 3v12l-8-4.5Z"/></svg>`,
         ban: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#8696a0" stroke-width="1.5"><circle cx="7" cy="7" r="5.8"/><path d="M3 3l8 8"/></svg>`,
         muted: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 22a2.5 2.5 0 0 0 2.4-2H9.6A2.5 2.5 0 0 0 12 22Zm7-6v-5a7 7 0 0 0-5-6.7V3.5a2 2 0 0 0-4 0v.8a7 7 0 0 0-1.6.7L19 15.6ZM3.3 2.3 2 3.6l3.4 3.4A7 7 0 0 0 5 9v7l-2 2v1h14.4l2.9 2.9 1.3-1.3Z"/></svg>`,
         person: `<svg width="24" height="26" viewBox="0 0 12 13" fill="#a0614a"><circle cx="6" cy="3.5" r="3"/><path d="M0 13a6 6 0 0 1 12 0Z"/></svg>`,
@@ -889,8 +963,12 @@
         const st = waState[i];
         if (!st) return c;
         const last = st.log[st.log.length - 1];
-        return { ...c, message: last.text, sent: last.from === "me", time: last.time, unread: 0,
-                 media: null, deleted: false, sender: null };
+        const label = last.type === "photo" ? (last.text || "Photo")
+                    : last.type === "voice" ? (last.duration || "Voice message")
+                    : last.type === "call" ? callTitle(last) : last.text;
+        const media = { photo: "photo", voice: "mic", call: last.call === "video" ? "video" : "call" }[last.type] || null;
+        return { ...c, message: label, sent: last.from === "me", time: last.time, unread: 0,
+                 media, deleted: false, sender: null };
       };
       const preview = c => {
         let t = c.sent ? ic.ticks + " " : "";
@@ -956,35 +1034,128 @@
       };
 
       const tickSvg = `<svg width="16" height="11" viewBox="0 0 17 11" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6l3 3 6-7.5M7.5 8.5l.5.5 6-7.5" stroke="#8696a0"/></svg>`;
-      const bubble = (m, prev) => (m.day !== prev?.day ? `<div class="wa-day">${esc(m.day)}</div>` : "") + `<div class="wa-msg ${m.from}${!prev || prev.from !== m.from || prev.day !== m.day ? " first" : ""}">${esc(m.text)}<span class="meta${m.read ? " read" : ""}">${esc(m.time || "")}${m.from === "me" ? tickSvg : ""}</span></div>`;
+      const meta = (m, extra = "") => `<span class="meta${m.read ? " read" : ""}${extra}">${m.edited ? "Edited " : ""}${esc(m.time || "")}${m.from === "me" ? tickSvg : ""}</span>`;
+      const secs = d => { const [a, b] = String(d || "0:00").split(":").map(Number); return b == null ? a : a * 60 + b; };
+      // waveform bars: the same voice note always gets the same shape
+      const wave = (seed, color) => {
+        let h = [...String(seed)].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7);
+        const bars = Array.from({ length: 31 }, (_, i) => {
+          h = (h * 1103515245 + 12345) >>> 0;
+          const v = 4 + (h >>> 16) % 17;
+          return `<rect x="${i * 6}" y="${13 - v / 2}" width="3" height="${v}" rx="1.5"/>`;
+        }).join("");
+        return `<svg viewBox="0 0 186 26" width="186" height="26" fill="${color}" preserveAspectRatio="none">${bars}</svg>`;
+      };
+      const callIcon = (video, color) => video
+        ? `<svg width="20" height="14" viewBox="0 0 26 18" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"><rect x="1" y="2" width="16" height="14" rx="3.5"/><path d="M17 7.5 25 3v12l-8-4.5"/></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="${color}"><path d="M6.6 2.5 9 2l2 4.5-2 1.6a12 12 0 0 0 6.9 6.9l1.6-2 4.5 2-.5 2.4c-.2 1-1 1.6-2 1.6A17.5 17.5 0 0 1 5 4.5c0-1 .6-1.8 1.6-2Z"/></svg>`;
+      function callTitle(m) {
+        const kind = m.call === "video" ? "video" : "voice";
+        return m.missed ? `Missed ${kind} call` : `${kind[0].toUpperCase() + kind.slice(1)} call`;
+      }
+
+      const msgBody = m => {
+        const c = chats[chatIdx];
+        if (m.type === "photo") {
+          return `<img src="${src(m.src || "")}" alt="">` +
+            (m.text ? `<div class="cap">${esc(m.text)}${meta(m)}</div>` : meta(m, " over"));
+        }
+        if (m.type === "voice") {
+          const who = m.from === "me" ? { avatar: CONFIG.whatsapp.myAvatar } : c;
+          const mic = `<svg class="mic" width="16" height="18" viewBox="0 0 16 22"><rect x="4" y="1" width="8" height="13" rx="4" fill="${m.from === "me" ? "#1daa61" : "#34b7f1"}"/><path d="M1 10a7 7 0 0 0 14 0M8 17v4" fill="none" stroke="${m.from === "me" ? "#1daa61" : "#34b7f1"}" stroke-width="2" stroke-linecap="round"/></svg>`;
+          return `<div class="wa-voice">
+              <button class="wa-vplay" type="button" aria-label="Play"><svg width="18" height="20" viewBox="0 0 18 20"><path d="M2 1.5v17L17 10Z" fill="#54656f"/></svg></button>
+              <div class="wa-wave">${wave(m.duration + m.time, "#b4bcc1")}<div class="done">${wave(m.duration + m.time, m.from === "me" ? "#1daa61" : "#34b7f1")}</div><i class="knob"></i></div>
+              <div class="wa-vav">${avatar(who, false)}${mic}</div>
+            </div>
+            <div class="wa-vfoot"><span class="dur">${esc(m.duration || "0:00")}</span>${meta(m)}</div>`;
+        }
+        if (m.type === "call") {
+          const sub = m.missed ? (m.from === "me" ? "No answer" : "Tap to call back") : (m.duration || "Tap to call back");
+          return `<div class="wa-call"><span class="ci">${callIcon(m.call === "video", m.missed ? "#ea0038" : "#0b141a")}</span>
+            <span class="t"><b>${callTitle(m)}</b><span>${esc(sub)}</span></span></div>${meta(m)}`;
+        }
+        const q = m.reply ? `<span class="wa-quote q-${m.reply.from === "me" ? "me" : "them"}"><b>${m.reply.from === "me" ? "You" : esc(c.name)}</b><span>${esc(m.reply.text || "")}</span></span>` : "";
+        return q + esc(m.text || "") + meta(m);
+      };
+      const bubble = (m, prev, next) => {
+        const first = !prev || prev.from !== m.from || prev.day !== m.day;
+        const tail = !next || next.from !== m.from || next.day !== m.day;
+        return (m.day !== prev?.day ? `<div class="wa-day">${esc(m.day)}</div>` : "") +
+          `<div class="wa-msg ${m.from} ${m.type || "text"}${first ? " first" : ""}${tail ? " tail" : ""}">${msgBody(m)}</div>`;
+      };
       const addBubble = m => {
-        const log = waState[chatIdx].log;
-        msgs.insertAdjacentHTML("beforeend", bubble(m, log[log.length - 2]));
+        const log = waState[chatIdx].log, prev = log[log.length - 2];
+        // the previous bubble loses its tail when the same person sends again
+        if (prev && prev.from === m.from && prev.day === m.day) msgs.lastElementChild?.classList.remove("tail");
+        msgs.insertAdjacentHTML("beforeend", bubble(m, prev, null));
         msgs.scrollTop = msgs.scrollHeight;
         return msgs.lastElementChild;
       };
       const setHasText = () => room.classList.toggle("has-text", typed.textContent.length > 0);
+      const markRead = async (msg, el) => {
+        await wait(900);
+        msg.read = true;
+        el.querySelector(".meta").classList.add("read");
+      };
+      const status = t => { sub.textContent = t; sub.classList.toggle("typing", t.endsWith("…")); };
 
       async function play(myRun) {
         const c = chats[chatIdx], st = waState[chatIdx];
         while (myRun === run && st.step < (c.script || []).length) {
           const m = c.script[st.step];
-          if (m.from === "me") {
+          const isText = !m.type || m.type === "text";
+          if (m.from === "me" && isText) {
             pendingReply = m;
             if (room.classList.contains("kb")) typeReply(myRun);
             return;   // continues after the reply is sent
           }
-          await wait(m.delay ?? 900);
+          await wait(m.delay ?? (m.from === "me" ? 1200 : 900));
           if (myRun !== run) return;
-          sub.textContent = "typing…"; sub.classList.add("typing");
-          await wait(Math.min(4000, 700 + m.text.length * 45));
-          if (myRun !== run) return;
-          sub.textContent = "online"; sub.classList.remove("typing");
-          const msg = { day: "Today", from: "them", text: m.text, time: now() };
+          if (m.from === "them" && m.type !== "call") {
+            status(m.type === "voice" ? "recording audio…" : "typing…");
+            await wait(m.type === "voice" ? Math.min(4000, 800 + secs(m.duration) * 120)
+                     : Math.min(4000, 700 + (m.text || "").length * 45));
+            if (myRun !== run) return;
+            status("online");
+          }
+          const msg = { ...m, day: "Today", time: now() };
+          delete msg.delay;
           st.log.push(msg); st.step++;
-          addBubble(msg);
+          const el = addBubble(msg);
+          if (m.from === "me") markRead(msg, el);
         }
       }
+
+      // voice notes: tap play to run the progress (plays the real file if audio: is set)
+      let playing = null;
+      msgs.addEventListener("click", e => {
+        const btn = e.target.closest(".wa-vplay");
+        if (!btn) return;
+        const el = btn.closest(".wa-msg"), idx = [...msgs.querySelectorAll(".wa-msg")].indexOf(el);
+        const m = waState[chatIdx].log[idx];
+        if (playing) { playing.stop(); if (playing.el === el) { playing = null; return; } }
+        const total = secs(m.duration) || 1, dur = el.querySelector(".dur");
+        const audio = m.audio ? new Audio(src(m.audio)) : null;
+        audio?.play().catch(() => {});
+        const t0 = performance.now();
+        const icon = (pause) => btn.innerHTML = pause
+          ? `<svg width="18" height="20" viewBox="0 0 18 20" fill="#54656f"><rect x="2" y="1.5" width="5" height="17" rx="1"/><rect x="11" y="1.5" width="5" height="17" rx="1"/></svg>`
+          : `<svg width="18" height="20" viewBox="0 0 18 20"><path d="M2 1.5v17L17 10Z" fill="#54656f"/></svg>`;
+        let raf;
+        const stop = () => { cancelAnimationFrame(raf); audio?.pause(); icon(false); el.style.removeProperty("--p"); dur.textContent = m.duration || "0:00"; };
+        const step = () => {
+          const t = audio ? audio.currentTime : (performance.now() - t0) / 1000;
+          const p = Math.min(1, t / (audio?.duration || total));
+          el.style.setProperty("--p", `${p * 100}%`);
+          dur.textContent = `${Math.floor(t / 60)}:${pad(Math.floor(t % 60))}`;
+          if (p >= 1 || (audio && audio.ended)) { stop(); playing = null; return; }
+          raf = requestAnimationFrame(step);
+        };
+        icon(true);
+        playing = { el, stop };
+        step();
+      });
 
       async function typeReply(myRun) {
         if (!pendingReply || typing || typed.textContent) return;
@@ -1009,9 +1180,7 @@
         typed.textContent = ""; setHasText();
         st.log.push(msg); st.step++;
         const el = addBubble(msg);
-        await wait(900);
-        msg.read = true;
-        el.querySelector(".meta").classList.add("read");
+        await markRead(msg, el);
         if (myRun === run) play(myRun);
       }
 
@@ -1024,17 +1193,19 @@
         }
         layer.querySelector("#waRoomAv").innerHTML = avatar(c, false);
         layer.querySelector("#waRoomName").textContent = c.name;
-        sub.textContent = c.group ? "tap here for group info" : "online"; sub.classList.remove("typing");
+        status(c.group ? "tap here for group info" : "tap for contact info");
         typed.textContent = ""; setHasText(); pendingReply = null; typing = false;
         room.classList.remove("kb");
         const log = waState[i].log;
-        msgs.innerHTML = log.map((m, j) => bubble(m, log[j - 1])).join("");
+        msgs.innerHTML = log.map((m, j) => bubble(m, log[j - 1], log[j + 1])).join("");
+        msgs.style.backgroundImage = `url("${src(CONFIG.whatsapp.chatWallpaper || CONFIG.wallpaper)}")`;
         room.classList.add("open");
         requestAnimationFrame(() => { msgs.scrollTop = msgs.scrollHeight; });
         play(++run);
       }
       function closeChat() {
         run++;
+        if (playing) { playing.stop(); playing = null; }
         room.classList.remove("open", "kb");
         renderList();
       }
@@ -1049,7 +1220,7 @@
         setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 320);
         typeReply(run);
       });
-      msgs.addEventListener("click", () => room.classList.remove("kb"));
+      msgs.addEventListener("click", e => { if (!e.target.closest(".wa-vplay")) room.classList.remove("kb"); });
       layer.querySelector("#waSend").addEventListener("click", send);
     },
   };
