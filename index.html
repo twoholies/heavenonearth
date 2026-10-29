@@ -252,6 +252,32 @@
     border: 1px solid rgba(255,255,255,.4);
     backdrop-filter: blur(10px) saturate(150%); -webkit-backdrop-filter: blur(10px) saturate(150%);
   }
+
+  /* app layer: opens on top of the home screen when an app is tapped */
+  .app-layer {
+    position: absolute; inset: 0; z-index: 4; overflow: auto;
+    background: #fff; color: #000; text-shadow: none;
+    transform: scale(.15); opacity: 0; pointer-events: none;
+    border-radius: 40px;
+    transition: transform .42s var(--ease), opacity .3s var(--ease), border-radius .42s var(--ease);
+  }
+  .app-layer.dragging { transition: none; }
+  .phone.app-open .app-layer { transform: none; opacity: 1; pointer-events: auto; border-radius: 0; }
+  .app-placeholder {
+    min-height: 100%; padding: 54px 24px 40px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    font-size: 15px; color: #8e8e93; text-align: center;
+  }
+  .app-placeholder .app { transform: scale(1.3); margin-bottom: 10px; cursor: default; }
+  .app-placeholder b { font-size: 20px; color: #000; }
+  .app-closer { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; z-index: 6; display: none; cursor: grab; }
+  .phone.app-open .app-closer { display: block; }
+  .phone.app-open .home-bar { transition: background .3s; }
+  .phone.app-open.dark-status .status { color: #000; text-shadow: none; }
+  .phone.app-open.dark-status .status svg { filter: invert(1); }
+  .phone.app-open.dark-status .sb-batt { background: rgba(0,0,0,.25); color: #fff; }
+  .phone.app-open.dark-status .sb-batt:not(.low-power) i { background: #000; }
+  .phone.app-open.dark-status .home-bar { background: #000; }
 </style>
 </head>
 <body>
@@ -353,8 +379,35 @@
     <div class="dock" id="dock"></div>
   </section>
 
+  <!-- 4. Opened app (filled from the <template>s below) -->
+  <section class="app-layer" id="appLayer"></section>
+  <div class="app-closer" id="appCloser"></div>
+
   <div class="home-bar"></div>
 </div>
+
+<!--
+  ===== APP SCREENS =====
+  To give an app its own screen, add a <template> here whose data-app is the
+  app's name exactly as it appears under its icon (e.g. "WhatsApp", "Notes",
+  "Phone"). Put any HTML/CSS inside it. Apps without a template show a
+  placeholder. The screen starts with a white background and a dark status
+  bar; for a dark screen add data-status="light" so the status bar turns white.
+
+  Example (remove the comment marks around it to try it):
+
+  <template data-app="Notes">
+    <style>
+      .notes { padding: 60px 20px; font-size: 16px; }
+      .notes h1 { font-size: 32px; margin-bottom: 12px; }
+    </style>
+    <div class="notes">
+      <h1>Notes</h1>
+      <p>Grocery list...</p>
+    </div>
+  </template>
+-->
+
 
 <script>
   // ---- Edit everything here ----
@@ -515,7 +568,9 @@
   let drag = null;
   phone.addEventListener("pointerdown", e => {
     if (state === "passcode" || e.target.closest("[contenteditable], .btn, button")) return;
-    drag = { y: e.clientY, t: performance.now(), dy: 0 };
+    if (state === "app" && e.target !== $("appCloser")) return;
+    drag = { y: e.clientY, t: performance.now(), dy: 0, app: e.target.closest(".app") };
+    if (state === "app") $("appLayer").classList.add("dragging");
     if (state === "lock") lock.classList.add("dragging");
   });
   window.addEventListener("pointermove", e => {
@@ -525,18 +580,55 @@
       const up = Math.min(0, drag.dy);
       lock.style.transform = `translateY(${up}px)`;
       lock.style.opacity = 1 + up / 400;
+    } else if (state === "app") {
+      const up = Math.min(0, drag.dy);
+      $("appLayer").style.transform = `translateY(${up / 2}px) scale(${1 + up / 1200})`;
+      $("appLayer").style.borderRadius = `${Math.min(40, -up / 4)}px`;
     }
   });
   window.addEventListener("pointerup", () => {
     if (!drag) return;
-    const { dy, t } = drag;
+    const { dy, t } = drag, dragApp = drag.app;
     const fast = Math.abs(dy) / (performance.now() - t) > 0.5;
     drag = null;
     lock.classList.remove("dragging");
     lock.style.transform = lock.style.opacity = "";
+    const layer = $("appLayer");
+    layer.classList.remove("dragging");
+    layer.style.transform = layer.style.borderRadius = "";
     if (state === "lock" && (dy < -120 || (fast && dy < -30))) show("passcode");
     else if (state === "home" && (dy > 120 || (fast && dy > 30))) show("lock");
+    else if (state === "home" && dragApp && Math.abs(dy) < 8) openApp(dragApp);
+    else if (state === "app" && (dy < -60 || (fast && dy < -20))) closeApp();
   });
+
+  // ---- Apps: tap an icon to open its screen, swipe up from the bottom edge to close ----
+  function openApp(appEl) {
+    const name = appEl.dataset.app;
+    const layer = $("appLayer");
+    const tpl = document.querySelector(`template[data-app="${name}"]`);
+    layer.innerHTML = "";
+    if (tpl) {
+      layer.append(tpl.content.cloneNode(true));
+    } else {
+      layer.innerHTML = `<div class="app-placeholder">
+        <div class="app">${appEl.querySelector(".icon").outerHTML}</div>
+        <b>${name}</b>
+        <span>This app's screen hasn't been added yet.<br>Swipe up from the bottom to go back.</span>
+      </div>`;
+    }
+    // grow out of the tapped icon
+    const icon = appEl.querySelector(".icon").getBoundingClientRect(), box = phone.getBoundingClientRect();
+    layer.style.transformOrigin = `${icon.left + icon.width / 2 - box.left}px ${icon.top + icon.height / 2 - box.top}px`;
+    layer.scrollTop = 0;
+    phone.classList.toggle("dark-status", tpl?.dataset.status !== "light");
+    state = "app";
+    phone.classList.add("app-open");
+  }
+  function closeApp() {
+    state = "home";
+    phone.classList.remove("app-open");
+  }
 
   // Keypad
   const LETTERS = ["", "ABC", "DEF", "GHI", "JKL", "MNO", "PQRS", "TUV", "WXYZ"];
@@ -591,6 +683,8 @@
       else if (e.key === "Escape") show("lock");
     } else if (state === "lock" && (e.key === "ArrowUp" || e.key === " " || e.key === "Enter")) {
       show("passcode");
+    } else if (state === "app" && (e.key === "Escape" || e.key === "ArrowUp")) {
+      closeApp();
     } else if (state === "home" && (e.key === "ArrowDown" || e.key === "Escape")) {
       show("lock");
     }
