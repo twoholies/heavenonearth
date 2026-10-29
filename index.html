@@ -739,7 +739,7 @@
   // ------------------------------
 
   const $ = id => document.getElementById(id);
-  const src = f => encodeURIComponent(f);
+  const src = f => f.split("/").map(encodeURIComponent).join("/");
   const phone = $("phone");
 
   $("wall").style.backgroundImage = `url("${src(CONFIG.wallpaper)}")`;
