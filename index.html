@@ -961,6 +961,49 @@
 </template>
 
 
+<!-- Calendar: year view, follows the real date -->
+<template data-app="Calendar">
+  <style>
+    .cal-app { position: relative; height: 100%; background: #fff; color: #000;
+               font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .cal-scroll { position: relative; height: 100%; overflow-y: auto; padding: 0 20px 120px 24px; }
+    .cal-year { padding-top: 104px; }
+    .cal-year + .cal-year { padding-top: 40px; }
+    .cal-year h1 { font-size: 30px; font-weight: 700; letter-spacing: -.3px; padding-bottom: 6px; border-bottom: 1px solid #ddd; }
+    .cal-year.now h1 { color: #ff3b30; }
+    .cal-months { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 6px; padding-top: 12px; }
+    .cal-m { height: 143px; }
+    .cal-m b { display: block; font-size: 17.5px; font-weight: 600; margin-bottom: 4px; }
+    .cal-m.now b { color: #ff3b30; }
+    .cal-days { display: grid; grid-template-columns: repeat(7, 16.5px); row-gap: .5px; }
+    .cal-days span { height: 17.5px; display: grid; place-items: center; font-size: 10.5px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .cal-days span.today { color: #fff; background: #ff3b30; border-radius: 50%; width: 16.5px; height: 16.5px; margin-top: .5px; font-weight: 600; }
+    .cal-fade { position: absolute; left: 0; right: 0; pointer-events: none; z-index: 1; }
+    .cal-fade.top { top: 0; height: 104px; background: linear-gradient(#fff 45%, rgba(255,255,255,0)); }
+    .cal-fade.bot { bottom: 0; height: 110px; background: linear-gradient(rgba(255,255,255,0), #fff 65%); }
+    .cal-pill { position: absolute; z-index: 2; height: 47px; border-radius: 24px; background: #fff; display: flex; align-items: center;
+                gap: 34px; padding: 0 22px; box-shadow: 0 4px 22px rgba(0,0,0,.09); cursor: pointer; font-size: 17px; font-weight: 500; }
+    .cal-pill.tr { top: 47px; right: 19px; }
+    .cal-pill.today { left: 27px; bottom: 31px; padding: 0 17px; }
+    .cal-pill.br { right: 28px; bottom: 31px; gap: 40px; }
+  </style>
+  <div class="cal-app">
+    <div class="cal-scroll" id="calScroll"></div>
+    <div class="cal-fade top"></div>
+    <div class="cal-fade bot"></div>
+    <div class="cal-pill tr">
+      <svg width="21" height="21" viewBox="0 0 19 19" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="m13 13 5 5"/></svg>
+      <svg width="19" height="19" viewBox="0 0 18 18" stroke="#000" stroke-width="2" stroke-linecap="round"><path d="M9 1v16M1 9h16"/></svg>
+    </div>
+    <div class="cal-pill today" id="calToday">Today</div>
+    <div class="cal-pill br">
+      <svg width="21" height="21" viewBox="0 0 22 22" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="9.5"/><path d="M11 6v6.5M11 15.6v.4"/></svg>
+      <svg width="25" height="20" viewBox="0 0 26 20" fill="none" stroke="#000" stroke-width="1.8" stroke-linejoin="round"><path d="M1.5 10.5 5 2h16l3.5 8.5V17a1.5 1.5 0 0 1-1.5 1.5H3A1.5 1.5 0 0 1 1.5 17Z"/><path d="M1.5 10.5H8a5 5 0 0 0 10 0h6.5"/></svg>
+    </div>
+  </div>
+</template>
+
+
 <script>
   // ---- Edit everything here ----
   const CONFIG = {
@@ -1405,6 +1448,31 @@ kantong sampah 😭
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
   const APP_SETUP = {
+    Calendar(layer) {
+      const $l = sel => layer.querySelector(sel);
+      const now = new Date(), Y = now.getFullYear();
+      const NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const month = (y, m) => {
+        const first = new Date(y, m, 1).getDay();            // weeks start on Sunday
+        const days = new Date(y, m + 1, 0).getDate();
+        const isNow = y === Y && m === now.getMonth();
+        const cells = Array(first).fill("<span></span>").concat(Array.from({ length: days }, (_, i) =>
+          `<span${isNow && i + 1 === now.getDate() ? ' class="today"' : ""}>${i + 1}</span>`));
+        return `<div class="cal-m${isNow ? " now" : ""}"><b>${NAMES[m]}</b><div class="cal-days">${cells.join("")}</div></div>`;
+      };
+      $l("#calScroll").innerHTML = [Y - 1, Y, Y + 1, Y + 2].map(y => `
+        <section class="cal-year${y === Y ? " now" : ""}" data-year="${y}">
+          <h1>${y}</h1>
+          <div class="cal-months">${NAMES.map((_, m) => month(y, m)).join("")}</div>
+        </section>`).join("");
+      const toToday = smooth => {
+        const sc = $l("#calScroll"), sec = $l(`[data-year="${Y}"]`);
+        // line the year's title up where the first year's title sits
+        sc.scrollTo({ top: sec === sc.firstElementChild ? 0 : sec.offsetTop - 64, behavior: smooth ? "smooth" : "auto" });
+      };
+      requestAnimationFrame(() => toToday(false));
+      $l("#calToday").addEventListener("click", () => toToday(true));
+    },
     "Voice Memos"(layer) {
       const memos = CONFIG.voiceMemos;
       const $l = sel => layer.querySelector(sel);
