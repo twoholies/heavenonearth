@@ -1333,6 +1333,49 @@
 </template>
 
 
+<!-- Settings: a single page, rows are in CONFIG.settings below -->
+<template data-app="Settings">
+  <style>
+    .st { position: relative; height: 100%; background: #f2f2f7; color: #000;
+          font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif; }
+    .st-scroll { height: 100%; overflow-y: auto; padding: 102px 19px 120px; }
+    .st h1 { font-size: 34px; font-weight: 700; letter-spacing: -.4px; margin: 0 0 9px 1px; }
+    .st-card { background: #fff; border-radius: 26px; overflow: hidden; margin-bottom: 34px; }
+    .st-acct { display: flex; align-items: center; gap: 9px; padding: 15px 17px 14px 19px; }
+    .st-acct .av { width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(#a2a2a7, #85858b); color: #fff;
+                   display: grid; place-items: center; font-size: 26px; flex: none; }
+    .st-acct .t { flex: 1; min-width: 0; line-height: 1.3; }
+    .st-acct .t b { font-size: 18px; font-weight: 600; display: block; }
+    .st-acct .t span { font-size: 12.5px; color: #8a8a8e; }
+    .st-row { display: flex; align-items: center; gap: 13px; min-height: 48.5px; padding: 0 17px 0 16px; position: relative; font-size: 15.5px; }
+    .st-row + .st-row::before, .st-acct + .st-row::before { content: ""; position: absolute; top: 0; right: 19px; left: 57px; border-top: 1px solid #e3e3e8; }
+    .st-acct + .st-row::before { left: 86px; }
+    .st-row.plain { padding-left: 20px; min-height: 50px; }
+    .st-ic { width: 29px; height: 29px; border-radius: 8px; display: grid; place-items: center; flex: none; }
+    .st-row .lbl { flex: 1; min-width: 0; }
+    .st-row .val { color: #8a8a8e; }
+    .st-badge { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: #ff3b30; color: #fff; font-size: 13.5px;
+                display: grid; place-items: center; }
+    .st-tog { width: 61px; height: 28px; border-radius: 14px; background: #e3e3e8; position: relative; cursor: pointer; transition: background .2s; flex: none; }
+    .st-tog::after { content: ""; position: absolute; top: 2px; left: 2px; width: 37px; height: 24px; border-radius: 12px; background: #fff;
+                     box-shadow: 0 1px 4px rgba(0,0,0,.2); transition: left .2s; }
+    .st-tog.on { background: #34c759; }
+    .st-tog.on::after { left: 22px; }
+    .st-search { position: absolute; left: 27px; right: 27px; bottom: 31px; height: 47px; border-radius: 24px; z-index: 2;
+                 background: rgba(255,255,255,.88); box-shadow: 0 4px 22px rgba(0,0,0,.1); display: flex; align-items: center; gap: 10px; padding: 0 19px;
+                 font-size: 17px; color: #8a8a8e; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    .st::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 64px; z-index: 1; pointer-events: none;
+                  background: linear-gradient(#f2f2f7 60%, rgba(242,242,247,0)); }
+    .st::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 110px; z-index: 1; pointer-events: none;
+                 background: linear-gradient(rgba(242,242,247,0), #f2f2f7 70%); }
+  </style>
+  <div class="st">
+    <div class="st-scroll" id="stScroll"></div>
+    <div class="st-search"><svg width="19" height="19" viewBox="0 0 19 19" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="m13 13 5 5"/></svg>Search</div>
+  </div>
+</template>
+
+
 <script>
   // ---- Edit everything here ----
   const CONFIG = {
@@ -1404,6 +1447,11 @@ kantong sampah 😭
       { title: "😵‍💫", date: "27 Feb 2026", duration: "10.56", audio: null },
       { title: "love never felt so good (raw cover by me)", date: "2 Nov 2025", duration: "3.15", audio: null },
     ],
+    // Settings page (nothing opens; only the Airplane Mode switch flips).
+    settings: {
+      name: "mist bell", initial: "b", suggestions: 3, update: "Update to iOS 27.0.1",
+      wifi: "SITOHANG", bluetooth: "On",
+    },
     // Mail inbox, newest first. The first lines of body show as the preview.
     // attachment: "File.pdf" adds a file at the bottom of the message.
     mail: {
@@ -1844,6 +1892,64 @@ kantong sampah 😭
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
   const APP_SETUP = {
+    Settings(layer) {
+      const S = CONFIG.settings;
+      const chev = `<svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#c4c4c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg>`;
+      const w = (d, extra = "") => `<svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"${extra}>${d}</svg>`;
+      const f = d => `<svg width="19" height="19" viewBox="0 0 20 20" fill="#fff">${d}</svg>`;
+      const G = {
+        airplane: f('<path d="M18 11.5v-1.7L11.2 6V2.3a1.2 1.2 0 0 0-2.4 0V6L2 9.8v1.7l6.8-2.1v4.3l-2 1.5V16.5l3.2-1 3.2 1v-1.3l-2-1.5V9.4Z"/>'),
+        wifi: w('<path d="M2 7.5a11 11 0 0 1 16 0M5 10.7a7 7 0 0 1 10 0M8 13.8a3 3 0 0 1 4 0"/><circle cx="10" cy="16.3" r=".8" fill="#fff"/>', ' stroke-width="2"'),
+        bt: w('<path d="m5.5 6 9 8-4.5 3.5v-15L14.5 6l-9 8"/>'),
+        cell: w('<circle cx="10" cy="9" r="1.6" fill="#fff"/><path d="M10 10.5V18M6.3 5.3a5.3 5.3 0 0 0 0 7.4M13.7 5.3a5.3 5.3 0 0 1 0 7.4M3.6 2.7a9 9 0 0 0 0 12.6M16.4 2.7a9 9 0 0 1 0 12.6"/>'),
+        hotspot: w('<rect x="1.8" y="6.5" width="10" height="7" rx="3.5"/><rect x="8.2" y="6.5" width="10" height="7" rx="3.5"/>'),
+        battery: f('<rect x="1.5" y="6" width="15" height="8" rx="2.2"/><rect x="17.2" y="8.3" width="1.6" height="3.4" rx=".8"/>'),
+        general: w('<circle cx="10" cy="10" r="6.8" stroke-dasharray="2.2 1.6" stroke-width="2.6"/><circle cx="10" cy="10" r="2.3"/>'),
+        access: w('<circle cx="10" cy="10" r="8.3"/><circle cx="10" cy="5.7" r="1.1" fill="#fff"/><path d="M5.6 8.2h8.8M10 8.5v3.5l-2.2 3.8M10 12l2.2 3.8"/>'),
+        camera: f('<path d="M7 3.5h6l1.4 2.2H17a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 17 16.7H3a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 3 5.7h2.6Z"/><circle cx="10" cy="11" r="3" fill="#8e8e93"/>'),
+        cc: w('<rect x="2" y="3.5" width="16" height="5" rx="2.5"/><circle cx="13.5" cy="6" r="1.2" fill="#fff"/><rect x="2" y="11.5" width="16" height="5" rx="2.5"/><circle cx="6.5" cy="14" r="1.2" fill="#fff"/>'),
+        display: `<svg width="20" height="16" viewBox="0 0 20 16"><text x="1" y="13" font-size="11" font-weight="700" fill="#fff" font-family="-apple-system, Helvetica Neue, Arial">A</text><text x="9" y="13.5" font-size="14" font-weight="700" fill="#fff" font-family="-apple-system, Helvetica Neue, Arial">A</text></svg>`,
+        home: f('<rect x="3" y="3" width="6" height="6" rx="1.6"/><rect x="11" y="3" width="6" height="6" rx="1.6"/><rect x="3" y="11" width="6" height="6" rx="1.6"/><rect x="11" y="11" width="6" height="6" rx="1.6"/>'),
+        search: w('<circle cx="8.5" cy="8.5" r="5.5"/><path d="m12.7 12.7 4.5 4.5"/>', ' stroke-width="2"'),
+        siri: `<svg width="21" height="21" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M4 10c2-3 3.5 3 6 0s4 3 6 0" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+        standby: w('<circle cx="10" cy="10" r="7.5"/><path d="M10 5.5V10l3 2"/>'),
+        wallpaper: f('<circle cx="10" cy="5.2" r="2.6"/><circle cx="14.6" cy="8.6" r="2.6"/><circle cx="12.8" cy="14" r="2.6"/><circle cx="7.2" cy="14" r="2.6"/><circle cx="5.4" cy="8.6" r="2.6"/>'),
+        notif: f('<rect x="2.5" y="4" width="13" height="13" rx="3.5" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="15.5" cy="4.5" r="3"/>'),
+        sound: f('<path d="M2.5 7.5h3L10 3.5v13l-4.5-4h-3Z"/><path d="M13 7a4.5 4.5 0 0 1 0 6M15.5 4.5a8 8 0 0 1 0 11" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>'),
+        focus: f('<path d="M14.8 13.4A7 7 0 0 1 7.5 3.2a7.5 7.5 0 1 0 9.6 9.6 7 7 0 0 1-2.3.6Z"/>'),
+        hourglass: w('<path d="M5 2.5h10M5 17.5h10M6 2.5c0 4.5 8 4.5 8 7.5s-8 3-8 7.5M14 2.5c0 4.5-8 4.5-8 7.5s8 3 8 7.5"/>'),
+        faceid: w('<path d="M2.5 6.5v-2a2 2 0 0 1 2-2h2M13.5 2.5h2a2 2 0 0 1 2 2v2M17.5 13.5v2a2 2 0 0 1-2 2h-2M6.5 17.5h-2a2 2 0 0 1-2-2v-2M7 7v1.5M13 7v1.5M10 7v4H9M7.2 13a4 4 0 0 0 5.6 0"/>'),
+        sos: `<svg width="22" height="12" viewBox="0 0 22 12"><text x="11" y="10.5" text-anchor="middle" font-size="10.5" font-weight="800" fill="#fff" font-family="-apple-system, Helvetica Neue, Arial">SOS</text></svg>`,
+        privacy: f('<path d="M10 2 3.5 4.5v5c0 4 2.8 7 6.5 8.5 3.7-1.5 6.5-4.5 6.5-8.5v-5Z"/>'),
+        appstore: w('<path d="M8 3.5 13.5 13M12 3.5 6.5 13M3.5 13h13M13 16l1 1.5M7 16l-1 1.5"/>', ' stroke-width="1.9"'),
+        wallet: f('<rect x="2.5" y="4" width="15" height="12.5" rx="2.5" fill="#1c1c1e"/><rect x="2.5" y="4" width="15" height="3" rx="1" fill="#f7b500"/><rect x="2.5" y="7" width="15" height="3" fill="#34c759"/><rect x="2.5" y="10" width="15" height="3" fill="#ff3b30"/>'),
+        game: `<svg width="21" height="21" viewBox="0 0 20 20"><circle cx="7" cy="7" r="4.5" fill="#ff5e8a"/><circle cx="13.5" cy="7.5" r="3.6" fill="#ffd60a" opacity=".9"/><circle cx="8.5" cy="13.5" r="3.6" fill="#30b0ff" opacity=".9"/><circle cx="14" cy="13.5" r="3" fill="#34c759" opacity=".9"/></svg>`,
+        icloud: `<svg width="22" height="16" viewBox="0 0 22 16"><path d="M6 14.5a4.5 4.5 0 0 1-.7-9 6 6 0 0 1 11.3 1.5A3.8 3.8 0 0 1 16.5 14.5Z" fill="#3693f3"/></svg>`,
+        apps: f('<rect x="3" y="3" width="6" height="6" rx="1.6"/><rect x="11" y="3" width="6" height="6" rx="1.6"/><rect x="3" y="11" width="6" height="6" rx="1.6"/><rect x="11" y="11" width="6" height="6" rx="1.6" opacity=".55"/>'),
+      };
+      const row = (g, bg, label, val = "", toggle = false) => `
+        <div class="st-row"><span class="st-ic" style="background:${bg}">${G[g]}</span><span class="lbl">${esc(label)}</span>
+          ${toggle ? `<span class="st-tog" id="stAir"></span>` : `${val ? `<span class="val">${esc(val)}</span>` : ""}${chev}`}</div>`;
+      const card = rows => `<div class="st-card">${rows.join("")}</div>`;
+      const gray = "#8e8e93", blue = "#0a84ff", green = "#34c759", purple = "#5e5ce6";
+      layer.querySelector("#stScroll").innerHTML = `
+        <h1>Settings</h1>
+        <div class="st-card">
+          <div class="st-acct"><span class="av">${esc(S.initial)}</span><div class="t"><b>${esc(S.name)}</b><span>Apple Account, iCloud, and more</span></div>${chev}</div>
+          <div class="st-row plain"><span class="lbl">Apple Account Suggestions</span>${S.suggestions ? `<span class="st-badge">${S.suggestions}</span>` : ""}${chev}</div>
+        </div>
+        ${S.update ? `<div class="st-card"><div class="st-row plain"><span class="lbl">${esc(S.update)}</span><span class="st-badge">1</span>${chev}</div></div>` : ""}
+        ${card([row("airplane", "#ff9500", "Airplane Mode", "", true), row("wifi", blue, "Wi-Fi", S.wifi), row("bt", blue, "Bluetooth", S.bluetooth),
+                row("cell", green, "Cellular"), row("hotspot", green, "Personal Hotspot"), row("battery", green, "Battery")])}
+        ${card([row("general", gray, "General"), row("access", blue, "Accessibility"), row("camera", gray, "Camera"), row("cc", gray, "Control Center"),
+                row("display", blue, "Display & Brightness"), row("home", purple, "Home Screen & App Library"), row("search", gray, "Search"),
+                row("siri", "linear-gradient(135deg,#3a3a3c,#1c1c1e)", "Siri"), row("standby", "#1c1c1e", "StandBy"), row("wallpaper", "#32ade6", "Wallpaper")])}
+        ${card([row("notif", "#ff3b30", "Notifications"), row("sound", "#ff2d55", "Sounds & Haptics"), row("focus", purple, "Focus"), row("hourglass", purple, "Screen Time")])}
+        ${card([row("faceid", green, "Face ID & Passcode"), row("sos", "#ff3b30", "Emergency SOS"), row("privacy", blue, "Privacy & Security")])}
+        ${card([row("game", "#fff;box-shadow:inset 0 0 0 1px #e5e5ea", "Game Center"), row("icloud", "#fff;box-shadow:inset 0 0 0 1px #e5e5ea", "iCloud"), row("wallet", "#1c1c1e", "Wallet & Apple Pay")])}
+        ${card([row("apps", purple, "Apps")])}`;
+      layer.querySelector("#stAir").addEventListener("click", e => e.currentTarget.classList.toggle("on"));
+    },
     Mail(layer) {
       const M = CONFIG.mail, $l = sel => layer.querySelector(sel);
       const page = id => layer.querySelectorAll(".ml-page").forEach(pg => pg.classList.toggle("on", pg.id === id));
