@@ -847,21 +847,24 @@
 
     /* a note */
     .nt-note { background: #fff; }
-    .nt-note .nt-btn { background: #f2f2f7; box-shadow: none; }
-    .nt-date { text-align: center; color: #8a8a8e; font-size: 13px; padding-top: 108px; }
-    .nt-body { padding: 14px 22px 0; }
-    .nt-doc { font-size: 17px; line-height: 1.38; }
-    .nt-doc h2 { font-size: 26px; font-weight: 700; line-height: 1.2; margin-bottom: 12px; }
+    .nt-note .nt-btn { background: #fff; box-shadow: 0 4px 22px rgba(0,0,0,.09); }
+    .nt-pill { display: flex; align-items: center; gap: 36px; padding: 0 22px; }
+    .nt-body { padding: 104px 26px 0; }
+    .nt-doc { font-size: 15.5px; line-height: 1.5; color: #3c3c3c; }
+    .nt-doc h2 { font-size: 24px; font-weight: 700; line-height: 1.25; margin-bottom: 6px; }
     .nt-doc p { min-height: 1.38em; white-space: pre-wrap; word-wrap: break-word; }
-    .nt-doc .ck { display: flex; align-items: flex-start; gap: 10px; margin: 5px 0; }
-    .nt-doc .ck i { flex: none; width: 21px; height: 21px; border-radius: 50%; border: 1.5px solid #c7c7cc; margin-top: 1px;
+    .nt-doc .ck { display: flex; align-items: flex-start; gap: 13px; margin: 8px 0 9px 2px; }
+    .nt-doc .ck i { flex: none; width: 21px; height: 21px; border-radius: 50%; border: 1.5px solid #c7c7cc; margin-top: 0;
                     display: grid; place-items: center; cursor: pointer; }
     .nt-doc .ck.done i { background: #e5a800; border-color: #e5a800; }
     .nt-doc .ck.done i::after { content: ""; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
     .nt-doc .ck span { flex: 1; min-width: 0; white-space: pre-wrap; word-wrap: break-word; }
     .nt-doc .ck.done span { color: #8a8a8e; }
-    .nt-tools { position: absolute; left: 28px; right: 28px; bottom: 31px; height: 50px; border-radius: 25px; background: #f2f2f7;
-                display: flex; align-items: center; justify-content: space-around; z-index: 2; }
+    .nt-tools { position: absolute; left: 27px; right: 28px; bottom: 31px; display: flex; align-items: center; justify-content: space-between; z-index: 2; }
+    .nt-tools .grp { height: 47px; border-radius: 24px; background: #fff; display: flex; align-items: center; gap: 34px; padding: 0 16px;
+                     box-shadow: 0 4px 22px rgba(0,0,0,.09); }
+    .nt-tools .one { width: 47px; height: 47px; border-radius: 50%; background: #fff; display: grid; place-items: center;
+                     box-shadow: 0 4px 22px rgba(0,0,0,.09); }
   </style>
   <div class="nt">
     <!-- folder -->
@@ -884,21 +887,23 @@
     <!-- open note -->
     <div class="nt-page nt-note" id="ntNote">
       <div class="nt-scroll">
-        <div class="nt-date" id="ntDate"></div>
         <div class="nt-body"><div class="nt-doc" id="ntDoc"></div></div>
       </div>
       <div class="nt-bar">
         <button class="nt-btn" id="ntBack" type="button" aria-label="Back"><svg width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 2 10l8 8"/></svg></button>
         <span class="sp"></span>
-        <button class="nt-btn" type="button" aria-label="Share"><svg width="18" height="22" viewBox="0 0 22 26" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 16V2M6 6l5-5 5 5M7 10H3v14h16V10h-4"/></svg></button>
-        <button class="nt-btn" type="button" aria-label="More"><svg width="18" height="4" viewBox="0 0 18 4" fill="#000"><circle cx="2" cy="2" r="2"/><circle cx="9" cy="2" r="2"/><circle cx="16" cy="2" r="2"/></svg></button>
+        <div class="nt-btn nt-pill">
+          <svg width="18" height="22" viewBox="0 0 22 26" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 16V2M6 6l5-5 5 5M7 10H3v14h16V10h-4"/></svg>
+          <svg width="18" height="4" viewBox="0 0 18 4" fill="#000"><circle cx="2" cy="2" r="2"/><circle cx="9" cy="2" r="2"/><circle cx="16" cy="2" r="2"/></svg>
+        </div>
       </div>
       <div class="nt-tools">
-        <svg width="22" height="20" viewBox="0 0 22 20" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"><circle cx="3.5" cy="4" r="2.5"/><circle cx="3.5" cy="16" r="2.5"/><path d="M9 4h12M9 16h12"/></svg>
-        <svg width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="#000" stroke-width="1.8" stroke-linejoin="round"><path d="M1 3h20v12H1Z"/><path d="M1 8h20M8 3v12"/></svg>
-        <svg width="24" height="20" viewBox="0 0 26 20" fill="none" stroke="#000" stroke-width="1.8"><path d="M9 1h8l2 3h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4Z"/><circle cx="13" cy="11.5" r="4.3"/></svg>
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19c3-1 5-3 7-6l7-9a2 2 0 0 1 3 2.5l-8 8.5c-3 2.5-5.5 3.5-9 4Z"/></svg>
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><path d="M17.5 1.8a1.8 1.8 0 0 1 2.6 2.6L11 13.5l-3.4.9.9-3.4Z"/></svg>
+        <div class="grp">
+          <svg width="26" height="20" viewBox="0 0 26 20" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"><circle cx="4" cy="4" r="3.2" fill="#000"/><path d="m2.6 4 1 1 1.8-2" stroke="#fff" stroke-width="1.2"/><circle cx="4" cy="15.5" r="3.2"/><path d="M11 4h13M11 15.5h13"/></svg>
+          <svg width="22" height="24" viewBox="0 0 22 24" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 11 11 19.5a5.5 5.5 0 0 1-7.8-7.8L12 3a3.7 3.7 0 0 1 5.2 5.2L8.5 16.9a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="10.5"/><path d="M8.5 21 12 7l3.5 14M9.6 17h4.8"/></svg>
+        </div>
+        <div class="one"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><path d="M17.5 1.8a1.8 1.8 0 0 1 2.6 2.6L11 13.5l-3.4.9.9-3.4Z"/></svg></div>
       </div>
     </div>
   </div>
@@ -924,23 +929,24 @@
     settingsBadge: 4,
     // Notes app. Each note's text: the first line is its title; a line
     // starting with "[ ] " is a checklist item, "[x] " a ticked one;
-    // **text** is bold. section groups notes under a heading ("Today", …).
+    // **text** is bold. section groups notes under a heading ("Today", …);
+    // time shows under the note in the folder.
     notes: {
       folder: "catatan hesa 🤍🫧",
       notes: [
-        { section: "Today", time: "22.19", date: "29 October 2026 at 22.19", text:
+        { section: "Today", time: "22.19", text:
 `dear diary
 
 aku kangen om isa... tapi om sibuk :(
 emang boleh ya kangen ginii??` },
-        { section: "Today", time: "22.18", date: "29 October 2026 at 22.18", text:
+        { section: "Today", time: "22.18", text:
 `things to do this week!
 [ ] laundry
 [ ] clean up my room
 [ ] buy groceries
 [ ] pay apartement
-[ ] **GET ENOUGH SLEEP HESA (jangan ngajak om Isa begadang terus 😒)**` },
-        { section: "Today", time: "22.16", date: "29 October 2026 at 22.16", text:
+[ ] **GET ENOUGH SLEEP HESA (jangan ngajak om Isa begadang terus 😔)**` },
+        { section: "Today", time: "22.16", text:
 `belanja bulanan (hemat ihh)
 
 beras 5kg
@@ -952,18 +958,17 @@ oatmeal
 sabun mandi
 sampo
 pasta gigi
-deterjen` },
-        { section: "Today", time: "22.14", date: "29 October 2026 at 22.14", text:
+deterjen
+tisuuuuu
+kantong sampah 😭
+:3` },
+        { section: "Today", time: "22.14", text:
 `deadlines!
 
 [ ] tugas financial accounting 30/10
 [ ] tax accounting (HUEKK) 2/11
 [ ] auditing 03/11
 [ ] ` },
-        { section: "Today", time: "22.10", date: "29 October 2026 at 22.10", text:
-`note 5 (replace me)
-
-write the fifth note here` },
       ],
     },
     // Photos app ("Recently Saved"). Newest first. For a video, add
@@ -1371,7 +1376,6 @@ write the fifth note here` },
       let cur = null;
       const openNote = i => {
         cur = i;
-        $l("#ntDate").textContent = notes[i].date || "";
         $l("#ntDoc").innerHTML = docHTML(i);
         $l("#ntNote .nt-scroll").scrollTop = 0;
         page("ntNote");
