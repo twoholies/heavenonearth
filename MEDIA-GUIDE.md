@@ -2,7 +2,7 @@
 
 How to put your own **photos, videos and audio** (mp3, m4a, voice memos…) into the phone.
 
-Everything happens on GitHub, on the branch **`claude/gifted-wozniak-sjb7me`**.
+Everything happens on GitHub, on the **`main`** branch.
 
 ---
 
@@ -17,25 +17,25 @@ Every media change is the same two steps:
 
 1. Open the upload page for the folder you want (links in the table below).
 2. Tap **Choose your files** and pick the photo, video or audio.
-3. Scroll down, choose **"Commit directly to the `claude/gifted-wozniak-sjb7me` branch"**, then tap **Commit changes**.
+3. Scroll down, choose **"Commit directly to the `main` branch"**, then tap **Commit changes**.
 
 | Folder | What goes in it | Upload link |
 |---|---|---|
-| `media/` | profile photos (Isaac, Niel, Hesa…) | [upload](https://github.com/twoholies/heavenonearth/upload/claude/gifted-wozniak-sjb7me/media) |
-| `media/photos/` | the Photos app (photos and videos) | [upload](https://github.com/twoholies/heavenonearth/upload/claude/gifted-wozniak-sjb7me/media/photos) |
-| `media/whatsapp/` | photos, voice notes and documents sent in WhatsApp chats | [upload](https://github.com/twoholies/heavenonearth/upload/claude/gifted-wozniak-sjb7me/media/whatsapp) |
-| `media/voice-memos/` | Voice Memos recordings | [upload](https://github.com/twoholies/heavenonearth/upload/claude/gifted-wozniak-sjb7me/media/voice-memos) |
-| `media/spotify/` | artist pictures, album and song covers, the song's audio | [upload](https://github.com/twoholies/heavenonearth/upload/claude/gifted-wozniak-sjb7me/media/spotify) |
-| `media/x/` | X avatars and post pictures | [upload](https://github.com/twoholies/heavenonearth/upload/claude/gifted-wozniak-sjb7me/media/x) |
+| `media/` | profile photos (Isaac, Niel, Hesa…) | [upload](https://github.com/twoholies/heavenonearth/upload/main/media) |
+| `media/photos/` | the Photos app (photos and videos) | [upload](https://github.com/twoholies/heavenonearth/upload/main/media/photos) |
+| `media/whatsapp/` | photos, voice notes and documents sent in WhatsApp chats | [upload](https://github.com/twoholies/heavenonearth/upload/main/media/whatsapp) |
+| `media/voice-memos/` | Voice Memos recordings | [upload](https://github.com/twoholies/heavenonearth/upload/main/media/voice-memos) |
+| `media/spotify/` | artist pictures, album and song covers, the song's audio | [upload](https://github.com/twoholies/heavenonearth/upload/main/media/spotify) |
+| `media/x/` | X avatars and post pictures | [upload](https://github.com/twoholies/heavenonearth/upload/main/media/x) |
 
 > **Shortcut:** if you upload a file with **exactly the same name** as an existing one (for example a new `media/isaac.jpg`), it replaces the old one everywhere, and you can skip step 2.
 
 ### Step 2: point to it in `index.html`
 
-1. Open the editor: <https://github.com/twoholies/heavenonearth/edit/claude/gifted-wozniak-sjb7me/index.html>
+1. Open the editor: <https://github.com/twoholies/heavenonearth/edit/main/index.html>
 2. Search (Ctrl+F / Cmd+F) for the word from the tables below, for example `voiceMemos:`.
 3. Write the file's path **inside the quotes**, including the folder: `"media/voice-memos/om-isa.m4a"`.
-4. Commit to the `claude/gifted-wozniak-sjb7me` branch.
+4. Commit to the `main` branch.
 
 ---
 
