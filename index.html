@@ -2158,6 +2158,8 @@ kantong sampah 😭
       //   Extras for text messages:
       //     reply: { from: "me", text: "the message being replied to" }
       //     edited: true   (shows "Edited" next to the time)
+      //   storyTime: "07.17" makes new messages in this chat start at 07.17 and move
+      //   on with real minutes, instead of showing the reader's real time.
       //   In script, Hesa's photos, voice notes and calls send by themselves
       //   (only her text replies use the keyboard). delay: 2000 waits 2 s first.
       //   Isaac's and Niel's lock screen message is added to the end of their
@@ -2168,7 +2170,7 @@ kantong sampah 😭
       chats: [
         // Om Isaac — morning scene. His first 3 messages arrive as pop-ups (see live:
         // above); the rest plays when the chat is opened.
-        { fromNotification: 0, includeNotification: false, time: "07.16", unread: 0, favorite: true,
+        { fromNotification: 0, includeNotification: false, time: "07.16", storyTime: "07.17", unread: 0, favorite: true,
           history: [],
           script: [
             { from: "me",   text: "iys" },
@@ -3533,7 +3535,17 @@ kantong sampah 😭
       // ---- chat room ----
       const room = layer.querySelector("#waRoom"), msgs = layer.querySelector("#waMsgs");
       const typed = layer.querySelector("#waTyped"), sub = layer.querySelector("#waRoomSub");
-      const now = () => CONFIG.time ?? (d => `${pad(d.getHours())}.${pad(d.getMinutes())}`)(new Date());
+      // time for new messages: the chat's own story clock (storyTime, moving on with
+      // real minutes since the chat was first opened), else the real time
+      const now = () => {
+        const c = WA.chats[chatIdx], st = waState[chatIdx];
+        if (c?.storyTime && st) {
+          const [h, m] = c.storyTime.split(/[.:]/).map(Number);
+          const t = h * 60 + m + Math.floor((Date.now() - st.t0) / 60000);
+          return `${pad(Math.floor(t / 60) % 24)}.${pad(t % 60)}`;
+        }
+        return CONFIG.time ?? (d => `${pad(d.getHours())}.${pad(d.getMinutes())}`)(new Date());
+      };
       const wait = ms => new Promise(r => setTimeout(r, ms));
       let run = 0;       // bumps whenever the room closes, so pending timers stop
       let chatIdx = null, pendingReply = null, typing = false;
@@ -3759,7 +3771,7 @@ kantong sampah 😭
         WA.chats[i].newUnread = chats[i].newUnread = 0;
         if (!waState[i]) {
           let day = "Today";
-          waState[i] = { log: (c.history || []).map(m => ({ ...m, day: (day = m.day ?? day), read: true })), step: 0 };
+          waState[i] = { log: (c.history || []).map(m => ({ ...m, day: (day = m.day ?? day), read: true })), step: 0, t0: Date.now() };
         }
         layer.querySelector("#waRoomAv").innerHTML = avatar(c, false);
         layer.querySelector("#waRoomName").textContent = c.name;
