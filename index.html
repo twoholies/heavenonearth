@@ -691,7 +691,7 @@
     .ph-title p { display: flex; align-items: center; gap: 5px; font-size: 16.5px; font-weight: 600; margin: 4px 0 14px; }
     .ph-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
     .ph-tile { position: relative; aspect-ratio: 1; overflow: hidden; background: #eee; cursor: pointer; }
-    .ph-tile img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+    .ph-tile img, .ph-tile video { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
     .ph-tile .dur { position: absolute; right: 6px; bottom: 4px; color: #fff; font-size: 12px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
     .ph-dock { position: absolute; left: 28px; right: 28px; bottom: 34px; display: flex; align-items: center; justify-content: space-between; z-index: 2; }
     .ph-glass { height: 46px; border-radius: 23px; display: grid; place-items: center; color: #fff;
@@ -708,7 +708,7 @@
     .ph-alb { cursor: pointer; }
     .ph-alb .cover { aspect-ratio: 1; border-radius: 14px; overflow: hidden; background: #f0f0f2; position: relative;
                      display: grid; place-items: center; }
-    .ph-alb .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ph-alb .cover img, .ph-alb .cover video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .ph-alb b { display: flex; align-items: center; gap: 5px; font-size: 16px; font-weight: 600; margin-top: 7px; }
     .ph-alb span { font-size: 14px; color: #8e8e93; }
 
@@ -1225,7 +1225,7 @@
     .cm-modes span.on { color: #ffd60a; }
     .cm-bottom { position: absolute; top: 705px; left: 0; right: 0; height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; }
     .cm-thumb { width: 48px; height: 48px; border-radius: 8px; overflow: hidden; background: #222; transition: transform .2s; }
-    .cm-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cm-thumb img, .cm-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .cm-thumb.pop { transform: scale(1.12); }
     .cm-shutter { width: 76px; height: 76px; border-radius: 50%; border: 4px solid #fff; display: grid; place-items: center; cursor: pointer; }
     .cm-shutter i { width: 62px; height: 62px; border-radius: 50%; background: #fff; transition: all .2s; }
@@ -2039,7 +2039,8 @@ kantong sampah 😭
                     duration: "3:24", position: "1:10", audio: null },
     },
     // Photos app ("Recently Saved"). Newest first. For a video, add
-    // type: "video" and a poster (the picture shown in the grid).
+    // type: "video"; poster (a picture for the grid) is optional — without
+    // it the video's first frame is shown.
     // date is optional and shows at the top when the photo is open.
     photos: {
       title: "Recently Saved",
@@ -2214,6 +2215,10 @@ kantong sampah 😭
 
   const $ = id => document.getElementById(id);
   const src = f => f.split("/").map(encodeURIComponent).join("/");
+  // Picture for a photo/video item; a video without a poster shows its own first frame.
+  const thumb = (it, extra = "") => it.type === "video" && !it.poster
+    ? `<video src="${src(it.src)}#t=0.5" muted playsinline preload="metadata"${extra}></video>`
+    : `<img src="${src(it.type === "video" ? it.poster : it.src)}" alt=""${extra}>`;
   const phone = $("phone");
 
   $("wall").style.backgroundImage = `url("${src(CONFIG.wallpaper)}")`;
@@ -2786,7 +2791,7 @@ kantong sampah 😭
 
       // the thumbnail shows the newest picture in Photos
       const first = CONFIG.photos.items[0];
-      if (first) $l("#cmThumb").innerHTML = `<img src="${src(first.type === "video" ? first.poster || "" : first.src)}" alt="">`;
+      if (first) $l("#cmThumb").innerHTML = thumb(first);
 
       $l("#cmShutter").addEventListener("click", () => {
         if (cm.classList.contains("video")) {
@@ -3138,7 +3143,7 @@ kantong sampah 😭
         $l("#phCount").textContent = `${a.count ?? items.length} Items`;
         $l("#phGrid").innerHTML = items.map((it, i) => `
           <div class="ph-tile" data-i="${i}">
-            <img src="${src(it.type === "video" ? it.poster || "" : it.src)}" alt="" loading="lazy">
+            ${thumb(it, ' loading="lazy"')}
             ${it.type === "video" ? `<span class="dur" data-dur="${i}"></span>` : ""}
           </div>`).join("");
         // fill in video lengths from the files themselves
@@ -3160,7 +3165,7 @@ kantong sampah 😭
       const cover = a => {
         if (a.locked) return `<svg width="54" height="40" viewBox="0 0 54 40" fill="none" stroke="#8e8e93" stroke-width="2.6" stroke-linecap="round"><path d="M3 20s9-15 24-15 24 15 24 15-9 15-24 15S3 20 3 20Z"/><circle cx="27" cy="20" r="7"/><path d="M8 37 46 3"/></svg>`;
         const it = a.items[0];
-        return it ? `<img src="${src(it.type === "video" ? it.poster || "" : it.src)}" alt="">` : "";
+        return it ? thumb(it) : "";
       };
       $l("#phAlbums").innerHTML = ALBUMS.map((a, i) => `
         <div class="ph-alb" data-album="${i}">
@@ -3220,7 +3225,7 @@ kantong sampah 😭
         $l("#phIdx").textContent = `${i + 1} of ${items.length}`;
         view.classList.toggle("is-video", it.type === "video");
         if (it.type === "video") {
-          stage.innerHTML = `<video src="${src(it.src)}" poster="${src(it.poster || "")}" playsinline preload="auto"></video>
+          stage.innerHTML = `<video src="${src(it.src)}"${it.poster ? ` poster="${src(it.poster)}"` : ""} playsinline preload="auto"></video>
             <span class="ph-play"><svg width="26" height="28" viewBox="0 0 18 20"><path d="M2 1.5v17L17 10Z" fill="#fff"/></svg></span>`;
           const v = video = stage.querySelector("video");
           v.onplay = () => stage.classList.add("playing");
