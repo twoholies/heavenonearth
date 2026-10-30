@@ -509,6 +509,8 @@
     .wa-msg .meta.read svg path { stroke: #53bdeb; }
     @keyframes waIn { from { opacity: 0; transform: translateY(8px) scale(.97); } }
 
+    .wa-link { color: #027eb5; text-decoration: underline; word-break: break-all; }
+    .wa-fwdlabel { display: flex; align-items: center; gap: 4px; font-size: 12.5px; font-style: italic; color: #8696a0; margin-bottom: 2px; white-space: nowrap; }
     /* reply quote */
     .wa-quote { display: block; margin: -1px -5px 6px -6px; padding: 7px 10px 8px 12px; border-radius: 10px;
                 background: rgba(11,20,26,.05); border-left: 4px solid var(--qc); font-size: 13.5px; line-height: 1.3; white-space: normal; }
@@ -1920,7 +1922,7 @@ kantong sampah 😭
       { fromNotification: 1, type: "WhatsApp Video", dir: "in", time: "Yesterday" },
       { name: "Mama", type: "WhatsApp Audio", dir: "in", missed: true, time: "Tuesday" },
       { name: "Mama", type: "WhatsApp Audio", dir: "out", count: 2, time: "Tuesday" },
-      { name: "Kak Rumi", type: "WhatsApp Audio", dir: "in", time: "Monday" },
+      { name: "Kak Eron", type: "WhatsApp Audio", dir: "in", time: "Monday" },
       { name: "Bang Jae", type: "mobile", dir: "out", time: "Sunday" },
     ],
     // Safari: Privacy Report number and the Recent Searches list (newest first).
@@ -2155,6 +2157,9 @@ kantong sampah 😭
       //     members: [{ name: "Niel", avatar: "🐰.jpg" }, { name: "Bang Jae" }],
       //     { from: "them", sender: "Niel", text: "..." }
       //     reply: { from: "them", sender: "Niel", text: "..." }
+      //   Text messages: links (https://…) turn blue by themselves; forwarded: true
+      //   adds the "Forwarded" label.
+      //   The chat list shows each chat's last message unless message: is set.
       //   Extras for text messages:
       //     reply: { from: "me", text: "the message being replied to" }
       //     edited: true   (shows "Edited" next to the time)
@@ -2253,54 +2258,101 @@ kantong sampah 😭
             { from: "them", text: "Senang berbisnis dengan anda", time: "16.19" },
           ],
         },
-        { name: "Heaven on Earth 🌷", group: true, sender: "Niel", deleted: true, time: "06.54", muted: true,
+        // Group: Hesa with Niel and Rafael (Hesa's close friend). The chat list shows
+        // the last message by itself.
+        { name: "Heaven on Earth 🌷", group: true, time: "06.55", muted: true,
           members: [
-            { name: "Om Isaac", avatar: "media/isaac.jpg" },
             { name: "Niel", avatar: "🐰.jpg" },
-            { name: "Bang Jae ‼️" },
-            { name: "Kak Rumi" },
+            { name: "Rafael" },
           ],
           history: [
-            { day: "Monday", from: "them", sender: "Kak Rumi", text: "gimana presentasinya tadi?", time: "15.40" },
-            { from: "them", sender: "Om Isaac", text: "lancar kok kak, aman", time: "15.55" },
-            { from: "them", sender: "Niel", text: "syukurlahh", reply: { from: "them", sender: "Om Isaac", text: "lancar kok kak, aman" }, time: "16.32" },
-            { from: "them", sender: "Kak Rumi", text: "akhirnya selesai juga🙌🏻", time: "16.49" },
-            { from: "me", text: "selamat yaa 🫶🏻", time: "17.48" },
-            { day: "Yesterday", from: "them", sender: "Bang Jae ‼️", text: "Udah bangun ?", time: "05.22" },
-            { from: "them", sender: "Niel", text: "Stretching", time: "05.22" },
-            { from: "me", text: "udah bang", time: "05.28" },
-            { day: "Today", from: "them", sender: "Bang Jae ‼️", text: "Bangun yuk", time: "04.45" },
-            { from: "them", sender: "Niel", text: "Stretching", time: "04.46" },
+            { day: "Wednesday", from: "them", sender: "Rafael", text: "guys besok kelas pak budi masuk ga?", time: "20.11" },
+            { from: "them", sender: "Niel", text: "masuk lah, kuis kan", time: "20.12" },
+            { from: "them", sender: "Rafael", text: "HAH KUIS?", time: "20.12" },
+            { from: "me", text: "makanya baca grup kelas raf", time: "20.14" },
+            { from: "them", sender: "Rafael", text: "grup kelas isinya stiker semua anjir", time: "20.14" },
+            { from: "them", sender: "Niel", text: "gue udah bikin rangkuman, nanti gue kirim", time: "20.15" },
+            { from: "them", sender: "Niel", type: "doc", name: "Rangkuman Tax Accounting.pdf", pages: 4, size: "1,2 MB", time: "20.31" },
+            { from: "them", sender: "Rafael", text: "NIEL PENYELAMAT HIDUP GUE 😭🙏🏻", time: "20.32" },
+            { from: "me", text: "makasih nieltut 🫶🏻", time: "20.40" },
+            { day: "Yesterday", from: "them", sender: "Rafael", text: "makan siang dimana nih", time: "12.03" },
+            { from: "me", text: "kantin fakultas aja", time: "12.05" },
+            { from: "them", sender: "Niel", text: "gue nyusul, masih di perpus", time: "12.06" },
+            { from: "them", sender: "Rafael", text: "hes lu kenapa senyum-senyum mulu liat hp dari tadi", time: "13.20" },
+            { from: "them", sender: "Niel", text: "NAH KAN BUKAN GUE DOANG YANG NOTICE", time: "13.21" },
+            { from: "me", text: "apaan sih kalian berdua", time: "13.25" },
+            { from: "them", sender: "Rafael", text: "ciee salting 🤭", time: "13.25" },
+            { day: "Today", from: "them", sender: "Rafael", text: "pagi guys 🌞", time: "06.40" },
             { from: "them", sender: "Niel", type: "deleted", time: "06.54" },
-          ],
-          script: [
-            { from: "them", sender: "Om Isaac", text: "ada yang mau nitip kopi?", delay: 1500 },
-            { from: "them", sender: "Bang Jae ‼️", text: "aku 1 ya" },
-            { from: "me", text: "aku juga dong, yang biasa" },
-            { from: "them", sender: "Om Isaac", text: "okee" },
+            { from: "them", sender: "Rafael", text: "niel ngapus apaan tuh 👀", time: "06.55" },
           ],
         },
-        { name: "Mama", message: "E-Tiket Pesawat Keberangkatan.pdf • 2 pages", media: "doc", sent: true, time: "Tuesday",
+        // Mama
+        { name: "Mama", time: "Yesterday",
           history: [
-            { day: "Tuesday", from: "them", text: "kak, tolong cariin tiket pesawat ke Jakarta ya", time: "12.40" },
-            { from: "me", text: "iya ma, ini pilihannya", time: "12.52" },
-            { from: "me", type: "photo", src: "media/flight-options.jpg", time: "13.07" },
-            { from: "them", type: "call", call: "voice", missed: true, time: "15.15" },
-            { from: "me", text: "kenapa ma", time: "15.24" },
-            { from: "me", type: "doc", name: "E-Tiket Pesawat Keberangkatan.pdf", pages: 2, size: "51 KB",
-              preview: "media/eticket-preview.jpg", time: "19.24" },
+            { day: "Sunday", from: "them", text: "kak, udah makan belum?", time: "08.03" },
+            { from: "me", text: "udah ma barusan", time: "09.41" },
+            { from: "them", text: "makan apa?", time: "09.42" },
+            { from: "me", text: "nasi goreng depan kos hehe", time: "09.45" },
+            { from: "them", text: "jangan keseringan makan gorengan kak, masak sendiri sekali-kali", time: "09.46" },
+            { from: "me", text: "iyaa maa 🙏🏻", time: "09.50" },
+            { day: "Monday", from: "them", forwarded: true, text: "Tips sehat pagi hari: minum 1 gelas air putih hangat setelah bangun tidur 💧 Baik untuk pencernaan. Sebarkan ke keluarga tercinta 🙏🏻", time: "12.20" },
+            { from: "them", text: "https://vt.tiktok.com/ZSj8kP2xQ/", time: "12.21" },
+            { from: "them", text: "kak liat ni kucingnya mirip si oyen 😂", time: "12.21" },
+            { from: "me", text: "HAHAHA mirip bgt ma", time: "13.05" },
+            { day: "Tuesday", from: "them", type: "call", call: "voice", missed: true, time: "15.15" },
+            { from: "me", text: "kenapa ma? tadi aku lagi kelas", time: "15.24" },
+            { from: "them", text: "gapapa kak, mama cuma kangen 🥺", time: "15.27" },
+            { from: "them", text: "uang bulanan udah mama transfer ya", time: "15.28" },
+            { from: "them", type: "photo", src: "media/whatsapp/bukti-transfer-mama.jpg", time: "15.29" },
+            { from: "me", text: "makasih mama sayang ❤️", time: "15.40" },
+            { from: "them", text: "dihemat ya kak, jangan jajan online terus", time: "15.41" },
+            { from: "me", text: "hehe iya ma", time: "15.41" },
+            { day: "Yesterday", from: "them", text: "https://vt.tiktok.com/ZSj9Lm4bR/", time: "19.02" },
+            { from: "them", text: "resep ini kak, gampang bikinnya. cobain di kos", time: "19.02" },
+            { from: "me", text: "nanti aku coba ma", time: "20.15" },
+            { from: "them", text: "kapan pulang kak? mama kangen", time: "20.16" },
+            { from: "me", text: "nanti pas libur semester ya ma 🫶🏻", time: "20.30" },
+            { from: "them", text: "iya, jaga kesehatan ya nak", time: "20.31" },
           ],
         },
-        { name: "Kak Rumi", message: "ini kakk", media: "photo", sent: true, time: "Monday", status: true,
+        // Kak Eron — Bang Jae's girlfriend
+        { name: "Kak Eron", time: "Yesterday", status: true,
           history: [
-            { day: "Monday", from: "them", text: "dek, fotoin yang kemarin dong", time: "10.02" },
-            { from: "me", type: "photo", src: "download - 2026-10-29T181441.295.jpg", text: "ini kakk", time: "10.15" },
+            { day: "Monday", from: "them", text: "hesaa, kakak boleh minta tolong ga?", time: "10.02" },
+            { from: "me", text: "boleh kak, kenapa?", time: "10.10" },
+            { from: "them", text: "minggu depan bang jae ulang tahun, kakak bingung mau kasih kado apa 😭", time: "10.11" },
+            { from: "me", text: "parfum aja kak, parfumnya udah mau abis tuh", time: "10.14" },
+            { from: "them", text: "SERIUS? yang mana?", time: "10.14" },
+            { from: "me", text: "nanti aku fotoin pas pulang ke rumah ya kak", time: "10.16" },
+            { from: "them", text: "makasih adek ipar kesayangan 🥹", time: "10.16" },
+            { from: "me", text: "masih calon kak wkwk", time: "10.17" },
+            { from: "them", text: "doain aja 🤭", time: "10.17" },
+            { day: "Yesterday", from: "them", text: "hes, bang jae udah pulang belum? chat kakak ga dibales dari siang", time: "19.20" },
+            { from: "me", text: "belum kak, katanya lembur", time: "19.25" },
+            { from: "them", text: "pantesan 😮‍💨 yaudah makasih ya dek", time: "19.26" },
+            { from: "me", text: "nanti aku omelin kak 😤", time: "19.27" },
+            { from: "them", text: "HAHAHA iya omelin aja", time: "19.27" },
           ],
         },
-        { name: "Bang Jae", message: "okee makasih", sent: true, time: "02/10/26",
+        // Bang Jae — Hesa's brother
+        { name: "Bang Jae", time: "Yesterday",
           history: [
-            { day: "02/10/26", from: "them", text: "dek, uangnya udah abang transfer ya", time: "19.30" },
-            { from: "me", text: "okee makasih", time: "19.41" },
+            { day: "Sunday", from: "them", text: "dek, charger laptop abang lu bawa ya?", time: "14.02" },
+            { from: "me", text: "ehehe iya bang", time: "14.20" },
+            { from: "them", text: "BALIKIN", time: "14.20" },
+            { from: "me", text: "nanti pas pulang bang", time: "14.21" },
+            { from: "them", text: "terus abang kerja pake apa dek 😭", time: "14.21" },
+            { from: "me", text: "pinjem temen lah bang", time: "14.23" },
+            { from: "them", text: "adek siapa sih ini", time: "14.23" },
+            { day: "Yesterday", from: "them", text: "dek, jangan bilang mama ya abang pulang telat terus", time: "21.10" },
+            { from: "me", text: "bayar dulu 😋", time: "21.12" },
+            { from: "them", text: "dasar adek durhaka", time: "21.12" },
+            { from: "them", text: "50rb", time: "21.13" },
+            { from: "me", text: "deal", time: "21.13" },
+            { from: "them", text: "udah abang transfer ya", time: "21.15" },
+            { from: "me", text: "okee makasih abangku sayang 🫶🏻", time: "21.16" },
+            { from: "me", text: "btw kak eron nyariin tuh, bales chatnya", time: "21.16" },
           ],
         },
       ],
@@ -3507,14 +3559,27 @@ kantong sampah 😭
       const WA = CONFIG.whatsapp;
       const lockNotifs = CONFIG.notifications.map((n, i) => ({ ...n, ...saved[i] }));
       // live: messages that arrived as pop-up notifications (CONFIG.live) before the chat was opened
+      // the chat list preview comes from the chat's last message, unless message: is set
+      const fromLast = (c, history) => {
+        const last = history[history.length - 1];
+        if (!last) return {};
+        const media = { photo: "photo", voice: "mic", doc: "doc", call: last.call === "video" ? "video" : "call" }[last.type] || null;
+        const message = last.type === "photo" ? (last.text || "Photo") : last.type === "voice" ? (last.duration || "Voice message")
+          : last.type === "doc" ? [last.name, last.pages && `${last.pages} pages`].filter(Boolean).join(" • ")
+          : last.type === "call" ? callTitle(last) : last.text || "";
+        return { message, media, sent: last.from === "me", deleted: last.type === "deleted",
+                 sender: c.group && last.from === "them" ? last.sender : null };
+      };
       const chats = WA.chats.map(c => {
-        if (c.fromNotification == null) return { ...c, history: [...(c.history || []), ...(c.live || [])] };
+        if (c.fromNotification == null) {
+          const history = [...(c.history || []), ...(c.live || [])];
+          return { ...(c.message == null ? fromLast(c, history) : {}), ...c, history };
+        }
         const n = lockNotifs[c.fromNotification];
         const notifMsg = c.includeNotification === false ? [] : [{ day: "Today", from: "them", text: n.message, time: c.baseTime ?? c.time }];
         const history = [...(c.history || []), ...notifMsg, ...(c.live || [])];
         // without the lock screen message, the list shows the chat's own last message
-        const last = history[history.length - 1];
-        const own = c.includeNotification === false ? { message: last?.text || "", sent: last?.from === "me" } : { message: n.message };
+        const own = c.includeNotification === false ? fromLast(c, history) : { message: n.message };
         return { name: n.name, avatar: n.avatar, ...own, ...c, history };
       });
       const ic = {
@@ -3690,7 +3755,9 @@ kantong sampah 😭
           const qColor = mine ? "" : c.group ? ` style="--qc:${member(m.reply.sender).color}"` : "";
           q = `<span class="wa-quote q-${mine ? "me" : "them"}"${qColor}><b>${esc(qName)}</b><span>${esc(m.reply.text || "")}</span></span>`;
         }
-        return q + esc(m.text || "") + meta(m);
+        const fwdLabel = m.forwarded ? `<span class="wa-fwdlabel"><svg width="13" height="11" viewBox="0 0 15 13" fill="#8696a0"><path d="M8.5 0 15 6l-6.5 6V8.3C4 8.3 1.6 9.8 0 13 .6 8 3 4.4 8.5 3.7Z"/></svg>Forwarded</span>` : "";
+        const linked = esc(m.text || "").replace(/(https?:\/\/[^\s<]+)/g, '<span class="wa-link">$1</span>');
+        return fwdLabel + q + linked + meta(m);
       };
       // consecutive messages from the same person on the same day form one run
       const sameRun = (a, b) => a && b && a.from === b.from && a.day === b.day && (a.sender || "") === (b.sender || "");
