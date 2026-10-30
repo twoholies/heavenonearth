@@ -400,29 +400,6 @@
   <div class="home-bar"></div>
 </div>
 
-<!--
-  ===== APP SCREENS =====
-  To give an app its own screen, add a <template> here whose data-app is the
-  app's name exactly as it appears under its icon (e.g. "WhatsApp", "Notes",
-  "Phone"). Put any HTML/CSS inside it. Apps without a template show a
-  placeholder. The screen starts with a white background and a dark status
-  bar; for a dark screen add data-status="light" so the status bar turns white.
-
-  Example (remove the comment marks around it to try it):
-
-  <template data-app="Notes">
-    <style>
-      .notes { padding: 60px 20px; font-size: 16px; }
-      .notes h1 { font-size: 32px; margin-bottom: 12px; }
-    </style>
-    <div class="notes">
-      <h1>Notes</h1>
-      <p>Grocery list...</p>
-    </div>
-  </template>
--->
-
-<!-- WhatsApp: the chat list itself is set in CONFIG.whatsapp below -->
 <template data-app="WhatsApp">
   <style>
     .wa { position: relative; height: 100%; display: flex; flex-direction: column; background: #fff; color: #0b141a;
@@ -1816,7 +1793,7 @@
   const CONFIG = {
     wallpaper: "download - 2026-10-29T181441.295.jpg",
     carrier: "TSEL",
-    deviceName: "thefirstfruitmark 🐰",
+    deviceName: "Hesa's iPhone",
     battery: 15,
     lowPower: true,          // yellow battery in the status bar
     focus: "Personal",
@@ -1826,7 +1803,7 @@
     date: null,
     // Home screen
     worldClock: { city: "CUP", timeZone: "America/Los_Angeles" },
-    weather: { city: "Pekanbaru", temp: 25, condition: "Rain", hi: 31, lo: 24 },
+    weather: { city: "Jakarta", temp: 25, condition: "Rain", hi: 31, lo: 24 },
     settingsBadge: 4,
     // Notes app. Each note's text: the first line is its title; a line
     // starting with "[ ] " is a checklist item, "[x] " a ticked one;
@@ -1884,8 +1861,8 @@ kantong sampah 😭
     ],
     // Settings page (nothing opens; only the Airplane Mode switch flips).
     settings: {
-      name: "mist bell", initial: "b", suggestions: 3, update: "Update to iOS 27.0.1",
-      wifi: "SITOHANG", bluetooth: "On",
+      name: "Hesa", initial: "H", suggestions: 3, update: "Update to iOS 27.0.1",
+      wifi: "twoholies", bluetooth: "On",
     },
     // Messages (SMS), newest first. Each conversation's last message is its
     // preview (or set preview:). day: starts a new "Text Message · …" label.
@@ -1915,8 +1892,8 @@ kantong sampah 😭
     // Isaac's / Niel's lock screen name and photo.
     phone: [
       { fromNotification: 0, type: "WhatsApp Audio", dir: "in", missed: true, time: "22.05" },
-      { name: "Bengkel Motor Jaya", type: "WhatsApp Audio", dir: "in", missed: true, time: "09.06" },
-      { name: "Bengkel Motor Jaya", type: "WhatsApp Audio", dir: "in", time: "08.21" },
+      { name: "Laundry Angkasa", type: "WhatsApp Audio", dir: "in", missed: true, time: "09.06" },
+      { name: "Laundry Angkasa", type: "WhatsApp Audio", dir: "in", time: "08.21" },
       { fromNotification: 0, type: "WhatsApp Video", dir: "out", time: "Yesterday" },
       { fromNotification: 1, type: "WhatsApp Audio", dir: "in", count: 3, time: "Yesterday" },
       { fromNotification: 1, type: "WhatsApp Video", dir: "in", time: "Yesterday" },
@@ -1929,76 +1906,75 @@ kantong sampah 😭
     safari: {
       trackers: 28,
       recent: [
-        "haechan",
-        "berapa lama durasi film clay face",
-        "singkatan nama winter aespa",
-        "heteronormatif adalah",
-        "popol kupa itu cowok atau cewek",
-        "what is one shoot",
-        "berapa jumlah limit cerita di ao3",
-        "meletakkan barang pada bahu disebut apa",
-        "speedometer",
-        "ao3",
+        "cara deketin orang yang lebih tua dari kita",
+        "obat insomnia",
+        "dimana beli vibrator yang bagus",
+        "apakah pake butt plug sakit?",
+        "tips muasin lelaki yang lebih dewasa",
+        "cara masak rendang",
+        "genesis airi kelahiran tahun berapa",
+        "kasus penyanyi pendatang",
+        "Isaac LinkedIn",
+        "apakah video call di omeTV aman?",
       ],
     },
     // X. Avatars are optional (a coloured letter is shown without one).
     x: {
       me: { name: "hesa", avatar: null },
       feed: [
-        { name: "Arung", handle: "@tulisanarung", time: "4h", image: "media/photos/screenshot-whatsapp.jpg", made: true,
-          text: "Sopan gak sih mereka saling salting di roomchat orang yang habis broken heart? 💔",
-          replies: 19, reposts: 1, likes: 5, views: "2,9K" },
-        { name: "vamp †", handle: "@gh0stlyvamp", time: "17h", gothic: "Let me love you to death", nameWeight: 400,
+        { name: "katanya fans", handle: "@akulahfansnomorsatu", time: "4h", image: "media/photos/screenshot-whatsapp.jpg", made: true,
+          text: "NCT DREAM WILL HAVE A COMEBACK WITH NEW ALBUM "DREAMAFTERDREAM" DON'T FORGET TO STAY TUNE!",
+          replies: 822, reposts: 2K, likes: 12K, views: "18,9K" },
+        { name: "Ilham", handle: "@bocilwindh", time: "17h", gothic: "First death♥️", nameWeight: 400,
           replies: 8, reposts: 482, likes: 1300, views: "23K" },
-        { name: "b", handle: "@kelincigemoy", time: "1h", text: "Udh gua bilangin jangan begadang, tetep aja begadang 😭",
-          quote: { name: "Human", handle: "@driftinghuman", time: "5h",
-                   text: "Sebenernya cewe kalau bilang \"terserah\" itu udah punya jawaban, cuma pengen lo nebak aja. Kalau lo nebaknya bener, dia seneng banget. Kalau salah, ya siap-siap aja 🙂" },
+        { name: "ana", handle: "@twoholies", time: "1h", text: "enih punya ak ges",
+          quote: { name: "mahae", handle: "@mahaeism", time: "5h",
+                   text: "Mark love Haechan" },
           replies: 41, reposts: 210, likes: 3400, views: "88K" },
         { name: "mahae daily", handle: "@mahaedaily", time: "2h", text: "reminder buat minum air putih dan jangan lupa makan ya kalian semua 🤍",
           replies: 3, reposts: 56, likes: 420, views: "9,1K" },
       ],
       notifications: [
-        { type: "like", avatars: 8, who: "fl0werryy💚💚💚💚💚", others: 75, time: "4m",
-          text: "yang belum baca sabar\" ya ternyata ao3 nya lagi down maintenance 😭" },
-        { type: "like", avatars: 8, who: "`Amaa🍉", others: 82, time: "4m", thumb: true,
-          text: "a markhyuck | mahae one shoot\n\nread tags | 8k words" },
-        { type: "like", avatars: 1, who: "piew 🐻", time: "8m",
-          text: "sumpah.. sesak nafas.. tolong ya guys kalo kalian nemu interactive au apalagi authornya ngoding sendiri tuh jangan lupa kasih apresiasi soalnya engap banget cuyy 😵‍💫✋🏻" },
-        { type: "repost", avatars: 8, who: "bintangsenja", others: 12, time: "13m", thumb: true,
-          text: "a markhyuck | mahae one shoot\n\nread tags | 8k words" },
+        { type: "like", avatars: 8, who: "heavens1", others: 75, time: "4m",
+          text: "MAHAE BANGSA BESAR" },
+        { type: "like", avatars: 8, who: "heavens2", others: 82, time: "4m", thumb: true,
+          text: "enaknya di atas atau di bawah?" },
+        { type: "like", avatars: 1, who: "heavens3", time: "8m",
+          text: "penasaran banget dehh" },
+        { type: "repost", avatars: 8, who: "heavens4", others: 12, time: "13m", thumb: true,
+          text: "enakanya di atas atau di bawah?" },
       ],
       unreadNotifications: 2,
       // DMs: messages from "me" (Hesa) or "them". link: true shows a link card.
       chats: [
-        { name: "mahae enjoyer 🌙", handle: "@mahaenjoyer", time: "3w", messages: [
-          { day: "3 weeks ago", from: "them", text: "kak boleh minta link au yang kemarin ga? kelewat aku 🥺", time: "21.02" },
-          { from: "me", text: "boleh dongg", time: "21.10" },
-          { from: "me", link: true, text: "a markhyuck | mahae one shoot", sub: "x.com/hesa/status/…", time: "21.10" },
+        { name: "Devon", handle: "@highandlow", time: "3w", messages: [
+          { day: "3 weeks ago", from: "them", text: "Hi, boleh kenalan ga?", time: "21.02" },
+          { from: "me", text: "bolehh", time: "21.10" },
         ] },
-        { name: "readers acc", handle: "@readersacc", time: "4w", messages: [
-          { day: "4 weeks ago", from: "them", text: "kak au nya bagus bangettt aku nangis bacanya 😭😭", time: "23.41" },
-          { from: "them", text: "chapter selanjutnya kapan kak??", time: "23.41" },
-          { from: "me", text: "huhu makasih banyak udah baca 🥹", time: "23.58" },
-          { from: "me", text: "makasih kembaliii stay tuned terus yaa 🫶🏻", time: "23.58" },
+        { name: "Rocky", handle: "@fallinw", time: "4w", messages: [
+          { day: "4 weeks ago", from: "them", text: "Kak, kamu cantik banget. Udah punya cowo belum?", time: "23.41" },
+          { from: "them", text: "haha makasihh aku belum punya cowo sih", time: "23.41" },
+          { from: "me", text: "Masa sih secakep ini ga punya cowo? Kamu dom mana kak?", time: "23.58" },
+          { from: "me", text: "Jakarta", time: "23.58" },
         ] },
       ],
       suggested: [
-        { name: "Veez", verified: true }, { name: "", handle: "@nightcafe_" }, { name: "Bebeb 🍳 | #MyFriend💌 | fan acc" },
-        { name: "MAHAE BASE AU" }, { name: "Mark Voting Squad" }, { name: "urfvrtcaca" },
+        { name: "Kanala", verified: true }, { name: "Bibi", handle: "@biancara" }, { name: "Oliver" },
+        { name: "Lucian" }, { name: "Orwell" }, { name: "Evander" },
       ],
     },
     // Mail inbox, newest first. The first lines of body show as the preview.
     // attachment: "File.pdf" adds a file at the bottom of the message.
     mail: {
       title: "Inbox Gmail",
-      account: "hesa.hoe@gmail.com",
+      account: "hesa.adrian@gmail.com",
       messages: [
-        { from: "Om Isaac", email: "isaac.dl@gmail.com", time: "22.41", date: "Today at 22.41", unread: true,
-          subject: "foto kemarin", attachment: "IMG_2210.HEIC",
-          body: "ini fotonya ya, yang di cafe kemarin. maaf baru sempat kirim, kerjaan lagi numpuk banget minggu ini.\n\njangan begadang terus ya.\n\n- Isaac" },
+        { from: "Om Isaac", email: "isaac.gabriel@gmail.com", time: "22.41", date: "Today at 22.41", unread: true,
+          subject: "Form Internship", attachment: "IMG_2210.HEIC",
+          body: "Saya tahu kamu pasti nolak untuk dapat surat rekomendasi dari saya. Tapi, kalau kamu berubah pikiran silahkan isi formnya, Hesa." },
         { from: "Nusa Air", email: "no-reply@nusaair.co.id", time: "Yesterday", date: "Yesterday at 19.20", unread: true,
           subject: "E-Ticket Keberangkatan – Kode Booking HSW7QE",
-          body: "Terima kasih telah terbang bersama Nusa Air.\n\nKode Booking: HSW7QE\nRute: Pekanbaru (PKU) → Jakarta (CGK)\nPenerbangan: NA 287 · 07:40 – 09:25\nPenumpang: 1 Dewasa\n\nSilakan lakukan check-in online paling lambat 2 jam sebelum keberangkatan. E-ticket terlampir.",
+          body: "Terima kasih telah terbang bersama Nusa Air.\n\nKode Booking: HSW7QE\nRute: Jakarta (CGK) → Bali (DPS)\nPenerbangan: NA 287 · 07:40 – 09:25\nPenumpang: 2 Dewasa\n\nSilakan lakukan check-in online paling lambat 2 jam sebelum keberangkatan. E-ticket terlampir.",
           attachment: "E-Tiket Pesawat Keberangkatan.pdf" },
         { from: "Akademik Fakultas Ekonomi", email: "akademik@feb.ac.id", time: "Tuesday", date: "Tuesday at 09.12",
           subject: "Jadwal UTS Semester Ganjil 2026/2027",
@@ -2024,7 +2000,7 @@ kantong sampah 😭
           body: "Transfer Anda telah berhasil.\n\nNominal: Rp 60.000\nTujuan: Ruang Cerita, Edukasi\nWaktu: 20/10/2026 12:02 WIB\n\nJangan berikan PIN atau kode OTP kepada siapa pun." },
       ],
     },
-    // FaceTime cards. fromNotification: 0 uses Isaac's name and photo from
+    // FaceTime cards. fromNotification: 0 uses Om Isaac's name and photo from
     // the lock screen (so it follows any rename); or give name and photo.
     facetime: [
       { fromNotification: 0, label: "Suggested" },
@@ -2043,12 +2019,12 @@ kantong sampah 😭
     spotify: {
       avatar: null,
       library: [
-        { type: "playlist", title: "Liked Songs", sub: "Playlist • b", liked: true, pinned: true },
-        { type: "album", title: "The Firstfruit - The 1st Album", sub: "Album • Mark Lee", image: null },
+        { type: "playlist", title: "Liked Songs", sub: "Playlist • Hesa", liked: true, pinned: true },
+        { type: "album", title: "AFTERHOURS - The 1st Album", sub: "Album • LØREN", image: null },
         { type: "artist", title: "Keenan Te", image: null },
-        { type: "artist", title: "HAECHAN", image: null },
+        { type: "artist", title: "AIRI", image: null },
         { type: "artist", title: "The Weeknd", image: null },
-        { type: "artist", title: "Mark Lee", image: null },
+        { type: "artist", title: "LØREN", image: null },
       ],
       // the song in the mini player; audio is optional (silent without it)
       nowPlaying: { title: "Collide (feat. Tyga)", artist: "Justine Skye, Tyga", cover: null,
@@ -2103,7 +2079,7 @@ kantong sampah 😭
     notifications: [
       { name: "Om Isaac", avatar: "media/isaac.jpg", message: "Sorry for bothering you, Hesa", when: "now", show: false },
       { name: "Niel",  avatar: "🐰.jpg", message: "Hi", when: "now", show: false },
-      { app: "reminders", name: "tugas financial accounting", message: "Today, 23.59", when: "now" },
+      { app: "Reminders for Heaven's angels", name: "Hint: Baca desc dengan baik, lalu nonton MV 1999 dan CRZY", message: "Today, 23.59", when: "now" },
     ],
     // Pop-up notifications while the page is open, in order.
     //   after: seconds to wait. start: "open" (default, counts from opening the
@@ -2117,9 +2093,9 @@ kantong sampah 😭
     //   sound: false = no chime. stay: seconds a banner stays (default 5).
     // Act 1: Om Isaac's morning messages, 5, 10 and 15 s after the phone is unlocked.
     live: [
-      { start: "unlock", after: 5,  app: "whatsapp", chat: 0, message: "Hesa, sudah bangun?", time: "07.15" },
-      { start: "unlock", after: 10, app: "whatsapp", chat: 0, message: "Maaf, saya harus pergi lebih awal dan tidak menunggu kamu karena ada urusan mendadak.", time: "07.15" },
-      { start: "unlock", after: 15, app: "whatsapp", chat: 0, message: "Jika sudah bangun tolong kabari saya, ya.", time: "07.16" },
+      { start: "unlock", after: 3,  app: "whatsapp", chat: 0, message: "Hesa, sudah bangun?", time: "07.15" },
+      { start: "unlock", after: 6, app: "whatsapp", chat: 0, message: "Maaf, saya harus pergi lebih awal dan tidak menunggu kamu karena ada urusan mendadak.", time: "07.15" },
+      { start: "unlock", after: 9, app: "whatsapp", chat: 0, message: "Jika sudah bangun tolong kabari saya, ya.", time: "07.16" },
     ],
     // WhatsApp chat list, top to bottom.
     //   avatar: a photo file, or leave it out for the default person icon
@@ -2208,6 +2184,33 @@ kantong sampah 😭
             { from: "them", text: "Saya kirimin sarapan kesukaan kamu, ya? Pasti kamu masih di atas kasur" },
             { from: "me",   text: "sok tau huuu" },
             { from: "them", text: "Saya tahu kebiasaan kamu, Hesa." },
+            { from: "them", text: "Kamu suka tidur tanpa pakaian dalam sampai saya harus nahan diri setiap tidur sama kamu haha" },
+            { from: "me", text: "HEHH 😭" },
+            { from: "me", text: "jangan ngetik aneh aneh dehhh" },
+            { from: "them", text: "Aneh bagaimana? Kan benar yang saya bilang, sayang" },
+            { from: "them", text: "Saya jadi kangen kamu. Boleh saya minta foto kamu nggak?" },
+            { from: "me", text: "iya sih.. ada benernya", reply: { from: "them", text: "Aneh bagaimana? Kan benar yang saya bilang, sayang" } },
+            { from: "me", text: "boleh om, tapi bayar 1 pap = 5jt 🫢" },
+            { from: "them", text: "Okay, tunggu sebentar." },
+            { from: "them", type: "photo", src: "picture.jpg" },
+            { from: "me", text: "busettt banyak banget ihh kaya sugar daddy aku jadinya 😭" },
+            { from: "them", text: "Not a sugar daddy." },
+            { from: "them", text: "But, your future husband, no?" },
+            { from: "me", text: "DIEM DEH OM DARI KEMARIN BAHAS HUSBAND HUSBAND TERUSS 😡🥱" },
+            { from: "them", text: "Hahaha kamu lucu sekali, Hesa" },
+            { from: "them", text: "Jadi, mana papnya sayang?" },
+            { from: "me", text: "wait, give me a minutee" },
+            { from: "them", text: "No need to cover or make up yourself, baby. Saya suka foto kamu apa adanya" },
+            { from: "me", text: "iyaaa ih sabar om bawel" },
+            { from: "them", text: "Alright, I'm waiting" },
+            { from: "me", type: "photo", src: "picture.jpg" },
+            { from: "them", text: "Sayang, kamu cantik banget." },
+            { from: "me", text: "mm coba aja ada om isa disini" },
+            { from: "me", text: "pasti udah bisa ngenakin aku" },
+            { from: "them", text: "Hm? What do you mean, Hesa?" },
+            { from: "me", type: "photo", src: "picture.jpg", text: "ini.." },
+            
+            
           ],
         },
         // Niel — history only (three days of chats).
@@ -2239,7 +2242,7 @@ kantong sampah 😭
             { from: "them", text: "HESA PUNYA SOMEONE?? SINCE WHEN??", time: "23.25" },
             { from: "me",  text: "tai", time: "23.26" },
             { from: "them", text: "CERITA SEKARANG", time: "23.26" },
-            { from: "me",  text: "ga jadi", time: "23.27" },
+            { from: "me",  text: "males ah", time: "23.27" },
             { from: "them", text: "HESA SUMPAH GUE OTW APART LU", time: "23.27" },
             { day: "Yesterday", from: "them", text: "hes", time: "16.12" },
             { from: "me",  text: "apa", time: "16.12" },
@@ -2252,10 +2255,10 @@ kantong sampah 😭
             { from: "them", text: "tf dulu kalo nggak gue kirim ke Om Om lu itu biar dia ilfeel 🫢", time: "16.16" },
             { from: "me",  text: "SEBUT BERAPAAAA", time: "16.16" },
             { from: "them", text: "500k hehe", time: "16.17" },
-            { from: "me",  text: "ini namanya pemerasan ya nieltut...", time: "16.17" },
+            { from: "me",  text: "ini namanya pemerasan ya nieltut anj...", time: "16.17" },
             { from: "them", text: "ini bisnis dekkk", time: "16.18" },
             { from: "me",  text: "DAH TU HAPUS SEKARANG", time: "16.18" },
-            { from: "them", text: "Senang berbisnis dengan anda", time: "16.19" },
+            { from: "them", text: "Senang berbisnis dengan anda sobatt", time: "16.19" },
           ],
         },
         // Group: Hesa with Niel and Rafael (Hesa's close friend). The chat list shows
@@ -3867,8 +3870,7 @@ kantong sampah 😭
       async function send() {
         if (!pendingReply || typing || !typed.textContent) return;
         const st = waState[chatIdx], myRun = run;
-        const msg = { ...pendingReply, day: "Today", time: now() };   // keeps reply:, edited:, …
-        delete msg.delay;
+        const msg = { day: "Today", from: "me", text: pendingReply.text, time: now() };
         pendingReply = null;
         typed.textContent = ""; setHasText();
         st.log.push(msg); st.step++;
