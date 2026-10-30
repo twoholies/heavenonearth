@@ -2094,8 +2094,9 @@ kantong sampah 😭
       },
     },
     // Newest first, like iOS. Names and messages can also be edited on the page.
-    // Isaac and Niel stay here even when hidden (show: false): their name,
-    // photo and message are used by WhatsApp, FaceTime and Phone.
+    // Isaac and Niel stay here even when hidden (show: false): their name and
+    // photo are used by WhatsApp, FaceTime and Phone, and their message is the
+    // last one in their WhatsApp chat (unless that chat has includeNotification: false).
     // app: "whatsapp" (default) or "reminders".
     notifications: [
       { name: "Om Isaac", avatar: "media/isaac.jpg", message: "Sorry for bothering you, Hesa", when: "now", show: false },
@@ -2112,10 +2113,11 @@ kantong sampah 😭
     //     name on the home screen, which tapping opens).
     //   time: "22.15" sets the message's time in the chat (default: the real time).
     //   sound: false = no chime. stay: seconds a banner stays (default 5).
-    // These two are examples — replace them with your own.
+    // Act 1: Om Isaac's morning messages.
     live: [
-      { after: 12, app: "whatsapp", chat: 0, message: "Hesa?", time: "22.10" },
-      { after: 25, app: "whatsapp", chat: 1, message: "kamu udah tidur belum?", time: "22.11" },
+      { after: 10,   app: "whatsapp", chat: 0, message: "Hesa, sudah bangun?", time: "07.15" },
+      { after: 12.5, app: "whatsapp", chat: 0, message: "Maaf, saya harus pergi lebih awal dan tidak menunggu kamu karena ada urusan mendadak.", time: "07.15" },
+      { after: 15,   app: "whatsapp", chat: 0, message: "Jika sudah bangun tolong kabari saya, ya.", time: "07.16" },
     ],
     // WhatsApp chat list, top to bottom.
     //   avatar: a photo file, or leave it out for the default person icon
@@ -2159,30 +2161,46 @@ kantong sampah 😭
       //   In script, Hesa's photos, voice notes and calls send by themselves
       //   (only her text replies use the keyboard). delay: 2000 waits 2 s first.
       //   Isaac's and Niel's lock screen message is added to the end of their
-      //   history automatically.
+      //   history automatically (includeNotification: false turns that off).
+      //   A chat with no messages yet is left out of the list until one arrives.
       // The texts below are examples — replace them with your own, and add as
       // many lines as you like.
       chats: [
-        { fromNotification: 0, time: "22.09", unread: 2, favorite: true,
-          history: [
-            { day: "Yesterday", from: "them", text: "Did you get home safe?", time: "23.40" },
-            { from: "me",   text: "Yes, just got in", time: "23.52" },
-            { from: "me",   type: "photo", src: "download - 2026-10-29T181441.295.jpg", text: "look what I found 🥹", time: "23.52" },
-            { from: "them", type: "voice", duration: "0:14", time: "23.55" },
-            { from: "them", text: "Good. Sleep well, Hesa", reply: { from: "me", text: "Yes, just got in" }, time: "23.56" },
-            { from: "me",   type: "call", call: "video", duration: "12 min", time: "23.58" },
-            { day: "Today", from: "them", type: "call", call: "voice", missed: true, time: "22.05" },
-            { from: "them", text: "Hesa, are you still awake?", time: "22.08", edited: true },
-          ],
+        // Om Isaac — morning scene. His first 3 messages arrive as pop-ups (see live:
+        // above); the rest plays when the chat is opened.
+        { fromNotification: 0, includeNotification: false, time: "07.16", unread: 0, favorite: true,
+          history: [],
           script: [
-            { from: "me",   text: "It's okay, I'm still up. What's wrong?" },
-            { from: "them", text: "Nothing really" },
-            { from: "them", type: "voice", duration: "0:09" },
-            { from: "them", text: "I just couldn't sleep and you were the first person I thought of" },
-            { from: "me",   text: "You know you can always text me" },
-            { from: "them", text: "Can I call you?" },
-            { from: "me",   text: "Give me a minute" },
-            { from: "me",   type: "call", call: "voice", duration: "15 min", delay: 2500 },
+            { from: "me",   text: "iys" },
+            { from: "me",   text: "aku baru bsngun" },
+            { from: "them", text: "Hi, baby" },
+            { from: "them", text: "Good morning" },
+            { from: "me",   text: "ish yang ninggalin aku dilarang baby baby ✋🏻" },
+            { from: "them", text: "Loh? Hahaha" },
+            { from: "them", text: "Kan saya sudah minta maaf barusan, jadi ga boleh nih panggil kamu baby?" },
+            { from: "me",   text: "NGGAK" },
+            { from: "me",   text: "aku bukan baby Om Isa!" },
+            { from: "them", text: "Oh, ya?" },
+            { from: "them", text: "Padahal kemarin kamu minta saya peluk tuh sambil dimanjain" },
+            { from: "them", text: "Terus tiap saya panggil baby selalu suka apalagi kalau udah tidur bareng" },
+            { from: "me",   text: "ISH ITU BEDAAA" },
+            { from: "them", text: "Ohh beda ya" },
+            { from: "them", text: "Bedanya kalau ada saya di dekat kamu tiap dipanggil baby pasti kamu gemeteran kan?" },
+            { from: "me",   text: "OM???" },
+            { from: "me",   text: "MASIH PAGI TOLONG YAA" },
+            { from: "me",   text: "huhh gatau ah aku ngambek!" },
+            { from: "them", text: "Sayang hahaha" },
+            { from: "them", text: "Saya harus apa biar kamu nggak ngambek, hm?" },
+            { from: "them", text: "Mau beli sesuatu? Keranjang shopee kamu pasti udah penuh kan, sini saya Checkout kan." },
+            { from: "me",   text: "NO, sana hush hushhh" },
+            { from: "me",   text: "aku gamau sama om jeleeeek" },
+            { from: "them", text: "Baby.." },
+            { from: "them", text: "Saya masih ada kerjaan kalau kamu gemes kaya gini, saya jadi nggak bisa fokus" },
+            { from: "me",   text: "bodoamat wleee" },
+            { from: "me",   text: "suruh siapa ninggalin aku 🙄" },
+            { from: "them", text: "Saya kirimin sarapan kesukaan kamu, ya? Pasti kamu masih di atas kasur" },
+            { from: "me",   text: "sok tau huuu" },
+            { from: "them", text: "Saya tahu kebiasaan kamu, Hesa." },
           ],
         },
         { fromNotification: 1, time: "22.07", unread: 1, favorite: true,
@@ -2480,6 +2498,7 @@ kantong sampah 😭
       </div>
     </div>`;
   function fireLive(n) {
+    n.fired = true;
     // a WhatsApp message also lands in its chat
     let onScreen = false;
     if (n.app === "whatsapp" && CONFIG.whatsapp.chats[n.chat]) {
@@ -3447,8 +3466,9 @@ kantong sampah 😭
       const chats = WA.chats.map(c => {
         if (c.fromNotification == null) return { ...c, history: [...(c.history || []), ...(c.live || [])] };
         const n = lockNotifs[c.fromNotification];
-        const history = [...(c.history || []), { day: "Today", from: "them", text: n.message, time: c.baseTime ?? c.time }, ...(c.live || [])];
-        return { name: n.name, avatar: n.avatar, message: n.message, ...c, history };
+        const notifMsg = c.includeNotification === false ? [] : [{ day: "Today", from: "them", text: n.message, time: c.baseTime ?? c.time }];
+        const history = [...(c.history || []), ...notifMsg, ...(c.live || [])];
+        return { name: n.name, avatar: n.avatar, message: c.includeNotification === false ? "" : n.message, ...c, history };
       });
       const ic = {
         ticks: `<svg width="17" height="11" viewBox="0 0 17 11" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6l3 3 6-7.5M7.5 8.5l.5.5 6-7.5" stroke="#8696a0"/></svg>`,
@@ -3489,6 +3509,7 @@ kantong sampah 😭
       let filter = "all";
       const renderList = () => {
         const shown = chats.map((c, i) => [listView(c, i), i])
+          .filter(([c, i]) => waState[i] || (chats[i].history || []).length || c.message || c.deleted)
           .filter(([c]) => filter === "unread" ? c.unread : filter === "favorites" ? c.favorite : filter === "groups" ? c.group : true);
         layer.querySelector("#waList").innerHTML = shown.map(([c, i]) => `
           <div class="wa-row" data-chat="${i}">
@@ -3646,6 +3667,8 @@ kantong sampah 😭
 
       async function play(myRun) {
         const c = chats[chatIdx], st = waState[chatIdx];
+        const me = chatIdx;
+        while (myRun === run && (CONFIG.live || []).some(n => n.app === "whatsapp" && n.chat === me && !n.fired)) await wait(400);
         while (myRun === run && st.step < (c.script || []).length) {
           const m = c.script[st.step];
           const isText = !m.type || m.type === "text";
