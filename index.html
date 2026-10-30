@@ -3867,7 +3867,8 @@ kantong sampah 😭
       async function send() {
         if (!pendingReply || typing || !typed.textContent) return;
         const st = waState[chatIdx], myRun = run;
-        const msg = { day: "Today", from: "me", text: pendingReply.text, time: now() };
+        const msg = { ...pendingReply, day: "Today", time: now() };   // keeps reply:, edited:, …
+        delete msg.delay;
         pendingReply = null;
         typed.textContent = ""; setHasText();
         st.log.push(msg); st.step++;
