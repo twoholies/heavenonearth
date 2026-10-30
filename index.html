@@ -1991,7 +1991,7 @@ kantong sampah 😭
       title: "Inbox Gmail",
       account: "hesa.hoe@gmail.com",
       messages: [
-        { from: "Isaac", email: "isaac.dl@gmail.com", time: "22.41", date: "Today at 22.41", unread: true,
+        { from: "Om Isaac", email: "isaac.dl@gmail.com", time: "22.41", date: "Today at 22.41", unread: true,
           subject: "foto kemarin", attachment: "IMG_2210.HEIC",
           body: "ini fotonya ya, yang di cafe kemarin. maaf baru sempat kirim, kerjaan lagi numpuk banget minggu ini.\n\njangan begadang terus ya.\n\n- Isaac" },
         { from: "Nusa Air", email: "no-reply@nusaair.co.id", time: "Yesterday", date: "Yesterday at 19.20", unread: true,
@@ -2098,7 +2098,7 @@ kantong sampah 😭
     // photo and message are used by WhatsApp, FaceTime and Phone.
     // app: "whatsapp" (default) or "reminders".
     notifications: [
-      { name: "Isaac", avatar: "media/isaac.jpg", message: "Sorry for bothering you, Hesa", when: "now", show: false },
+      { name: "Om Isaac", avatar: "media/isaac.jpg", message: "Sorry for bothering you, Hesa", when: "now", show: false },
       { name: "Niel",  avatar: "🐰.jpg", message: "Hi", when: "now", show: false },
       { app: "reminders", name: "tugas financial accounting", message: "Today, 23.59", when: "now" },
     ],
@@ -2193,15 +2193,15 @@ kantong sampah 😭
         },
         { name: "Heaven on Earth 🌷", group: true, sender: "Niel", deleted: true, time: "06.54", muted: true,
           members: [
-            { name: "Isaac", avatar: "media/isaac.jpg" },
+            { name: "Om Isaac", avatar: "media/isaac.jpg" },
             { name: "Niel", avatar: "🐰.jpg" },
             { name: "Bang Jae ‼️" },
             { name: "Kak Rumi" },
           ],
           history: [
             { day: "Monday", from: "them", sender: "Kak Rumi", text: "gimana presentasinya tadi?", time: "15.40" },
-            { from: "them", sender: "Isaac", text: "lancar kok kak, aman", time: "15.55" },
-            { from: "them", sender: "Niel", text: "syukurlahh", reply: { from: "them", sender: "Isaac", text: "lancar kok kak, aman" }, time: "16.32" },
+            { from: "them", sender: "Om Isaac", text: "lancar kok kak, aman", time: "15.55" },
+            { from: "them", sender: "Niel", text: "syukurlahh", reply: { from: "them", sender: "Om Isaac", text: "lancar kok kak, aman" }, time: "16.32" },
             { from: "them", sender: "Kak Rumi", text: "akhirnya selesai juga🙌🏻", time: "16.49" },
             { from: "me", text: "selamat yaa 🫶🏻", time: "17.48" },
             { day: "Yesterday", from: "them", sender: "Bang Jae ‼️", text: "Udah bangun ?", time: "05.22" },
@@ -2212,10 +2212,10 @@ kantong sampah 😭
             { from: "them", sender: "Niel", type: "deleted", time: "06.54" },
           ],
           script: [
-            { from: "them", sender: "Isaac", text: "ada yang mau nitip kopi?", delay: 1500 },
+            { from: "them", sender: "Om Isaac", text: "ada yang mau nitip kopi?", delay: 1500 },
             { from: "them", sender: "Bang Jae ‼️", text: "aku 1 ya" },
             { from: "me", text: "aku juga dong, yang biasa" },
-            { from: "them", sender: "Isaac", text: "okee" },
+            { from: "them", sender: "Om Isaac", text: "okee" },
           ],
         },
         { name: "Mama", message: "E-Tiket Pesawat Keberangkatan.pdf • 2 pages", media: "doc", sent: true, time: "Tuesday",
@@ -3777,12 +3777,13 @@ kantong sampah 😭
         live(i, msg) {
           Object.assign(chats[i], { message: WA.chats[i].message, time: WA.chats[i].time, unread: WA.chats[i].unread,
                                     newUnread: WA.chats[i].newUnread, history: [...(chats[i].history || []), msg] });
-          const onScreen = layer.isConnected && room.classList.contains("open") && chatIdx === i;
+          const shown = layer.contains(room);   // false once another app has replaced WhatsApp
+          const onScreen = shown && state === "app" && room.classList.contains("open") && chatIdx === i;
           if (onScreen) { addBubble(msg); WA.chats[i].newUnread = chats[i].newUnread = 0; }
-          if (layer.isConnected) renderList();
+          if (shown) renderList();
           return onScreen;
         },
-        open(i) { if (layer.isConnected) openChat(i); },
+        open(i) { if (layer.contains(room)) openChat(i); },
       };
     },
   };
