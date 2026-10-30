@@ -2113,11 +2113,11 @@ kantong sampah 😭
     //     name on the home screen, which tapping opens).
     //   time: "22.15" sets the message's time in the chat (default: the real time).
     //   sound: false = no chime. stay: seconds a banner stays (default 5).
-    // Act 1: Om Isaac's morning messages.
+    // Act 1: Om Isaac's morning messages, 10–15 s after the phone is unlocked.
     live: [
-      { after: 10,   app: "whatsapp", chat: 0, message: "Hesa, sudah bangun?", time: "07.15" },
-      { after: 12.5, app: "whatsapp", chat: 0, message: "Maaf, saya harus pergi lebih awal dan tidak menunggu kamu karena ada urusan mendadak.", time: "07.15" },
-      { after: 15,   app: "whatsapp", chat: 0, message: "Jika sudah bangun tolong kabari saya, ya.", time: "07.16" },
+      { start: "unlock", after: 10,   app: "whatsapp", chat: 0, message: "Hesa, sudah bangun?", time: "07.15" },
+      { start: "unlock", after: 12.5, app: "whatsapp", chat: 0, message: "Maaf, saya harus pergi lebih awal dan tidak menunggu kamu karena ada urusan mendadak.", time: "07.15" },
+      { start: "unlock", after: 15,   app: "whatsapp", chat: 0, message: "Jika sudah bangun tolong kabari saya, ya.", time: "07.16" },
     ],
     // WhatsApp chat list, top to bottom.
     //   avatar: a photo file, or leave it out for the default person icon
