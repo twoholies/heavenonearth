@@ -100,6 +100,7 @@
   }
   .avatar { position: relative; flex: none; width: 40px; height: 40px; }
   .avatar img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; pointer-events: none; }
+  .avatar .app-ic { display: block; width: 40px; height: 40px; border-radius: 9px; overflow: hidden; }
   .avatar .badge {
     position: absolute; right: -4px; bottom: -4px; width: 18px; height: 18px;
     border-radius: 5px; background: #25d366; display: grid; place-items: center;
@@ -2080,9 +2081,13 @@ kantong sampah 😭
       },
     },
     // Newest first, like iOS. Names and messages can also be edited on the page.
+    // Isaac and Niel stay here even when hidden (show: false): their name,
+    // photo and message are used by WhatsApp, FaceTime and Phone.
+    // app: "whatsapp" (default) or "reminders".
     notifications: [
-      { name: "Isaac", avatar: "media/isaac.jpg", message: "Sorry for bothering you, Hesa", when: "now" },
-      { name: "Niel",  avatar: "🐰.jpg", message: "Hi", when: "now" },
+      { name: "Isaac", avatar: "media/isaac.jpg", message: "Sorry for bothering you, Hesa", when: "now", show: false },
+      { name: "Niel",  avatar: "🐰.jpg", message: "Hi", when: "now", show: false },
+      { app: "reminders", name: "tugas financial accounting", message: "Today, 23.59", when: "now" },
     ],
     // WhatsApp chat list, top to bottom.
     //   avatar: a photo file, or leave it out for the default person icon
@@ -2241,9 +2246,12 @@ kantong sampah 😭
   try { saved = JSON.parse(localStorage.getItem(SAVE_KEY)) || []; } catch {}
   const notifs = CONFIG.notifications.map((n, i) => ({ ...n, ...saved[i] }));
 
-  $("notifs").innerHTML = notifs.map((n, i) => `
+  const remindersIcon = `<span class="app-ic"><svg width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" rx="9" fill="#fff"/>
+    <circle cx="11" cy="12" r="3.2" fill="#0a84ff"/><circle cx="11" cy="20" r="3.2" fill="#ff3b30"/><circle cx="11" cy="28" r="3.2" fill="#ff9f0a"/>
+    <path d="M17 12h14M17 20h14M17 28h14" stroke="#d1d1d6" stroke-width="1.6" stroke-linecap="round"/></svg></span>`;
+  $("notifs").innerHTML = notifs.map((n, i) => n.show === false ? "" : `
     <div class="notif">
-      <div class="avatar"><img src="${src(n.avatar)}" alt=""><span class="badge">${wa}</span></div>
+      <div class="avatar">${n.app === "reminders" ? remindersIcon : `<img src="${src(n.avatar)}" alt=""><span class="badge">${wa}</span>`}</div>
       <div class="body">
         <div class="row"><span class="name" contenteditable="plaintext-only" spellcheck="false" data-i="${i}" data-field="name">${esc(n.name)}</span><span class="when">${esc(n.when)}</span></div>
         <div class="msg" contenteditable="plaintext-only" spellcheck="false" data-i="${i}" data-field="message">${esc(n.message)}</div>
