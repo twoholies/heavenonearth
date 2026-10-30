@@ -100,6 +100,18 @@
   }
   .avatar { position: relative; flex: none; width: 40px; height: 40px; }
   .avatar img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; pointer-events: none; }
+  /* pop-up notifications */
+  .notif.live-in { animation: liveIn .5s var(--ease); }
+  @keyframes liveIn { from { opacity: 0; transform: translateY(-14px) scale(.96); } }
+  .banner { position: absolute; top: 10px; left: 8px; right: 8px; z-index: 8; transform: translateY(-130%); transition: transform .45s var(--ease);
+            cursor: pointer; text-shadow: none; }
+  .banner.show { transform: none; }
+  .banner .notif { background: rgba(245,245,247,.86); border-color: rgba(255,255,255,.6); box-shadow: 0 8px 30px rgba(0,0,0,.18); }
+  .banner .notif .name, .banner .notif .msg { color: #000; }
+  .banner .notif .when { color: #6e6e73; }
+  .app-mini { display: block; width: 40px; height: 40px; }
+  .app-mini .icon { width: 62px; height: 62px; transform: scale(.645); transform-origin: 0 0; border-radius: 15px; overflow: hidden;
+                    display: grid; place-items: center; }
   .avatar .app-ic { display: block; width: 40px; height: 40px; border-radius: 9px; overflow: hidden; }
   .avatar .badge {
     position: absolute; right: -4px; bottom: -4px; width: 18px; height: 18px;
@@ -384,6 +396,7 @@
   <section class="app-layer" id="appLayer"></section>
   <div class="app-closer" id="appCloser"></div>
 
+  <div class="banner" id="banner"></div>
   <div class="home-bar"></div>
 </div>
 
@@ -2089,6 +2102,21 @@ kantong sampah 😭
       { name: "Niel",  avatar: "🐰.jpg", message: "Hi", when: "now", show: false },
       { app: "reminders", name: "tugas financial accounting", message: "Today, 23.59", when: "now" },
     ],
+    // Pop-up notifications while the page is open, in order.
+    //   after: seconds to wait. start: "open" (default, counts from opening the
+    //   page) or "unlock" (counts from the first unlock).
+    //   WhatsApp: app: "whatsapp", chat: its number in whatsapp.chats (0 = Isaac,
+    //     1 = Niel, 2 = the group…; add sender: "Niel" for a group). The message
+    //     also arrives in that chat. Tapping the notification opens the chat.
+    //   Other apps: app: "reminders", or name + avatar + open: "Mail" (any app
+    //     name on the home screen, which tapping opens).
+    //   time: "22.15" sets the message's time in the chat (default: the real time).
+    //   sound: false = no chime. stay: seconds a banner stays (default 5).
+    // These two are examples — replace them with your own.
+    live: [
+      { after: 12, app: "whatsapp", chat: 0, message: "Hesa?", time: "22.10" },
+      { after: 25, app: "whatsapp", chat: 1, message: "kamu udah tidur belum?", time: "22.11" },
+    ],
     // WhatsApp chat list, top to bottom.
     //   avatar: a photo file, or leave it out for the default person icon
     //   group: true (group icon)      unread: number of unread messages
@@ -2345,6 +2373,7 @@ kantong sampah 😭
   }
   tick();
   setInterval(tick, 1000);
+  setTimeout(() => scheduleLive("open"), 0);
 
   // ---- Screens: lock -> passcode -> home ----
   let state = "lock";
@@ -2395,6 +2424,99 @@ kantong sampah 😭
   });
 
   // ---- Apps: tap an icon to open its screen, swipe up from the bottom edge to close ----
+  // ---- Pop-up notifications while the page is open (CONFIG.live) ----
+  const nowHHMM = () => CONFIG.time ?? (d => `${pad(d.getHours())}.${pad(d.getMinutes())}`)(new Date());
+  let audioCtx = null;
+  const ding = () => {   // a soft two-note chime, made in the browser (no sound file needed)
+    try {
+      audioCtx ??= new (window.AudioContext || window.webkitAudioContext)();
+      [[1318.5, 0], [1760, .12]].forEach(([f, t]) => {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = "sine"; o.frequency.value = f;
+        g.gain.setValueAtTime(0, audioCtx.currentTime + t);
+        g.gain.linearRampToValueAtTime(.18, audioCtx.currentTime + t + .01);
+        g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime + t + .5);
+        o.connect(g).connect(audioCtx.destination);
+        o.start(audioCtx.currentTime + t); o.stop(audioCtx.currentTime + t + .55);
+      });
+    } catch {}
+    navigator.vibrate?.(120);
+  };
+  // browsers only allow sound after the first tap/key press on the page
+  ["pointerdown", "keydown"].forEach(ev => window.addEventListener(ev, () => {
+    try { audioCtx ??= new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume(); } catch {}
+  }, { once: true }));
+
+  const appIcon = name => {
+    const tile = document.querySelector(`#homeScreen .app[data-app="${CSS.escape(name)}"] .icon`);
+    return tile ? `<span class="app-mini">${tile.outerHTML}</span>` : "";
+  };
+  // who / what a live notification shows, and where tapping it leads
+  function liveView(n) {
+    if (n.app === "whatsapp") {
+      const c = CONFIG.whatsapp.chats[n.chat] || {};
+      const base = c.fromNotification != null ? { ...CONFIG.notifications[c.fromNotification], ...saved[c.fromNotification] } : {};
+      return { name: n.name ?? (c.group ? `${n.sender ? n.sender + " @ " : ""}${c.name}` : base.name ?? c.name),
+               avatar: n.avatar ?? base.avatar ?? c.avatar, badge: "whatsapp", target: { app: "WhatsApp", chat: n.chat } };
+    }
+    if (n.app === "reminders") return { name: n.name, icon: remindersIcon, target: null };
+    return { name: n.name, avatar: n.avatar, icon: appIcon(n.open || ""), target: n.open ? { app: n.open } : null };
+  }
+  function openTarget(t) {
+    if (!t) return;
+    const el = document.querySelector(`#homeScreen .app[data-app="${CSS.escape(t.app)}"]`);
+    if (!el) return;
+    if (state === "app") closeApp();
+    openApp(el);
+    if (t.chat != null) setTimeout(() => waHooks?.open(t.chat), 450);
+  }
+  let pendingTarget = null;
+  const lockNotifHTML = (v, n) => `
+    <div class="notif live-in">
+      <div class="avatar">${v.icon ? v.icon : `<img src="${src(v.avatar || "")}" alt="">${v.badge === "whatsapp" ? `<span class="badge">${wa}</span>` : ""}`}</div>
+      <div class="body">
+        <div class="row"><span class="name">${esc(v.name || "")}</span><span class="when">now</span></div>
+        <div class="msg">${esc(n.message || "")}</div>
+      </div>
+    </div>`;
+  function fireLive(n) {
+    // a WhatsApp message also lands in its chat
+    let onScreen = false;
+    if (n.app === "whatsapp" && CONFIG.whatsapp.chats[n.chat]) {
+      const c = CONFIG.whatsapp.chats[n.chat], time = n.time ?? nowHHMM();
+      const msg = { day: "Today", from: "them", text: n.message, time, ...(n.sender ? { sender: n.sender } : {}) };
+      c.baseTime ??= c.time;   // the original last message keeps its own time
+      c.time = time;
+      c.message = n.message;
+      if (waState[n.chat]) { waState[n.chat].log.push(msg); c.newUnread = (c.newUnread || 0) + 1; }
+      else { (c.live ??= []).push(msg); c.unread = (c.unread || 0) + 1; }
+      if (c.group) c.sender = n.sender;
+      c.deleted = false; c.media = null; c.sent = false;
+      onScreen = waHooks?.live(n.chat, msg) || false;
+    }
+    if (onScreen) return;            // the reader is looking at that chat already
+    const v = liveView(n);
+    if (n.sound !== false) ding();
+    if (state === "lock" || state === "passcode") {
+      $("notifs").insertAdjacentHTML("afterbegin", lockNotifHTML(v, n));
+      const el = $("notifs").firstElementChild;
+      el.addEventListener("click", () => { pendingTarget = v.target; show("passcode"); });
+      return;
+    }
+    const b = $("banner");
+    b.innerHTML = lockNotifHTML(v, n);
+    b.firstElementChild.classList.remove("live-in");
+    b.onclick = () => { b.classList.remove("show"); openTarget(v.target); };
+    b.classList.remove("show"); void b.offsetWidth; b.classList.add("show");
+    clearTimeout(b._t);
+    b._t = setTimeout(() => b.classList.remove("show"), (n.stay ?? 5) * 1000);
+  }
+  // schedule them: "after" seconds from opening the page, or from unlocking when start: "unlock"
+  let unlockedOnce = false;
+  const scheduleLive = start => (CONFIG.live || []).forEach(n => {
+    if ((n.start || "open") === start) setTimeout(() => fireLive(n), (n.after || 0) * 1000);
+  });
+
   let openAppName = null;
   function openApp(appEl) {
     const name = openAppName = appEl.dataset.app;
@@ -2420,6 +2542,7 @@ kantong sampah 😭
     phone.classList.add("app-open");
   }
   const waState = {};
+  let waHooks = null;
   let notesDone = null, mailRead = null, safariRecent = null, msgsRead = null;   // ticked checklist items / opened emails, until reload
   const APP_KEYS = {};   // per-app keyboard handlers; return true when the key was used
   // Extra code for app screens that are built from CONFIG.
@@ -3320,10 +3443,11 @@ kantong sampah 😭
     WhatsApp(layer) {
       const WA = CONFIG.whatsapp;
       const lockNotifs = CONFIG.notifications.map((n, i) => ({ ...n, ...saved[i] }));
+      // live: messages that arrived as pop-up notifications (CONFIG.live) before the chat was opened
       const chats = WA.chats.map(c => {
-        if (c.fromNotification == null) return c;
+        if (c.fromNotification == null) return { ...c, history: [...(c.history || []), ...(c.live || [])] };
         const n = lockNotifs[c.fromNotification];
-        const history = [...(c.history || []), { day: "Today", from: "them", text: n.message, time: c.time }];
+        const history = [...(c.history || []), { day: "Today", from: "them", text: n.message, time: c.baseTime ?? c.time }, ...(c.live || [])];
         return { name: n.name, avatar: n.avatar, message: n.message, ...c, history };
       });
       const ic = {
@@ -3352,7 +3476,7 @@ kantong sampah 😭
                     : last.type === "doc" ? [last.name, last.pages && `${last.pages} pages`].filter(Boolean).join(" • ")
                     : last.type === "call" ? callTitle(last) : last.text;
         const media = { photo: "photo", voice: "mic", doc: "doc", call: last.call === "video" ? "video" : "call" }[last.type] || null;
-        return { ...c, message: label, sent: last.from === "me", time: last.time, unread: 0,
+        return { ...c, message: label, sent: last.from === "me", time: last.time, unread: c.newUnread || 0,
                  media, deleted: last.type === "deleted", sender: c.group && last.from === "them" ? last.sender : null };
       };
       const preview = c => {
@@ -3609,6 +3733,7 @@ kantong sampah 😭
       function openChat(i) {
         chatIdx = i;
         const c = chats[i];
+        WA.chats[i].newUnread = chats[i].newUnread = 0;
         if (!waState[i]) {
           let day = "Today";
           waState[i] = { log: (c.history || []).map(m => ({ ...m, day: (day = m.day ?? day), read: true })), step: 0 };
@@ -3645,6 +3770,20 @@ kantong sampah 😭
       });
       msgs.addEventListener("click", e => { if (!e.target.closest(".wa-vplay")) room.classList.remove("kb"); });
       layer.querySelector("#waSend").addEventListener("click", send);
+
+      // used by pop-up notifications (CONFIG.live)
+      waHooks = {
+        // a message arrived for chat i; returns true when that chat is on screen
+        live(i, msg) {
+          Object.assign(chats[i], { message: WA.chats[i].message, time: WA.chats[i].time, unread: WA.chats[i].unread,
+                                    newUnread: WA.chats[i].newUnread, history: [...(chats[i].history || []), msg] });
+          const onScreen = layer.isConnected && room.classList.contains("open") && chatIdx === i;
+          if (onScreen) { addBubble(msg); WA.chats[i].newUnread = chats[i].newUnread = 0; }
+          if (layer.isConnected) renderList();
+          return onScreen;
+        },
+        open(i) { if (layer.isConnected) openChat(i); },
+      };
     },
   };
 
@@ -3677,6 +3816,8 @@ kantong sampah 😭
     setTimeout(() => {
       if (code === CONFIG.passcode) {
         show("home");
+        if (!unlockedOnce) { unlockedOnce = true; scheduleLive("unlock"); }
+        if (pendingTarget) { const t = pendingTarget; pendingTarget = null; setTimeout(() => openTarget(t), 500); }
       } else {
         $("dots").classList.add("shake");
         navigator.vibrate?.(200);
