@@ -2205,10 +2205,15 @@ kantong sampah 😭
             { from: "them", text: "Saya tahu kebiasaan kamu, Hesa." },
           ],
         },
-        { fromNotification: 1, time: "22.07", unread: 1, favorite: true,
-          script: [
-            { from: "me",   text: "Hi Niel" },
-            { from: "them", text: "Are you free tomorrow?" },
+        // Niel — history only for now (placeholder messages, to be replaced).
+        { fromNotification: 1, includeNotification: false, time: "Yesterday", unread: 0, favorite: true,
+          history: [
+            { day: "Yesterday", from: "them", text: "eca, besok jadi ke kampus bareng?", time: "21.40" },
+            { from: "me",   text: "jadi dongg, jemput aku ya niel 🥺", time: "21.45" },
+            { from: "them", text: "iyaa jam 9 ya", time: "21.46" },
+            { from: "them", text: "jangan telat bangun lagi", time: "21.46" },
+            { from: "me",   text: "iya bawell", time: "21.50" },
+            { from: "them", text: "good night eca 🌙", time: "22.07" },
           ],
         },
         { name: "Heaven on Earth 🌷", group: true, sender: "Niel", deleted: true, time: "06.54", muted: true,
@@ -3470,7 +3475,10 @@ kantong sampah 😭
         const n = lockNotifs[c.fromNotification];
         const notifMsg = c.includeNotification === false ? [] : [{ day: "Today", from: "them", text: n.message, time: c.baseTime ?? c.time }];
         const history = [...(c.history || []), ...notifMsg, ...(c.live || [])];
-        return { name: n.name, avatar: n.avatar, message: c.includeNotification === false ? "" : n.message, ...c, history };
+        // without the lock screen message, the list shows the chat's own last message
+        const last = history[history.length - 1];
+        const own = c.includeNotification === false ? { message: last?.text || "", sent: last?.from === "me" } : { message: n.message };
+        return { name: n.name, avatar: n.avatar, ...own, ...c, history };
       });
       const ic = {
         ticks: `<svg width="17" height="11" viewBox="0 0 17 11" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6l3 3 6-7.5M7.5 8.5l.5.5 6-7.5" stroke="#8696a0"/></svg>`,
