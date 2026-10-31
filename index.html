@@ -1923,14 +1923,14 @@ kantong sampah 😭
       me: { name: "hesa", avatar: null },
       feed: [
         { name: "katanya fans", handle: "@akulahfansnomorsatu", time: "4h", image: "media/photos/screenshot-whatsapp.jpg", made: true,
-          text: "NCT DREAM WILL HAVE A COMEBACK WITH NEW ALBUM "DREAMAFTERDREAM" DON'T FORGET TO STAY TUNE!",
-          replies: 822, reposts: 2K, likes: 12K, views: "18,9K" },
-        { name: "Ilham", handle: "@bocilwindh", time: "17h", gothic: "First death♥️", nameWeight: 400,
-          replies: 8, reposts: 482, likes: 1300, views: "23K" },
+          text: "NCT DREAM WILL HAVE A COMEBACK WITH NEW ALBUM DREAMAFTERDREAM DON'T FORGET TO STAY TUNE!",
+          replies: 822, reposts: "2K", likes: "12K", views: "18,9K" },
+        { name: "Ilham", handle: "@bocilwindh", time: "17h", gothic: "pirst deth♥️", nameWeight: 400,
+          replies: 8, reposts: 482, likes: "1,3K", views: "23K" },
         { name: "ana", handle: "@twoholies", time: "1h", text: "enih punya ak ges",
           quote: { name: "mahae", handle: "@mahaeism", time: "5h",
                    text: "Mark love Haechan" },
-          replies: 41, reposts: 210, likes: 3400, views: "88K" },
+          replies: 41, reposts: 210, likes: "3,5K", views: "88K" },
         { name: "mahae daily", handle: "@mahaedaily", time: "2h", text: "reminder buat minum air putih dan jangan lupa makan ya kalian semua 🤍",
           replies: 3, reposts: 56, likes: 420, views: "9,1K" },
       ],
@@ -2080,7 +2080,7 @@ kantong sampah 😭
     notifications: [
       { name: "Om Isaac", avatar: "media/isaac.jpg", message: "Sorry for bothering you, Hesa", when: "now", show: false },
       { name: "Niel",  avatar: "🐰.jpg", message: "Hi", when: "now", show: false },
-      { app: "Welcome, Heaven's angels🪽", name: "Hint: Baca desc dengan baik, lalu nonton MV 1999 dan CRZY", message: "Today, 23.59", when: "now" },
+      { app: "Reminders", name: "Hint: Baca desc dengan baik, lalu nonton MV 1999 dan CRZY", message: "Today, 23.59", when: "now" },
     ],
     // Pop-up notifications while the page is open, in order.
     //   after: seconds to wait. start: "open" (default, counts from opening the
@@ -2408,7 +2408,7 @@ kantong sampah 😭
     <path d="M17 12h14M17 20h14M17 28h14" stroke="#d1d1d6" stroke-width="1.6" stroke-linecap="round"/></svg></span>`;
   $("notifs").innerHTML = notifs.map((n, i) => n.show === false ? "" : `
     <div class="notif">
-      <div class="avatar">${n.app === "Reminders" ? RemindersIcon : `<img src="${src(n.avatar)}" alt=""><span class="badge">${wa}</span>`}</div>
+      <div class="avatar">${n.app === "Reminders" ? remindersIcon : `<img src="${src(n.avatar)}" alt=""><span class="badge">${wa}</span>`}</div>
       <div class="body">
         <div class="row"><span class="name" contenteditable="plaintext-only" spellcheck="false" data-i="${i}" data-field="name">${esc(n.name)}</span><span class="when">${esc(n.when)}</span></div>
         <div class="msg" contenteditable="plaintext-only" spellcheck="false" data-i="${i}" data-field="message">${esc(n.message)}</div>
@@ -2588,7 +2588,7 @@ kantong sampah 😭
       return { name: n.name ?? (c.group ? `${n.sender ? n.sender + " @ " : ""}${c.name}` : base.name ?? c.name),
                avatar: n.avatar ?? base.avatar ?? c.avatar, badge: "whatsapp", target: { app: "WhatsApp", chat: n.chat } };
     }
-    if (n.app === "reminders") return { name: n.name, icon: remindersIcon, target: null };
+    if (n.app === "Reminders") return { name: n.name, icon: remindersIcon, target: null };
     return { name: n.name, avatar: n.avatar, icon: appIcon(n.open || ""), target: n.open ? { app: n.open } : null };
   }
   function openTarget(t) {
