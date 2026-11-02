@@ -2018,19 +2018,19 @@ kantong sampah 😭
     // Spotify "Your Library". type is "playlist", "album" or "artist";
     // image is optional (without one a coloured placeholder is shown).
     spotify: {
-      avatar: null,
-      library: [
-        { type: "playlist", title: "Liked Songs", sub: "Playlist • Hesa", liked: true, pinned: true },
-        { type: "album", title: "AFTERHOURS - The 1st Album", sub: "Album • LØREN", image: null },
-        { type: "artist", title: "Keenan Te", image: null },
-        { type: "artist", title: "AIRI", image: null },
-        { type: "artist", title: "The Weeknd", image: null },
-        { type: "artist", title: "LØREN", image: null },
-      ],
-      // the song in the mini player; audio is optional (silent without it)
-      nowPlaying: { title: "Collide (feat. Tyga)", artist: "Justine Skye, Tyga", cover: null,
-                    duration: "3:24", position: "1:10", audio: null },
-    },
+    avatar: null,   // or "media/spotify/me.jpg" for your profile photo
+    library: [
+      { type: "playlist", title: "Liked Songs", sub: "Playlist • Hesa", liked: true, pinned: true },
+      { type: "album",  title: "AFTERHOURS - The 1st Album", sub: "Album • LØREN", image: "media/spotify/AFTERHOURS.jpg" },
+      { type: "artist", title: "Keenan Te",  image: "media/spotify/Keenan Te on TikTok.jpg" },
+      { type: "artist", title: "AIRI",       image: "media/spotify/AIRI.jpg" },
+      { type: "artist", title: "The Weeknd", image: "media/spotify/The Weeknd.jpg" },
+      { type: "artist", title: "LØREN",      image: "media/spotify/LOREN.jpg" },
+    ],
+    nowPlaying: { title: "Collide (feat. Tyga)", artist: "Justine Skye, Tyga",
+                  cover: "media/spotify/Collide (feat_ Tyga).jpg",
+                  duration: "3:24", position: "1:10", audio: null },
+  },
     // Photos app ("Recently Saved"). Newest first. For a video, add
     // type: "video"; poster (a picture for the grid) is optional — without
     // it the video's first frame is shown.
@@ -2053,7 +2053,7 @@ kantong sampah 😭
         { src: "media/photos/isa3.jpg", date: "Yesterday" },
         { src: "media/photos/pap perut.mp4", type: "video", poster: "media/photos/poster pap perut.jpg", date: "Yesterday" },
         { src: "media/photos/pic2.jpg", date: "Monday" },
-        { src: "media/photos/isa5", date: "Monday" },
+        { src: "media/photos/isa5.jpg", date: "Monday" },
         { src: "media/photos/pic8.jpg", date: "Tuesday" },
         { src: "media/photos/pic10.jpg", date: "Tuesday" },
         { src: "media/photos/esa lingerie.jpg", date: "Tuesday" },
