@@ -1855,9 +1855,9 @@ kantong sampah 😭
     // to play a real recording; without it the memo plays silently.
     voiceMemos: [
       { title: "yapping at 2AM (i had a shore throat lol)", date: "22 Jun 2026", duration: "3.08", audio: null },
-      { title: "om isa nyanyiiii", date: "2 Mar 2026", duration: "1.57", audio: "media/voice-memos/isaac-nyanyi.m4a" },
-      { title: "😵‍💫", date: "27 Feb 2026", duration: "0.41", audio: "media/voice-memos/vn-hesa.m4a" },
-      { title: "love never felt so good (raw cover by me)", date: "2 Nov 2025", duration: "0.42", audio: "media/voice-memos/hesa-nyanyi.m4a" },
+      { title: "om isa nyanyiiii", date: "2 Mar 2026", duration: "1.57", audio: "media/voice-memos/isaac nyanyi.m4a" },
+      { title: "😵‍💫", date: "27 Feb 2026", duration: "0.41", audio: "media/voice-memos/vn hesa.m4a" },
+      { title: "love never felt so good (raw cover by me)", date: "2 Nov 2025", duration: "0.42", audio: "media/voice-memos/hesa nyanyi.m4a" },
     ],
     // Settings page (nothing opens; only the Airplane Mode switch flips).
     settings: {
@@ -3278,7 +3278,7 @@ kantong sampah 😭
       const play = () => {
         const p = open;
         p.playing = true; p.last = performance.now();
-        p.audio?.play().catch(() => {});
+        p.audio?.play().catch(err => console.error("Audio failed:", err));
         p.raf = requestAnimationFrame(tick);
         paint();
       };
